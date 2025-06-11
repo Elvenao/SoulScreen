@@ -67,7 +67,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+import com.example.mongodb.screens.seePost
+import com.example.mongodb.screens.logIn
+import com.example.mongodb.screens.signUp
+import com.example.mongodb.screens.welcomeScreen
+import kotlin.math.sign
 
 class MainActivity : ComponentActivity() {
 
@@ -78,95 +82,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-/*
-@kotlin.OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun UIPrincipal(usuarios: List<Usuario>, response: Boolean){
-
-    val usuarios = remember { mutableStateOf<List<Usuario>>(emptyList()) }
-
-    val errorMessage = remember { mutableStateOf<String?>(null) }
-
-    var refreshing by remember { mutableStateOf(false) }
-
-    suspend fun recargarDatos() {
-        refreshing = true
-        delay(2000) // Simulación de carga
-        refreshing = false
-    }
-
-    val pullRefreshState = rememberPullRefreshState(refreshing, {
-        // Acción al hacer pull
-       CoroutineScope(Dispatchers.IO).launch{
-           recargarDatos()
-       }
-    })
-
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .pullRefresh(pullRefreshState)){
-        if(!response) {
-            LazyColumn {
-                items(usuarios.size) { index ->
-                    val usuario = usuarios[index]
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .border(
-                                width = 2.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFFE0F7FA))
-                            .padding(16.dp)
-                    ) {
-                        Column {
-                            Row {
-                                Text(
-                                    text = "Nombre: ${usuario.nombre}", // Asumiendo que tienes un campo `nombre`
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                            Row {
-                                Text(
-                                    text = "Edad: ${usuario.edad}", // Asumiendo que tienes un campo `nombre`
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
-
-
-                    }
-
-                }
-            }
-        }else{
-            Column(Modifier.align(Alignment.Center)) {
-                Text("Fallo en la conexion")
-            }
-        }
-
-        PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
-    }
-}
-*/
 
 @Composable
 fun NavigationHost(){
+        var initialDestination = "welcomeScreen"
         val navController = rememberNavController()
-
-        NavHost(navController = navController, startDestination = "UIPrincipal") {
+        NavHost(navController = navController, startDestination = initialDestination) {
             composable("UIPrincipal") {
                 UIPrincipal()
             }
-
-
-
-
             composable("seePost/{user}/{title}/{content}/{date}/{time}"){
                 backStackEntry ->
                     val user = backStackEntry.arguments?.getString("user")?: " "
@@ -175,7 +99,16 @@ fun NavigationHost(){
                     val date = backStackEntry.arguments?.getString("date")?: " "
                     val time = backStackEntry.arguments?.getString("time")?: " "
                 seePost(user,title,content,date,time)
+            }
 
+            composable("logIn"){
+                logIn()
+            }
+            composable("signUp") {
+                signUp(navController)
+            }
+            composable("welcomeScreen") {
+                welcomeScreen(navController)
             }
         }
 
@@ -236,7 +169,6 @@ fun UIPrincipal() {
     }
 
     LaunchedEffect(Unit) {
-
         cargarPosts()
     }
 
@@ -328,9 +260,6 @@ fun UIPrincipal() {
     }
 }
 
-fun seePost(user : String, title: String,content: String,date:String,time:String){
-
-}
 
 
 
