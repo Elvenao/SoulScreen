@@ -5,13 +5,14 @@ import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.TokenResponse
+import com.example.mongodb.model.RefreshTokenRequest
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
     @POST("auth/refresh")
-    fun refreshToken(@Body refreshToken: String): Call<TokenResponse>
+    fun refreshToken(@Body refreshToken: RefreshTokenRequest): Call<TokenResponse>
 
     @GET("users")
     fun getUsuarios(): Call<List<Usuario>>

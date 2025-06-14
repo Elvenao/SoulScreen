@@ -6,6 +6,7 @@ import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
+import com.example.mongodb.model.RefreshTokenRequest
 
 class TokenAuthenticator(
     private val context: Context,
@@ -16,7 +17,7 @@ class TokenAuthenticator(
         val securePrefs = SecurePrefs(context)
         val refreshToken = securePrefs.getRefreshToken() ?: return null
 
-        val tokenResponse = api.refreshToken(refreshToken).execute()
+        val tokenResponse = api.refreshToken(RefreshTokenRequest(refreshToken)).execute()
         if (tokenResponse.isSuccessful) {
             val newAccessToken = tokenResponse.body()?.accessToken ?: return null
 

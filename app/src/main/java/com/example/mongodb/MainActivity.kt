@@ -82,6 +82,8 @@ import androidx.navigation.NavController
 import androidx.security.crypto.EncryptedSharedPreferences
 import org.json.JSONObject
 
+import com.example.mongodb.model.RefreshTokenRequest
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,7 +120,7 @@ fun NavigationHost(){
     if (!accessToken.isNullOrEmpty() && isTokenValid(accessToken)) {
         initialDestination = "Posts"
     } else if (!refreshToken.isNullOrEmpty()) {
-        RetrofitClient.getInstance(context).refreshToken(refreshToken)
+        RetrofitClient.getInstance(context).refreshToken(RefreshTokenRequest(refreshToken))
     } else {
         initialDestination = "welcomeScreen"
     }
@@ -163,6 +165,8 @@ fun UIPrincipal(navController:NavController) {
     val errorMessage = remember { mutableStateOf<String?>(null) }
     val isRefreshing = remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val encryptedSharedPreferences = remember{SecurePrefs(context)}
+    val refreshToken = encryptedSharedPreferences.getRefreshToken()
 
 
     fun cargarUsuarios() {
@@ -189,25 +193,49 @@ fun UIPrincipal(navController:NavController) {
     }
 
     fun cargarPosts() {
+
         isRefreshing.value = true
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = RetrofitClient.getInstance(context).getPosts().execute()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        posts.value = response.body() ?: emptyList()
-                        errorMessage.value = null
+                if(refreshToken != null){
+                    val responseToken = RetrofitClient.getInstance(context)
+                        .refreshToken(RefreshTokenRequest(refreshToken))
+                        .execute()
+
+                    if (responseToken.isSuccessful && responseToken.body() != null) {
+                        val tokenResponse = responseToken.body()!!
+                        // Guarda los nuevos tokens
+                        encryptedSharedPreferences.saveAccessToken(tokenResponse.accessToken)
+                        encryptedSharedPreferences.saveRefreshToken(tokenResponse.refreshToken)
+                        val response = RetrofitClient.getInstance(context).getPosts().execute()
+                        withContext(Dispatchers.Main) {
+                            if (response.isSuccessful) {
+                                posts.value = response.body() ?: emptyList()
+                                errorMessage.value = null
+
+                            } else {
+                                errorMessage.value = "Error ${response.code()}"
+                                Toast.makeText(context, errorMessage.value, Toast.LENGTH_SHORT).show()
+
+                            }
+                            isRefreshing.value = false
+                        }
                     } else {
-                        errorMessage.value = "Error ${response.code()}"
+                        withContext(Dispatchers.Main) {
+                            navController.navigate("welcomeScreen") {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
                     }
-                    isRefreshing.value = false
                 }
+
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    errorMessage.value = "Fallo: ${e.message}"
-                    isRefreshing.value = false
-                }
+                errorMessage.value = "HOla"
+                isRefreshing.value = false
             }
+
+            
+
         }
     }
 

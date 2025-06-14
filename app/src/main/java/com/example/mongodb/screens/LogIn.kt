@@ -198,6 +198,8 @@ fun IniciarSesion(email: String, password: String, context: Context, navControll
                     val errorBody = e.response()?.errorBody()?.string()
                     Log.e("LOGIN", "Respuesta no JSON: $errorBody")
                 }
+                errorMessage = "Error en la conexion"
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                 
             }
         }
