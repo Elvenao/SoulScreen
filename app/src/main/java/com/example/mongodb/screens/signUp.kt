@@ -85,7 +85,6 @@ fun signUp(navController: NavController){
                             textColor = Color.White,
                             cursorColor = Color.Cyan
                         )
-
                     )
                     OutlinedTextField(
                         value = surname,

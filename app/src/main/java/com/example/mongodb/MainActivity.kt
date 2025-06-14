@@ -73,6 +73,8 @@ import com.example.mongodb.screens.signUp
 import com.example.mongodb.screens.welcomeScreen
 import kotlin.math.sign
 
+import androidx.compose.ui.platform.LocalContext
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,33 +87,38 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NavigationHost(){
-        var initialDestination = "welcomeScreen"
-        val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = initialDestination) {
-            composable("UIPrincipal") {
-                UIPrincipal()
-            }
-            composable("seePost/{user}/{title}/{content}/{date}/{time}"){
-                backStackEntry ->
-                    val user = backStackEntry.arguments?.getString("user")?: " "
-                    val title = backStackEntry.arguments?.getString("title")?: " "
-                    val content = backStackEntry.arguments?.getString("content")?: " "
-                    val date = backStackEntry.arguments?.getString("date")?: " "
-                    val time = backStackEntry.arguments?.getString("time")?: " "
-                seePost(user,title,content,date,time)
-            }
-
-            composable("logIn"){
-                logIn()
-            }
-            composable("signUp") {
-                signUp(navController)
-            }
-            composable("welcomeScreen") {
-                welcomeScreen(navController)
-            }
+    var initialDestination = "welcomeScreen"
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = initialDestination) {
+        composable("UIPrincipal") {
+            UIPrincipal()
+        }
+        composable("seePost/{user}/{title}/{content}/{date}/{time}") { backStackEntry ->
+            val user = backStackEntry.arguments?.getString("user") ?: " "
+            val title = backStackEntry.arguments?.getString("title") ?: " "
+            val content = backStackEntry.arguments?.getString("content") ?: " "
+            val date = backStackEntry.arguments?.getString("date") ?: " "
+            val time = backStackEntry.arguments?.getString("time") ?: " "
+            seePost(user, title, content, date, time)
         }
 
+        composable("logIn") {
+            logIn(navController)
+        }
+        composable("signUp") {
+            signUp(navController)
+        }
+        composable("welcomeScreen") {
+            welcomeScreen(navController)
+        }
+
+        composable("seePost") {
+
+        }
+        composable("Posts") {
+            UIPrincipal()
+        }
+    }
 }
 
 @kotlin.OptIn(ExperimentalMaterialApi::class)
@@ -121,6 +128,7 @@ fun UIPrincipal() {
     val posts = remember { mutableStateOf<List<Post>>(emptyList())}
     val errorMessage = remember { mutableStateOf<String?>(null) }
     val isRefreshing = remember { mutableStateOf(false) }
+
 
     fun cargarUsuarios() {
         isRefreshing.value = true

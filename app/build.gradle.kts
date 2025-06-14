@@ -46,8 +46,9 @@ dependencies {
     implementation(libs.androidx.material.v154)
     implementation(libs.material3)
 
-    implementation(libs.accompanist.swiperefresh)
 
+
+    implementation(libs.accompanist.swiperefresh)
 
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
