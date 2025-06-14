@@ -49,7 +49,7 @@ dependencies {
 
 
     implementation(libs.accompanist.swiperefresh)
-
+    implementation(libs.androidx.security.crypto)
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation(libs.androidx.core.ktx)

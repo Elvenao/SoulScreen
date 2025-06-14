@@ -63,6 +63,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -70,13 +71,13 @@ fun seePost(user : String, title: String,content: String,date:String,time:String
     val posts = remember { mutableStateOf<List<Post>>(emptyList())}
     val errorMessage = remember { mutableStateOf<String?>(null) }
     val isRefreshing = remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
 
     fun cargarPosts() {
         isRefreshing.value = true
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = RetrofitClient.instance.getPosts().execute()
+                val response = RetrofitClient.getInstance(context).getPosts().execute()
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         posts.value = response.body() ?: emptyList()

@@ -1,6 +1,10 @@
 package com.example.mongodb
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Base64
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -74,6 +78,9 @@ import com.example.mongodb.screens.welcomeScreen
 import kotlin.math.sign
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import androidx.security.crypto.EncryptedSharedPreferences
+import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
@@ -85,13 +92,40 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun isTokenValid(token: String): Boolean {
+    try {
+        val parts = token.split(".")
+        if (parts.size != 3) return false
+
+        val payloadJson = String(Base64.decode(parts[1], Base64.DEFAULT))
+        val jsonObject = JSONObject(payloadJson)
+        val exp = jsonObject.getLong("exp") // tiempo de expiración en segundos
+
+        val currentTime = System.currentTimeMillis() / 1000 // en segundos
+        return exp > currentTime
+    } catch (e: Exception) {
+        return false
+    }
+}
+
 @Composable
 fun NavigationHost(){
     var initialDestination = "welcomeScreen"
+    val context = LocalContext.current
+    val encryptedSharedPreferences = remember{SecurePrefs(context)}
+    val accessToken = encryptedSharedPreferences.getAccessToken()
+    val refreshToken = encryptedSharedPreferences.getRefreshToken()
+    if (!accessToken.isNullOrEmpty() && isTokenValid(accessToken)) {
+        initialDestination = "Posts"
+    } else if (!refreshToken.isNullOrEmpty()) {
+        RetrofitClient.getInstance(context).refreshToken(refreshToken)
+    } else {
+        initialDestination = "welcomeScreen"
+    }
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = initialDestination) {
         composable("UIPrincipal") {
-            UIPrincipal()
+            UIPrincipal(navController)
         }
         composable("seePost/{user}/{title}/{content}/{date}/{time}") { backStackEntry ->
             val user = backStackEntry.arguments?.getString("user") ?: " "
@@ -116,25 +150,26 @@ fun NavigationHost(){
 
         }
         composable("Posts") {
-            UIPrincipal()
+            UIPrincipal(navController)
         }
     }
 }
 
 @kotlin.OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun UIPrincipal() {
+fun UIPrincipal(navController:NavController) {
     val usuarios = remember { mutableStateOf<List<Usuario>>(emptyList()) }
     val posts = remember { mutableStateOf<List<Post>>(emptyList())}
     val errorMessage = remember { mutableStateOf<String?>(null) }
     val isRefreshing = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
 
     fun cargarUsuarios() {
         isRefreshing.value = true
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = RetrofitClient.instance.getUsuarios().execute()
+                val response = RetrofitClient.getInstance(context).getUsuarios().execute()
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         usuarios.value = response.body() ?: emptyList()
@@ -157,7 +192,7 @@ fun UIPrincipal() {
         isRefreshing.value = true
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = RetrofitClient.instance.getPosts().execute()
+                val response = RetrofitClient.getInstance(context).getPosts().execute()
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         posts.value = response.body() ?: emptyList()
@@ -196,6 +231,7 @@ fun UIPrincipal() {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .pullRefresh(pullRefreshState)){
+
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -204,56 +240,80 @@ fun UIPrincipal() {
                     verticalArrangement = Arrangement.Center
 
                 ) {
+                    Button(
+                        onClick = { cerrarSesion(context, navController) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text("Cerrar Sesión")
+
+                    }
                                 Text(text = "Error en el servidor", fontSize = 18.sp)
                                 Text(text = errorMessage.value ?: "", fontSize = 14.sp)
                 }
             }
 
         } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(posts.value) { post ->
-                    Box(
+            Scaffold(
+                topBar = {
+                    Button(
+                        onClick = { cerrarSesion(context, navController) },
                         modifier = Modifier
-                            .padding(8.dp)
                             .fillMaxWidth()
-                            .border(
-                                width = 2.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFFE0F7FA))
-                            .padding(16.dp)
-                            .clickable {
-
-                            }
+                            .padding(8.dp)
                     ) {
-                        Column {
-                            Text(
-                                text = "${post.user}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${post.title}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${post.content}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${post.date}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${post.time}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
+                        Text("Cerrar Sesión")
+                    }
+                }
+            ) { innerPadding ->
+                LazyColumn(contentPadding = innerPadding,
+                    modifier = Modifier.fillMaxSize()) {
+
+                    items(posts.value) { post ->
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.Gray,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color(0xFFE0F7FA))
+                                .padding(16.dp)
+                                .clickable {
+
+                                }
+                        ) {
+                            Column {
+                                Text(
+                                    text = "${post.user}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${post.title}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${post.content}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${post.date}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${post.time}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -265,6 +325,17 @@ fun UIPrincipal() {
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter)
         )
+
+    }
+}
+
+fun cerrarSesion(context: Context,navController: NavController){
+    Toast.makeText(context, "Cerrando Sesion", Toast.LENGTH_SHORT).show()
+    val sharedPreferences = SecurePrefs(context)
+    sharedPreferences.clearAccessToken()
+    sharedPreferences.clearRefreshToken()
+    navController.navigate("welcomeScreen"){
+        popUpTo(0) { inclusive = true }
     }
 }
 

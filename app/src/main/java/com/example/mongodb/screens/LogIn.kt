@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import com.example.mongodb.SecurePrefs
 import com.example.mongodb.network.RetrofitClient
 import com.example.mongodb.ui.theme.DarkCyan
 import kotlinx.coroutines.CoroutineScope
@@ -80,7 +81,7 @@ fun logIn(navController: NavController){
                         onValueChange = {email = it},
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.height(60.dp),
-                        label = { Text("Nombre", color = Color.White)},
+                        label = { Text("Correo Electronico", color = Color.White)},
                         textStyle = TextStyle(
                             fontSize = 15.sp,
                             color = Color.White
@@ -105,7 +106,7 @@ fun logIn(navController: NavController){
                         onValueChange = {password = it},
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.height(60.dp),
-                        label = { Text("Nombre", color = Color.White)},
+                        label = { Text("Contraseña", color = Color.White)},
                         textStyle = TextStyle(
                             fontSize = 15.sp,
                             color = Color.White
@@ -150,16 +151,32 @@ fun IniciarSesion(email: String, password: String, context: Context, navControll
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = RetrofitClient.instance.logIn(loginRequest)
+
             withContext(Dispatchers.Main) {
+
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
+                    val securePrefs = SecurePrefs(context)
+
                     if (loginResponse != null && loginResponse.success) {
                         // Inicio de sesión exitoso
                         // Aquí podrías guardar el token, navegar a otra pantalla, etc.
 
                         Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
-                        navController.navigate("Posts")
+                        navController.navigate("Posts") {
+                            popUpTo(0) { inclusive = true }
+                        }
                         errorMessage = ""
+                        if(loginResponse.accessToken != null){
+                            securePrefs.saveAccessToken(loginResponse.accessToken)
+                            Log.d("AccessToken",loginResponse.accessToken)
+                        }
+                        if(loginResponse.refreshToken != null){
+                            securePrefs.saveRefreshToken(loginResponse.refreshToken)
+                            Log.d("RefreshToken",loginResponse.refreshToken)
+                        }
+
+
                         result = true
                     }else{
                         errorMessage = loginResponse?.message ?: "Error desconocido"
@@ -167,7 +184,9 @@ fun IniciarSesion(email: String, password: String, context: Context, navControll
                     }
                 } else {
                     errorMessage = "Credenciales incorrectas"
+
                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                    response.body()?.let { Log.e("error", it.message) }
                 }
                 
             }

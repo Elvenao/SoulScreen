@@ -24,6 +24,7 @@ media3CommonKtx = "1.7.1"
 navigationComposeAndroid = "2.9.0"
 
 [libraries]
+androidx-security-crypto = "androidx.security:security-crypto:1.1.0-alpha03"
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material-pullrefresh = { module = "androidx.compose.material:material-pullrefresh", version.ref = "materialPullrefresh" }
