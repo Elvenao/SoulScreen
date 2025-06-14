@@ -1,6 +1,6 @@
 [versions]
 accompanistSwiperefresh = "0.31.5-beta"
-agp = "8.9.1"
+agp = "8.10.1"
 androidxMaterial = "1.5.4"
 converterGson = "2.9.0"
 kotlin = "2.0.21"

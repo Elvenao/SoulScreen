@@ -83,6 +83,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import org.json.JSONObject
 
 import com.example.mongodb.model.RefreshTokenRequest
+import com.example.mongodb.screens.Home
 
 class MainActivity : ComponentActivity() {
 
@@ -127,7 +128,7 @@ fun NavigationHost(){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = initialDestination) {
         composable("UIPrincipal") {
-            UIPrincipal(navController)
+            Home(navController)
         }
         composable("seePost/{user}/{title}/{content}/{date}/{time}") { backStackEntry ->
             val user = backStackEntry.arguments?.getString("user") ?: " "
@@ -152,220 +153,12 @@ fun NavigationHost(){
 
         }
         composable("Posts") {
-            UIPrincipal(navController)
+            Home(navController)
         }
     }
 }
 
-@kotlin.OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun UIPrincipal(navController:NavController) {
-    val usuarios = remember { mutableStateOf<List<Usuario>>(emptyList()) }
-    val posts = remember { mutableStateOf<List<Post>>(emptyList())}
-    val errorMessage = remember { mutableStateOf<String?>(null) }
-    val isRefreshing = remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val encryptedSharedPreferences = remember{SecurePrefs(context)}
-    val refreshToken = encryptedSharedPreferences.getRefreshToken()
 
-
-    fun cargarUsuarios() {
-        isRefreshing.value = true
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = RetrofitClient.getInstance(context).getUsuarios().execute()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        usuarios.value = response.body() ?: emptyList()
-                        errorMessage.value = null
-                    } else {
-                        errorMessage.value = "Error ${response.code()}"
-                    }
-                    isRefreshing.value = false
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    errorMessage.value = "Fallo: ${e.message}"
-                    isRefreshing.value = false
-                }
-            }
-        }
-    }
-
-    fun cargarPosts() {
-
-        isRefreshing.value = true
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                if(refreshToken != null){
-                    val responseToken = RetrofitClient.getInstance(context)
-                        .refreshToken(RefreshTokenRequest(refreshToken))
-                        .execute()
-
-                    if (responseToken.isSuccessful && responseToken.body() != null) {
-                        val tokenResponse = responseToken.body()!!
-                        // Guarda los nuevos tokens
-                        encryptedSharedPreferences.saveAccessToken(tokenResponse.accessToken)
-                        encryptedSharedPreferences.saveRefreshToken(tokenResponse.refreshToken)
-                        val response = RetrofitClient.getInstance(context).getPosts().execute()
-                        withContext(Dispatchers.Main) {
-                            if (response.isSuccessful) {
-                                posts.value = response.body() ?: emptyList()
-                                errorMessage.value = null
-
-                            } else {
-                                errorMessage.value = "Error ${response.code()}"
-                                Toast.makeText(context, errorMessage.value, Toast.LENGTH_SHORT).show()
-
-                            }
-                            isRefreshing.value = false
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            navController.navigate("welcomeScreen") {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        }
-                    }
-                }
-
-            } catch (e: Exception) {
-                errorMessage.value = "HOla"
-                isRefreshing.value = false
-            }
-
-            
-
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        cargarPosts()
-    }
-
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isRefreshing.value,
-        onRefresh = { cargarPosts() }
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState)
-    ) {
-
-        if (errorMessage.value != null) {
-            // Mostrar error pero mantener el gesto de pull
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .pullRefresh(pullRefreshState)){
-
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-
-                ) {
-                    Button(
-                        onClick = { cerrarSesion(context, navController) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Text("Cerrar Sesión")
-
-                    }
-                                Text(text = "Error en el servidor", fontSize = 18.sp)
-                                Text(text = errorMessage.value ?: "", fontSize = 14.sp)
-                }
-            }
-
-        } else {
-            Scaffold(
-                topBar = {
-                    Button(
-                        onClick = { cerrarSesion(context, navController) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Text("Cerrar Sesión")
-                    }
-                }
-            ) { innerPadding ->
-                LazyColumn(contentPadding = innerPadding,
-                    modifier = Modifier.fillMaxSize()) {
-
-                    items(posts.value) { post ->
-                        Box(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth()
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.Gray,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(Color(0xFFE0F7FA))
-                                .padding(16.dp)
-                                .clickable {
-
-                                }
-                        ) {
-                            Column {
-                                Text(
-                                    text = "${post.user}",
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                                Text(
-                                    text = "${post.title}",
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                                Text(
-                                    text = "${post.content}",
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                                Text(
-                                    text = "${post.date}",
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                                Text(
-                                    text = "${post.time}",
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // Este indicador debe estar *fuera* del condicional para que funcione siempre
-        PullRefreshIndicator(
-            refreshing = isRefreshing.value,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
-
-    }
-}
-
-fun cerrarSesion(context: Context,navController: NavController){
-    Toast.makeText(context, "Cerrando Sesion", Toast.LENGTH_SHORT).show()
-    val sharedPreferences = SecurePrefs(context)
-    sharedPreferences.clearAccessToken()
-    sharedPreferences.clearRefreshToken()
-    navController.navigate("welcomeScreen"){
-        popUpTo(0) { inclusive = true }
-    }
-}
 
 
 
