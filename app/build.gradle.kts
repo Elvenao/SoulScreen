@@ -46,7 +46,9 @@ dependencies {
     implementation(libs.androidx.material.v154)
     implementation(libs.material3)
 
-
+    implementation(libs.jjwt.api)
+    runtimeOnly(libs.jjwt.impl)
+    runtimeOnly(libs.jjwt.jackson)
 
     implementation(libs.accompanist.swiperefresh)
     implementation(libs.androidx.security.crypto)

@@ -1,8 +1,9 @@
 [versions]
 accompanistSwiperefresh = "0.31.5-beta"
-agp = "8.10.1"
+agp = "8.9.1"
 androidxMaterial = "1.5.4"
 converterGson = "2.9.0"
+jjwtApi = "0.11.5"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -32,6 +33,9 @@ androidx-material = { module = "androidx.compose.material:material", version.ref
 androidx-material-v154 = { module = "androidx.compose.material:material", version.ref = "androidxMaterial" }
 androidx-material-v182 = { module = "androidx.compose.material:material", version.ref = "materialVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwtApi" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwtApi" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwtApi" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
