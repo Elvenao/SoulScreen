@@ -61,8 +61,10 @@ class SecurePrefs(context: Context) {
         name = CryptoUtils.decryptAES(name)
         var birthDate = claims["birthDate"] as String
         birthDate = CryptoUtils.decryptAES(birthDate)
+        val genres = claims["genres"] as List<String>
+        val biography = claims["biography"] as String
         val avatar =  claims["avatar"] as String
-        val userData = CurrentUserData(id,userName,name,birthDate,avatar)
+        val userData = CurrentUserData(id,userName,name,birthDate, biography,genres,avatar)
         return userData
     }
 }
