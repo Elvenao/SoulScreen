@@ -105,7 +105,9 @@ fun signUp(navController: NavController){
                     )
                 }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth()){
-                   Button(onClick = {},
+                   Button(onClick = {
+                       navController.navigate("")
+                   },
                        modifier = Modifier.weight(1f),
                        colors = ButtonDefaults.buttonColors(
                            containerColor = Color.Cyan
