@@ -371,7 +371,7 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    Toast.makeText(context, "Soporte", Toast.LENGTH_SHORT).show()
+                                    cerrarSesion(context, navController)
                                 }
                                 .padding(4.dp,0.dp),
                             horizontalAlignment = Alignment.Start
