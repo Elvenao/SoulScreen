@@ -68,6 +68,10 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -177,6 +181,33 @@ fun NavigationHost(){
     }
 }
 
+
+
+@Composable
+fun BottomBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
+    NavigationBar(
+        containerColor = Color(0xFF8E24AA) // Morado
+    ) {
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
+            label = { Text("Inicio") },
+            selected = selectedIndex == 0,
+            onClick = { onItemSelected(0) }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Favorite, contentDescription = "Amigos") },
+            label = { Text("Amigos") },
+            selected = selectedIndex == 1,
+            onClick = { onItemSelected(1) }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Search, contentDescription = "Explorar") },
+            label = { Text("Explorar") },
+            selected = selectedIndex == 2,
+            onClick = { onItemSelected(2) }
+        )
+    }
+}
 
 
 

@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Phone
@@ -52,9 +54,11 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getCurrentCompositionErrors
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,6 +87,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import coil.compose.AsyncImage
+import com.example.mongodb.BottomBar
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -102,6 +107,7 @@ fun Home(navController:NavController) {
     val scope = rememberCoroutineScope()
     val EncryptedSharedPreferences = SecurePrefs(context)
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
+    var selectedIndex by remember { mutableStateOf(0) }
 
 
     fun cargarUsuarios() {
@@ -189,6 +195,7 @@ fun Home(navController:NavController) {
         drawerContent = {
             ModalDrawerSheet(modifier = Modifier.width(280.dp)) {
                 LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxHeight(),
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
@@ -197,6 +204,8 @@ fun Home(navController:NavController) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
                                 .clickable {
                                     navController.navigate("profileScreen") {
                                         popUpTo(0) { inclusive = true }
@@ -231,6 +240,7 @@ fun Home(navController:NavController) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .fillMaxHeight()
                                 .padding(10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -252,18 +262,22 @@ fun Home(navController:NavController) {
 
 
                     item {
-                        Row {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .clickable{
+                                navController.navigate("profileScreen") {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
                                 contentDescription = "UserIcon",
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
-                                    .clickable {
-                                        navController.navigate("profileScreen") {
-                                            popUpTo(0) { inclusive = true }
-                                        }
-                                    }
                             )
                             Text(
                                 text = "Perfil",
@@ -275,20 +289,24 @@ fun Home(navController:NavController) {
                     }
 
                     item {
-                        Row {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .clickable{
+                                Toast.makeText(context, "Configuracion", Toast.LENGTH_SHORT).show()
+                                /*
+                                navController.navigate("Configuracion") {
+                                    popUpTo(0) { inclusive = true }
+                                }*/
+                            }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
                                 contentDescription = "Settings Icon",
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
-                                    .clickable {
-                                        Toast.makeText(context, "Configuracion", Toast.LENGTH_SHORT).show()
-                                        /*
-                                        navController.navigate("Configuracion") {
-                                            popUpTo(0) { inclusive = true }
-                                        }*/
-                                    }
                             )
                             Text(
                                 text = "Configuración",
@@ -300,20 +318,20 @@ fun Home(navController:NavController) {
                     }
 
                     item {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-
-                    item {
-                        Row {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .clickable{
+                                Toast.makeText(context, "Ayuda", Toast.LENGTH_SHORT).show()
+                            }
+                        ){
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = "Help Icon",
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
-                                    .clickable {
-                                        Toast.makeText(context, "Ayuda", Toast.LENGTH_SHORT).show()
-                                    }
                             )
                             Text(
                                 text = "Ayuda",
@@ -325,16 +343,20 @@ fun Home(navController:NavController) {
                     }
 
                     item {
-                        Row {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .clickable{
+                                Toast.makeText(context, "Soporte", Toast.LENGTH_SHORT).show()
+                            }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Phone,
                                 contentDescription = "Support Icon",
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
-                                    .clickable {
-                                        Toast.makeText(context, "Soporte", Toast.LENGTH_SHORT).show()
-                                    }
                             )
                             Text(
                                 text = "Contacta con Soporte",
@@ -343,6 +365,28 @@ fun Home(navController:NavController) {
                             )
                         }
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+                    item{
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    Toast.makeText(context, "Soporte", Toast.LENGTH_SHORT).show()
+                                }
+                                .padding(4.dp,0.dp),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Cerrar Sesión",
+                                    fontSize = 15.sp,
+                                    color = Color.Red,
+                                    modifier = Modifier.padding(5.dp)
+                                )
+                            }
+                        }
                     }
 
                 }
@@ -392,6 +436,16 @@ fun Home(navController:NavController) {
                                 }
                             }
                         )
+                    },
+                    bottomBar = {
+                        BottomBar(selectedIndex) { index ->
+                            selectedIndex = index
+                            when (index) {
+                                0 -> navController.navigate("Posts")
+                                1 -> navController.navigate("amigosScreen")
+                                2 -> navController.navigate("explorarScreen")
+                            }
+                        }
                     }
                 ) { innerPadding ->
                     LazyColumn(contentPadding = innerPadding,
