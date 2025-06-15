@@ -9,6 +9,7 @@ import androidx.core.content.edit
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import com.example.mongodb.model.CurrentUserData
+import com.example.mongodb.utils.CryptoUtils
 
 class SecurePrefs(context: Context) {
     private val secretKey = Keys.hmacShaKeyFor("8da949392%1!5423_381j39ja2$6asdfas12".toByteArray())
@@ -54,9 +55,12 @@ class SecurePrefs(context: Context) {
             .parseClaimsJws(refreshToken)
             .body
         val id = claims["id"] as String
-        val userName = claims["userName"] as String
-        val name = claims["name"] as String
-        val birthDate = claims["birthDate"] as String
+        var userName = claims["userName"] as String
+        userName = CryptoUtils.decryptAES(userName)
+        var name = claims["name"] as String
+        name = CryptoUtils.decryptAES(name)
+        var birthDate = claims["birthDate"] as String
+        birthDate = CryptoUtils.decryptAES(birthDate)
         val avatar =  claims["avatar"] as String
         val userData = CurrentUserData(id,userName,name,birthDate,avatar)
         return userData
