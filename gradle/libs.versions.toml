@@ -2,6 +2,7 @@
 accompanistSwiperefresh = "0.31.5-beta"
 agp = "8.9.1"
 androidxMaterial = "1.5.4"
+coilCompose = "2.4.0"
 converterGson = "2.9.0"
 jjwtApi = "0.11.5"
 kotlin = "2.0.21"
@@ -32,6 +33,7 @@ androidx-material-pullrefresh = { module = "androidx.compose.material:material-p
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-material-v154 = { module = "androidx.compose.material:material", version.ref = "androidxMaterial" }
 androidx-material-v182 = { module = "androidx.compose.material:material", version.ref = "materialVersion" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwtApi" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwtApi" }

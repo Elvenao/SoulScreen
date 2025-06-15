@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.androidx.material.v182)
     implementation(libs.androidx.material.v154)
     implementation(libs.material3)
+    implementation(libs.coil.compose)
 
     implementation(libs.jjwt.api)
     runtimeOnly(libs.jjwt.impl)

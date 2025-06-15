@@ -23,7 +23,7 @@ class TokenAuthenticator(
 
             securePrefs.saveAccessToken(newAccessToken)
 
-            return response.request().newBuilder()
+            return response.request.newBuilder()
                 .header("Authorization", "Bearer $newAccessToken")
                 .build()
         }

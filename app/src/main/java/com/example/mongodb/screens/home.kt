@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getCurrentCompositionErrors
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -63,6 +64,7 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.security.crypto.EncryptedSharedPreferences
 import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.Post
 import com.example.mongodb.model.RefreshTokenRequest
@@ -73,6 +75,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import coil.compose.AsyncImage
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -89,7 +93,8 @@ fun Home(navController:NavController) {
     val refreshToken = encryptedSharedPreferences?.getRefreshToken()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
+    val EncryptedSharedPreferences = SecurePrefs(context)
+    val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
 
 
     fun cargarUsuarios() {
@@ -164,7 +169,7 @@ fun Home(navController:NavController) {
 
     LaunchedEffect(Unit) {
         cargarPosts()
-        cargarUsuarios()
+        //cargarUsuarios()
     }
 
     val pullRefreshState = rememberPullRefreshState(
@@ -188,10 +193,29 @@ fun Home(navController:NavController) {
                         )
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text(
-                            text = "${usuarios.value}",
+                            text = currentUserData.userName,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(8.dp)
                         )
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        Text(
+                            text = currentUserData.name,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(8.dp)
+                        )
+
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        Text(
+                            text = currentUserData.birthDate,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(8.dp)
+                        )
+
+                        AsyncImage(
+                            model = currentUserData.avatar,
+                            contentDescription = "Imagen desde URL"
+                        )
+
 
                         Button(
                             onClick = { cerrarSesion(context, navController) },
