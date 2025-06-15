@@ -1,6 +1,7 @@
 package com.example.mongodb.screens
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -186,36 +188,49 @@ fun Home(navController:NavController) {
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     item {
-                        Text(
-                            "Perfil",
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            fontWeight = FontWeight.Bold
-                        )
+                        Row(){
+                            Text(
+                                "Perfil",
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Row(){
+                            AsyncImage(
+                                model = currentUserData.avatar,
+                                contentDescription = "Imagen desde URL",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(CircleShape)
+                                    .padding(8.dp)
+                            )
+                            Text(
+                                text = currentUserData.name,
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text(
-                            text = currentUserData.userName,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        Text(
-                            text = currentUserData.name,
+                            text = "Username: "+currentUserData.userName,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(8.dp)
                         )
 
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
                         Text(
-                            text = currentUserData.birthDate,
+                            text = currentUserData.biography?:"",
                             fontSize = 20.sp,
                             modifier = Modifier.padding(8.dp)
                         )
 
-                        AsyncImage(
-                            model = currentUserData.avatar,
-                            contentDescription = "Imagen desde URL"
-                        )
 
+                        Text(
+                            text = currentUserData.genres?.joinToString(", ") ?: "",
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(8.dp)
+                        )
 
                         Button(
                             onClick = { cerrarSesion(context, navController) },

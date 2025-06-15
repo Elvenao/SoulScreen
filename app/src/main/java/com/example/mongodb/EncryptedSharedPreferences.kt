@@ -63,9 +63,15 @@ class SecurePrefs(context: Context) {
         birthDate = CryptoUtils.decryptAES(birthDate)
         val genres = (claims["genres"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
         val biography = claims["biography"] as? String ?: ""
-        val avatar =  claims["avatar"] as String
+        var avatar =  claims["avatar"] as String
         val ip = claims["ip"] as? String ?: ""
+        avatar = "http://$ip$avatar"
         val userData = CurrentUserData(id,userName,name,birthDate, biography,genres,avatar,ip)
         return userData
+    }
+
+    fun getIp(): String? {
+        val currentUserData = getCurrentUserData()
+        return currentUserData.ip
     }
 }
