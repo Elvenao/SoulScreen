@@ -75,6 +75,7 @@ import com.example.mongodb.screens.seePost
 import com.example.mongodb.screens.logIn
 import com.example.mongodb.screens.signUp
 import com.example.mongodb.screens.welcomeScreen
+import com.example.mongodb.screens.signUp_Email
 import kotlin.math.sign
 
 import androidx.compose.ui.platform.LocalContext
@@ -84,6 +85,8 @@ import org.json.JSONObject
 
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.screens.Home
+import com.example.mongodb.screens.signUp_BirthDate
+import com.example.mongodb.screens.profileScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -152,9 +155,25 @@ fun NavigationHost(){
         composable("seePost") {
 
         }
+        composable("signUp_BirthDate/{nombre}/{apellidos}"){ backStackEntry ->
+            val nombre = backStackEntry.arguments?.getString("nombre")?: " "
+            val apellidos = backStackEntry.arguments?.getString("apellidos")?: " "
+            signUp_BirthDate(navController, nombre, apellidos)
+        }
         composable("Posts") {
             Home(navController)
         }
+        composable("signUp_Email/{nombre}/{apellidos}/{birthDate}"){ backStackEntry ->
+            val nombre = backStackEntry.arguments?.getString("nombre")?: " "
+            val apellidos = backStackEntry.arguments?.getString("apellidos")?: " "
+            val birthDate = backStackEntry.arguments?.getString("birthDate")?: " "
+            signUp_Email(navController,nombre,apellidos,birthDate)
+        }
+
+        composable("profileScreen") {
+            profileScreen(navController)
+        }
+
     }
 }
 

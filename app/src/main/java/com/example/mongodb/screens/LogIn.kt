@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material3.Button
 
 
@@ -23,6 +25,9 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
 
 import androidx.compose.runtime.Composable
@@ -39,6 +44,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
@@ -60,6 +67,7 @@ import kotlin.math.log
 fun logIn(navController: NavController){
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var loggedIn by rememberSaveable { mutableStateOf(false) }
     Box(Modifier.fillMaxSize().background(Color.Cyan)){
@@ -107,6 +115,19 @@ fun logIn(navController: NavController){
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.height(60.dp),
                         label = { Text("Contraseña", color = Color.White)},
+
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                            
+                            val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(imageVector = icon, contentDescription = description,tint = Color.White)
+                            }
+                        },
+                        singleLine = true,
+
                         textStyle = TextStyle(
                             fontSize = 15.sp,
                             color = Color.White

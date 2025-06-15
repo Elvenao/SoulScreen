@@ -46,7 +46,7 @@ dependencies {
     implementation(libs.androidx.material.v154)
     implementation(libs.material3)
     implementation(libs.coil.compose)
-
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.jjwt.api)
     runtimeOnly(libs.jjwt.impl)
     runtimeOnly(libs.jjwt.jackson)
