@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +29,11 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -188,14 +193,16 @@ fun Home(navController:NavController) {
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     item {
-                        Row(){
-                            Text(
-                                "Perfil",
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Row(){
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clickable {
+                                    navController.navigate("profileScreen") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                }
+                        ) {
                             AsyncImage(
                                 model = currentUserData.avatar,
                                 contentDescription = "Imagen desde URL",
@@ -205,48 +212,139 @@ fun Home(navController:NavController) {
                                     .clip(CircleShape)
                                     .padding(8.dp)
                             )
-                            Text(
-                                text = currentUserData.name,
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        Text(
-                            text = "Username: "+currentUserData.userName,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
-
-
-                        Text(
-                            text = currentUserData.biography?:"",
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
-
-
-                        Text(
-                            text = currentUserData.genres?.joinToString(", ") ?: "",
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
-
-                        Button(
-                            onClick = { cerrarSesion(context, navController) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Text("Cerrar Sesión")
-
+                            Column {
+                                Text(
+                                    text = currentUserData.name,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "@${currentUserData.userName}",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+                                )
+                            }
                         }
                     }
+
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "n Seguidores",
+                                fontSize = 15.sp
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = "n Seguidos",
+                                fontSize = 15.sp,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+
 
 
                     item {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 15.dp))
+                        Row {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "UserIcon",
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .size(24.dp)
+                                    .clickable {
+                                        navController.navigate("profileScreen") {
+                                            popUpTo(0) { inclusive = true }
+                                        }
+                                    }
+                            )
+                            Text(
+                                text = "Perfil",
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     }
+
+                    item {
+                        Row {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings Icon",
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .size(24.dp)
+                                    .clickable {
+                                        Toast.makeText(context, "Configuracion", Toast.LENGTH_SHORT).show()
+                                        /*
+                                        navController.navigate("Configuracion") {
+                                            popUpTo(0) { inclusive = true }
+                                        }*/
+                                    }
+                            )
+                            Text(
+                                text = "Configuración",
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+
+                    item {
+                        Row {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Help Icon",
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .size(24.dp)
+                                    .clickable {
+                                        Toast.makeText(context, "Ayuda", Toast.LENGTH_SHORT).show()
+                                    }
+                            )
+                            Text(
+                                text = "Ayuda",
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+
+                    item {
+                        Row {
+                            Icon(
+                                imageVector = Icons.Default.Phone,
+                                contentDescription = "Support Icon",
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .size(24.dp)
+                                    .clickable {
+                                        Toast.makeText(context, "Soporte", Toast.LENGTH_SHORT).show()
+                                    }
+                            )
+                            Text(
+                                text = "Contacta con Soporte",
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+
                 }
             }
 
