@@ -399,30 +399,7 @@ fun Home(navController:NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .pullRefresh(pullRefreshState)
-        ) {
-
-            if (errorMessage.value != null) {
-                // Mostrar error pero mantener el gesto de pull
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .pullRefresh(pullRefreshState)){
-
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-
-                    ) {
-
-                        Text(text = "Error en el servidor", fontSize = 18.sp)
-                        Text(text = errorMessage.value ?: "", fontSize = 14.sp)
-                    }
-                }
-
-            } else {
-                Scaffold(
+        ) { Scaffold(
                     topBar = {
                         TopAppBar(
                             title = { Text("") },
@@ -448,6 +425,27 @@ fun Home(navController:NavController) {
                         }
                     }
                 ) { innerPadding ->
+                    if (errorMessage.value != null) {
+                        // Mostrar error pero mantener el gesto de pull
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState)){
+
+                            Column(
+                                Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState()),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+
+                            ) {
+
+                                Text(text = "Error en el servidor", fontSize = 18.sp)
+                                Text(text = errorMessage.value ?: "", fontSize = 14.sp)
+                            }
+                        }
+
+                    } else {
                     LazyColumn(contentPadding = innerPadding,
                         modifier = Modifier.fillMaxSize()) {
 
