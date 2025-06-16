@@ -8,5 +8,6 @@ data class CurrentUserData (
     val biography: String? = null,
     val genres: List<String>? = null,
     val avatar: String,
-    val ip: String? = null
+    val ip: String? = null,
+    val joiningDate: String
 )

@@ -189,7 +189,7 @@ fun Home(navController:NavController) {
         refreshing = isRefreshing.value,
         onRefresh = { cargarPosts() }
     )
-
+    
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -447,7 +447,6 @@ fun Home(navController:NavController) {
                     } else {
                     LazyColumn(contentPadding = innerPadding,
                         modifier = Modifier.fillMaxSize()
-                        .verticalScroll(rememberScrollState())
                     ) {
                         items(posts.value) { post ->
                             Box(
@@ -501,6 +500,7 @@ fun Home(navController:NavController) {
         }
 
     }
+    
 }
 
 fun cerrarSesion(context: Context,navController: NavController){

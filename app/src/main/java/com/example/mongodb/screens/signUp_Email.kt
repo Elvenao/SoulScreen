@@ -1,5 +1,8 @@
 package com.example.mongodb.screens
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,17 +57,29 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.ImeAction
-
+import com.example.mongodb.model.Usuario
+import com.example.mongodb.network.RetrofitClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun signUp_Email(navController: NavController, nombre: String, apellidos: String, birthDate: String){
+fun signUp_Email(navController: NavController, nombre: String, apellidos: String, birthDate: String, userName : String){
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var passwordCheck by rememberSaveable { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var passwordVisible2 by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
     Box(Modifier.fillMaxSize().background(Color.Black)){
         Box(Modifier.fillMaxSize()){
             Column(modifier = Modifier.align(Alignment.TopStart).padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -90,7 +105,9 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
                         value = email,
-                        onValueChange = {email = it},
+                        onValueChange = {    newText ->
+                            // Eliminar todos los espacios antes de asignar
+                            email = newText.replace(" ", "") },
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.weight(1f),
                         label = { Text("Correo Electronico", color = Color.White)},
@@ -103,10 +120,17 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                             unfocusedBorderColor = Color.Gray,
                             textColor = Color.White,
                             cursorColor = Color.Cyan
-                        )
+                        ),
+                        singleLine = true,
                     )
 
                     
+                }
+                if(password.length < 8){
+                    Row(Modifier.align(Alignment.Start).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Contraseña demasiado corta", color = Color.White)
+                    }
                 }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -138,16 +162,52 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                         )
                     )
                 }
+                if(passwordCheck.length < 8){
+                    Row(Modifier.align(Alignment.Start).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Contraseña demasiado corta", color = Color.White)
+                    }
+                }
+                Row(Modifier.align(Alignment.Start).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = passwordCheck,
+                        onValueChange = {passwordCheck = it},
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.weight(1f),
+                        label = { Text("Confirmar contraseña", color = Color.White)},
+                        visualTransformation = if (passwordVisible2) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            val icon = if (passwordVisible2) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                            val description = if (passwordVisible2) "Ocultar contraseña" else "Mostrar contraseña"
+
+                            IconButton(onClick = { passwordVisible2 = !passwordVisible2 }) {
+                                Icon(imageVector = icon, contentDescription = description, tint = Color.White)
+                            }
+                        },
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontSize = 15.sp,
+                            color = Color.White
+                        ),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Cyan,
+                            unfocusedBorderColor = Color.Gray,
+                            textColor = Color.White,
+                            cursorColor = Color.Cyan
+                        )
+                    )
+                }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth()){
                     Button(onClick = {
-                        navController.navigate("")
+                        signUpRequest(nombre,apellidos,birthDate,userName,email,password,navController, context)
                     },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Cyan,
                             disabledContainerColor = DarkCyan
                         ),
-                        enabled = isEmptyEmail(email)
+                        enabled = isEmptyEmail(email,password,passwordCheck)
                         ) {
                         Text("Siguiente", fontSize = 15.sp, color = Color.Black)
                     }
@@ -158,6 +218,43 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
     }
 }
 
-fun isEmptyEmail(email: String): Boolean{
-    return !email.isNullOrEmpty()
+
+
+fun isEmptyEmail(email: String, password1 :String, password2 :String): Boolean{
+    return email.isNotEmpty() && password1.isNotEmpty() && password2.isNotEmpty() && password1.length >= 8 && password2.length >= 8  && email.contains("@")
+}
+
+fun signUpRequest(nombre: String, apellidos: String, birthDate: String, userName: String, email: String, password: String, navController: NavController, context: Context){
+    val today = LocalDate.now()
+    val nombre = nombre.trim() + " " + apellidos
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val joininDate = today.format(formatter)
+    val genre = emptyList<String>()
+    val usuario = Usuario(null,userName,nombre,"",genre,birthDate,joininDate,password,email,"/Images/no_photo.jpg")
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitClient.instance.signUp(usuario)
+            withContext(Dispatchers.Main){
+                val signUpResponse = response.body()
+                if(signUpResponse != null && signUpResponse.success ){
+                    Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
+                    IniciarSesion(email,password,context,navController)
+                }else if(signUpResponse?.message == "El email ya esta en uso") {
+                    Log.d("GH","GHla")
+                    Toast.makeText(context, signUpResponse.message, Toast.LENGTH_SHORT).show()
+                } else{
+                    if (signUpResponse != null) {
+                        Toast.makeText(context, signUpResponse.message, Toast.LENGTH_SHORT).show()
+                        Log.d("Error primario" , signUpResponse.message)
+                    }
+                }
+            }
+
+        }catch (e : Exception){
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Error de red o servidor: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                Log.e("SignUp", "Error: ${e.localizedMessage}")
+            }
+        }
+    }
 }

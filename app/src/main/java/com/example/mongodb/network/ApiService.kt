@@ -1,5 +1,6 @@
 package com.example.mongodb.network
 
+import android.util.Log
 import com.example.mongodb.model.Usuario
 import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
@@ -20,8 +21,8 @@ interface ApiService {
     @GET("posts")
     fun getPosts(): Call<List<Post>>
 
-    @POST("users")
-    fun crearUsuario(@Body usuario: Usuario): Call<Usuario>
+    @POST("signup")
+    suspend fun signUp(@Body usuario: Usuario): Response<LoginResponse>
 
     @POST("posts")
     fun crearPost(@Body post: Post): Call<Post>

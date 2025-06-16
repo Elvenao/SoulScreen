@@ -53,6 +53,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 
 @Composable
@@ -89,7 +90,7 @@ fun signUp_BirthDate(navController: NavController, nombre: String, apellidos: St
                 }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth()){
                     Button(onClick = {
-                        navController.navigate("signUp_Email/${nombre}/${apellidos}/${fechaSeleccionada.value}")
+                        navController.navigate("signUp_UserName/${nombre}/${apellidos}/${fechaSeleccionada.value}")
                     },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
@@ -110,9 +111,17 @@ fun signUp_BirthDate(navController: NavController, nombre: String, apellidos: St
 }
 
 fun convertMillisToDate(millis: Long, dateBirth: MutableState<String>): String {
-    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-    val anotherFormatter = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
-    dateBirth.value = anotherFormatter.format((Date(millis)))
+    val utcTimeZone = TimeZone.getTimeZone("UTC")
+
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).apply {
+        timeZone = utcTimeZone
+    }
+
+    val anotherFormatter = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).apply {
+        timeZone = utcTimeZone
+    }
+
+    dateBirth.value = anotherFormatter.format(Date(millis))
     return formatter.format(Date(millis))
 }
 
@@ -175,6 +184,7 @@ fun DatePickerModal(
     val datePickerState = rememberDatePickerState()
 
     AlertDialog(
+        
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(

@@ -77,7 +77,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mongodb.screens.seePost
 import com.example.mongodb.screens.logIn
-import com.example.mongodb.screens.signUp
+import com.example.mongodb.screens.signUp_Name
 import com.example.mongodb.screens.welcomeScreen
 import com.example.mongodb.screens.signUp_Email
 import kotlin.math.sign
@@ -91,6 +91,8 @@ import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.screens.Home
 import com.example.mongodb.screens.signUp_BirthDate
 import com.example.mongodb.screens.profileScreen
+import com.example.mongodb.screens.signUp_Name
+import com.example.mongodb.screens.signUp_UserName
 
 class MainActivity : ComponentActivity() {
 
@@ -150,7 +152,7 @@ fun NavigationHost(){
             logIn(navController)
         }
         composable("signUp") {
-            signUp(navController)
+            signUp_Name(navController)
         }
         composable("welcomeScreen") {
             welcomeScreen(navController)
@@ -167,11 +169,18 @@ fun NavigationHost(){
         composable("Posts") {
             Home(navController)
         }
-        composable("signUp_Email/{nombre}/{apellidos}/{birthDate}"){ backStackEntry ->
+        composable("signUp_Email/{nombre}/{apellidos}/{birthDate}/{userName}"){ backStackEntry ->
             val nombre = backStackEntry.arguments?.getString("nombre")?: " "
             val apellidos = backStackEntry.arguments?.getString("apellidos")?: " "
             val birthDate = backStackEntry.arguments?.getString("birthDate")?: " "
-            signUp_Email(navController,nombre,apellidos,birthDate)
+            val userName = backStackEntry.arguments?.getString("userName")?: " "
+            signUp_Email(navController,nombre,apellidos,birthDate, userName)
+        }
+        composable("signUp_UserName/{nombre}/{apellidos}/{birthDate}"){backStackEntry ->
+            val nombre = backStackEntry.arguments?.getString("nombre")?: " "
+            val apellidos = backStackEntry.arguments?.getString("apellidos")?: " "
+            val birthDate = backStackEntry.arguments?.getString("birthDate")?: " "
+            signUp_UserName(navController,nombre,apellidos,birthDate)
         }
 
         composable("profileScreen") {

@@ -1,6 +1,7 @@
 package com.example.mongodb
 
 import android.content.Context
+import android.provider.Settings.Global.putString
 import androidx.security.crypto.EncryptedSharedPreferences
 
 import androidx.security.crypto.MasterKey
@@ -13,12 +14,14 @@ import com.example.mongodb.utils.CryptoUtils
 
 class SecurePrefs(context: Context) {
     private val secretKey = Keys.hmacShaKeyFor("8da949392%1!5423_381j39ja2$6asdfas12".toByteArray())
-    private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+    private val masterKey = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
 
-    private val prefs = EncryptedSharedPreferences.create(
-        "secure_prefs",                   // Nombre del archivo
-        masterKeyAlias,                   // Alias de la clave maestra
-        context,                          // Contexto
+    val prefs = EncryptedSharedPreferences.create(
+        context,
+        "secure_prefs",
+        masterKey,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
@@ -63,15 +66,13 @@ class SecurePrefs(context: Context) {
         birthDate = CryptoUtils.decryptAES(birthDate)
         val genres = (claims["genres"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
         val biography = claims["biography"] as? String ?: ""
-        var avatar =  claims["avatar"] as String
+        var avatar =  claims["avatar"] as? String ?: ""
         val ip = claims["ip"] as? String ?: ""
+        val joiningDate = claims["joiningDate"] as? String?: ""
         avatar = "http://$ip$avatar"
-        val userData = CurrentUserData(id,userName,name,birthDate, biography,genres,avatar,ip)
+        val userData = CurrentUserData(id,userName,name,birthDate, biography,genres,avatar,ip,joiningDate)
         return userData
     }
 
-    fun getIp(): String? {
-        val currentUserData = getCurrentUserData()
-        return currentUserData.ip
-    }
+
 }

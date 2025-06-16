@@ -19,7 +19,6 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -38,20 +37,38 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mongodb.ui.theme.DarkCyan
 
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
 
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+
+import androidx.compose.foundation.text.KeyboardOptions
+
+import androidx.compose.foundation.layout.fillMaxWidth
+
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.runtime.*
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.ImeAction
 
 @Composable
-fun signUp_Name(navController: NavController){
-    var nombre by rememberSaveable { mutableStateOf("") }
-    var apellidos by rememberSaveable { mutableStateOf("") }
+fun signUp_UserName(navController: NavController, nombre: String, apellidos: String, birthDate: String){
+    var userName by rememberSaveable { mutableStateOf("") }
+
+
     Box(Modifier.fillMaxSize().background(Color.Black)){
         Box(Modifier.fillMaxSize()){
             Column(modifier = Modifier.align(Alignment.TopStart).padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(Modifier.align(Alignment.Start)) {
                     Text(
-                        "¿Cómo te llamas?",
+                        "¿Como quieres que te llamen?",
                         fontSize = 27.sp,
                         textAlign = TextAlign.Left,
                         color = Color.White,
@@ -61,38 +78,24 @@ fun signUp_Name(navController: NavController){
                 }
                 Row(Modifier.align(Alignment.Start)) {
                     Text(
-                        "Ingresa tu nombre completo.",
+                        "Ingresa tu nombre de Usuario",
                         fontSize = 18.sp,
                         textAlign = TextAlign.Left,
                         color = Color.White,
-                        )
+                    )
                 }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
-                        value = nombre,
-                        onValueChange = {nombre = it},
+                        value = "@$userName",
+                        onValueChange = {
+                            val input = it.removePrefix("@")               // Elimina cualquier arroba que ya esté
+                                .replace("@", "")            // Elimina arrobas adicionales en el resto
+                            userName = input
+                        },
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.weight(1f),
-                        label = { Text("Nombre", color = Color.White)},
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
-                        ),
-                        singleLine = true,
-                    )
-                    OutlinedTextField(
-                        value = apellidos,
-                        onValueChange = {apellidos = it},
-                        label = { Text("Apellidos", color = Color.White) },
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.weight(1f)  ,
+                        label = { Text("Usuario", color = Color.White) },
                         textStyle = TextStyle(
                             fontSize = 15.sp,
                             color = Color.White
@@ -107,24 +110,21 @@ fun signUp_Name(navController: NavController){
                     )
                 }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth()){
-                   Button(onClick = {
-                       navController.navigate("signUp_BirthDate/${nombre}/${apellidos}")
-                   },
-                       modifier = Modifier.weight(1f),
-                       colors = ButtonDefaults.buttonColors(
-                           containerColor = Color.Cyan,
-                           disabledContainerColor = DarkCyan
-                       ),
-                       enabled =  isEmpty(nombre, apellidos),
-                       
-
-                       ) {
-                       Text("Siguiente", fontSize = 15.sp, color = Color.Black)
-                   }
+                    Button(onClick = {
+                        navController.navigate("signUp_Email/${nombre}/${apellidos}/${birthDate}/${userName}")
+                    },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Cyan,
+                            disabledContainerColor = DarkCyan
+                        ),
+                        enabled = userName.isNotEmpty()
+                    ) {
+                        Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                    }
                 }
 
             }
         }
     }
 }
-

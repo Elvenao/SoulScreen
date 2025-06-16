@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -64,6 +65,13 @@ import androidx.navigation.compose.rememberNavController
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.platform.LocalContext
+
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -130,50 +138,52 @@ fun seePost(user : String, title: String,content: String,date:String,time:String
             }
 
         } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(posts.value) { post ->
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .border(
-                                width = 2.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFFE0F7FA))
-                            .padding(16.dp)
-                            .clickable {
+            Column(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                    items(posts.value) { post ->
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.Gray,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color(0xFFE0F7FA))
+                                .padding(16.dp)
+                                .clickable {
 
+                                }
+                        ) {
+                            Column {
+                                Text(
+                                    text = "${post.user}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${post.title}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${post.content}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${post.date}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${post.time}",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
                             }
-                    ) {
-                        Column {
-                            Text(
-                                text = "${post.user}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${post.title}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${post.content}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${post.date}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${post.time}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
                         }
                     }
                 }
