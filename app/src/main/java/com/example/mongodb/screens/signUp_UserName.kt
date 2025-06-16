@@ -1,5 +1,7 @@
 package com.example.mongodb.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,16 +55,32 @@ import androidx.compose.material.IconButton
 
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.withStyle
+import com.example.mongodb.model.UserNameRequest
+import com.example.mongodb.network.RetrofitClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 
 @Composable
 fun signUp_UserName(navController: NavController, nombre: String, apellidos: String, birthDate: String){
     var userName by rememberSaveable { mutableStateOf("") }
-
-
+    val context = LocalContext.current
+    val isRepeated = remember { mutableStateOf(false) }
+    var repeteadUserName = rememberSaveable { mutableStateOf("") }
     Box(Modifier.fillMaxSize().background(Color.Black)){
         Box(Modifier.fillMaxSize()){
             Column(modifier = Modifier.align(Alignment.TopStart).padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -84,6 +102,12 @@ fun signUp_UserName(navController: NavController, nombre: String, apellidos: Str
                         color = Color.White,
                     )
                 }
+                if(isRepeated.value){
+                    Row(Modifier.align(Alignment.Start)) {
+                        Text(repeteadUserName.value, color = Red)
+                    }
+                }
+
                 Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
@@ -111,7 +135,8 @@ fun signUp_UserName(navController: NavController, nombre: String, apellidos: Str
                 }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth()){
                     Button(onClick = {
-                        navController.navigate("signUp_Email/${nombre}/${apellidos}/${birthDate}/${userName}")
+                        checkUserName(context,userName,navController,nombre,apellidos,birthDate, isRepeated,repeteadUserName)
+
                     },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
@@ -127,4 +152,24 @@ fun signUp_UserName(navController: NavController, nombre: String, apellidos: Str
             }
         }
     }
+}
+
+fun checkUserName(context: Context, userName: String,navController: NavController, nombre:String, apellidos: String,birthDate: String, isRepeated: MutableState<Boolean>, message: MutableState<String>){
+
+    CoroutineScope(Dispatchers.IO).launch {
+        val userNameDto = UserNameRequest(userName)
+        val response = RetrofitClient.instance.repeteadUserName(userNameDto)
+
+        withContext(Dispatchers.Main){
+            val repeteadUserNameResponse = response.body()
+            if(repeteadUserNameResponse != null && repeteadUserNameResponse.success){
+                navController.navigate("signUp_Email/${nombre}/${apellidos}/${birthDate}/${userName}")
+                isRepeated.value = false
+            }else if(repeteadUserNameResponse?.message == "Nombre de usuario ya registrado"){
+                isRepeated.value = true
+                message.value = "El nombre de usuario @${userName} ya esta en uso"
+            }
+        }
+    }
+
 }

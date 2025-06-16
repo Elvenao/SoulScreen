@@ -78,6 +78,8 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
     var passwordCheck by rememberSaveable { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var passwordVisible2 by remember { mutableStateOf(false) }
+    val isRepeated = remember { mutableStateOf(false) }
+    var repeteadUserName = rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
 
     Box(Modifier.fillMaxSize().background(Color.Black)){
@@ -100,6 +102,16 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                         textAlign = TextAlign.Left,
                         color = Color.White,
                     )
+                }
+                if(isRepeated.value){
+                    Row(Modifier.align(Alignment.Start)) {
+                        Text(
+                            repeteadUserName.value,
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Left,
+                            color = Color.Red,
+                        )
+                    }
                 }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -200,7 +212,7 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                 }
                 Row(Modifier.align(Alignment.Start).fillMaxWidth()){
                     Button(onClick = {
-                        signUpRequest(nombre,apellidos,birthDate,userName,email,password,navController, context)
+                        signUpRequest(nombre,apellidos,birthDate,userName,email,password,navController, context,isRepeated,repeteadUserName)
                     },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
@@ -224,7 +236,7 @@ fun isEmptyEmail(email: String, password1 :String, password2 :String): Boolean{
     return email.isNotEmpty() && password1.isNotEmpty() && password2.isNotEmpty() && password1.length >= 8 && password2.length >= 8  && email.contains("@")
 }
 
-fun signUpRequest(nombre: String, apellidos: String, birthDate: String, userName: String, email: String, password: String, navController: NavController, context: Context){
+fun signUpRequest(nombre: String, apellidos: String, birthDate: String, userName: String, email: String, password: String, navController: NavController, context: Context, isRepeated: MutableState<Boolean>, message: MutableState<String>){
     val today = LocalDate.now()
     val nombre = nombre.trim() + " " + apellidos
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -239,9 +251,13 @@ fun signUpRequest(nombre: String, apellidos: String, birthDate: String, userName
                 if(signUpResponse != null && signUpResponse.success ){
                     Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
                     IniciarSesion(email,password,context,navController)
-                }else if(signUpResponse?.message == "El email ya esta en uso") {
+                    isRepeated.value = false
+                }else if(signUpResponse?.message == "Correo electronico ya registrado") {
                     Log.d("GH","GHla")
+                    isRepeated.value = true
+                    message.value = "El email ${email} ya esta en uso"
                     Toast.makeText(context, signUpResponse.message, Toast.LENGTH_SHORT).show()
+
                 } else{
                     if (signUpResponse != null) {
                         Toast.makeText(context, signUpResponse.message, Toast.LENGTH_SHORT).show()

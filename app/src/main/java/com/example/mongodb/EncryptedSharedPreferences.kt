@@ -58,8 +58,7 @@ class SecurePrefs(context: Context) {
             .parseClaimsJws(refreshToken)
             .body
         val id = claims["id"] as String
-        var userName = claims["userName"] as String
-        userName = CryptoUtils.decryptAES(userName)
+        val userName = claims["userName"] as String
         var name = claims["name"] as String
         name = CryptoUtils.decryptAES(name)
         var birthDate = claims["birthDate"] as String

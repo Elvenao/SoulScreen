@@ -7,6 +7,7 @@ import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
+import com.example.mongodb.model.UserNameRequest
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -23,6 +24,9 @@ interface ApiService {
 
     @POST("signup")
     suspend fun signUp(@Body usuario: Usuario): Response<LoginResponse>
+
+    @POST("signup/userName")
+    suspend fun repeteadUserName(@Body userName: UserNameRequest): Response<LoginResponse>
 
     @POST("posts")
     fun crearPost(@Body post: Post): Call<Post>
