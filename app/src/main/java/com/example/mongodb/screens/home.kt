@@ -440,26 +440,20 @@ fun Home(navController:NavController) {
 
                             ) {
 
-                                Text(text = "Error en el servidor", fontSize = 18.sp)
-                                Text(text = errorMessage.value ?: "", fontSize = 14.sp)
+                                Text(text = "Error al conectarse. Revisa tu conexión a internet.", fontSize = 18.sp)
                             }
                         }
 
                     } else {
                     LazyColumn(contentPadding = innerPadding,
-                        modifier = Modifier.fillMaxSize()) {
-
+                        modifier = Modifier.fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                    ) {
                         items(posts.value) { post ->
                             Box(
                                 modifier = Modifier
                                     .padding(8.dp)
                                     .fillMaxWidth()
-                                    .border(
-                                        width = 2.dp,
-                                        color = Color.Gray,
-                                        shape = RoundedCornerShape(16.dp)
-                                    )
-                                    .clip(RoundedCornerShape(16.dp))
                                     .background(Color(0xFFE0F7FA))
                                     .padding(16.dp)
                                     .clickable {
