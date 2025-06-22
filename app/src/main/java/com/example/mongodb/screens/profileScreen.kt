@@ -1,7 +1,13 @@
 package com.example.mongodb.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.horizontalScroll
@@ -46,9 +52,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mongodb.SecurePrefs
+import com.google.accompanist.flowlayout.FlowRow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -60,12 +68,21 @@ import kotlinx.coroutines.withContext
 fun profileScreen(
     navController: NavController
 ) {
+    val context = LocalContext.current
     val EncryptedSharedPreferences = SecurePrefs(LocalContext.current)
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
     val isRefreshing = remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Peliculas", "Series", "Videojuegos", "Música", "Libros")
-
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            navController.navigate("openCamera/takenPhoto")
+        } else {
+            Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_LONG).show()
+        }
+    }
     BackHandler {
         navController.navigate("UIPrincipal") {
             popUpTo("UIPrincipal") { inclusive = true }
@@ -126,8 +143,20 @@ fun profileScreen(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(128.dp)
-                            .padding(8.dp)
+                            .padding(12.dp)
                             .clip(CircleShape)
+                            .clickable {
+                                val hasCameraPermission = ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED
+
+                                if (hasCameraPermission) {
+                                    navController.navigate("openCamera/takenPhoto")
+                                } else {
+                                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                                }
+                            }
                     )
                     Text(
                         text = currentUserData.name,
@@ -147,10 +176,31 @@ fun profileScreen(
                         modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
                     )
                     Text(
-                        text = "Generos favoritos: ${currentUserData.genres?.joinToString(", ")}.",
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 12.dp)
+                        text = "Generos que me interesan: ",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
                     )
+                    FlowRow(
+                        mainAxisSpacing = 8.dp,
+                        crossAxisSpacing = 8.dp) {
+                        currentUserData.genres?.forEach { genre ->
+                            Box(
+                                modifier = Modifier
+                                    .border(
+                                        width = 2.dp,
+                                        color = Color.Black,
+                                        shape = RoundedCornerShape(50) // 50% de redondeo (circular)
+                                    )
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = genre,
+                                    color = Color.Black
+                                )
+                            }
+                        }
+                    }
+
                     Row(
                         modifier = Modifier
                             .padding(start = 8.dp, bottom = 15.dp),

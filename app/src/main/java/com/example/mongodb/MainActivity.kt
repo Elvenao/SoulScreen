@@ -81,14 +81,19 @@ import com.example.mongodb.screens.signUp_Name
 import com.example.mongodb.screens.welcomeScreen
 import com.example.mongodb.screens.signUp_Email
 import kotlin.math.sign
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
+
+
 import androidx.navigation.NavController
 import androidx.security.crypto.EncryptedSharedPreferences
 import org.json.JSONObject
 
 import com.example.mongodb.model.RefreshTokenRequest
+import com.example.mongodb.screens.CameraUI
+import com.example.mongodb.screens.Confirmacion
 import com.example.mongodb.screens.Home
+import com.example.mongodb.screens.SharedViewModel
 import com.example.mongodb.screens.categoryChoosing
 import com.example.mongodb.screens.crearPost
 import com.example.mongodb.screens.signUp_BirthDate
@@ -124,6 +129,7 @@ fun isTokenValid(token: String): Boolean {
 
 @Composable
 fun NavigationHost(){
+    val sharedViewModel: SharedViewModel = viewModel()
     var initialDestination = "welcomeScreen"
     val context = LocalContext.current
     val encryptedSharedPreferences = remember{SecurePrefs(context)}
@@ -197,6 +203,17 @@ fun NavigationHost(){
             categoryChoosing(navController)
         }
 
+        composable("openCamera/{destination}") {  backStackEntry ->
+            val destination = backStackEntry.arguments?.getString("destination")?: " "
+            CameraUI(navController,destination,sharedViewModel)
+        }
+
+        composable("takenPhoto/{destination}") { backStackEntry ->
+            val destination = backStackEntry.arguments?.getString("destination")?: " "
+            Confirmacion(navController,sharedViewModel,destination)
+
+        }
+
     }
 }
 
@@ -227,9 +244,3 @@ fun BottomBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
         )
     }
 }
-
-
-
-
-
-

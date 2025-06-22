@@ -49,9 +49,20 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.jjwt.api)
+    implementation(libs.androidx.camera.view)
     runtimeOnly(libs.jjwt.impl)
     runtimeOnly(libs.jjwt.jackson)
-
+    
+    val camerax_version = "1.4.2"
+    implementation("androidx.camera:camera-core:$camerax_version")
+    implementation("androidx.camera:camera-camera2:$camerax_version")
+    implementation("androidx.camera:camera-lifecycle:$camerax_version")
+    implementation("androidx.camera:camera-view:$camerax_version")
+    implementation("androidx.camera:camera-video:$camerax_version")
+    implementation("androidx.camera:camera-extensions:$camerax_version")
+    // Optional:
+    // implementation("androidx.camera:camera-image-analysis:$camerax_version")
+    implementation ("androidx.compose.material:material-icons-extended")
 
 
     implementation(libs.accompanist.swiperefresh)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -21,6 +22,7 @@ import androidx.compose.material3.Button
 
 
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
 
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -70,77 +72,106 @@ fun logIn(navController: NavController){
     var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var loggedIn by rememberSaveable { mutableStateOf(false) }
-    Box(Modifier.fillMaxSize().background(Color.Cyan)){
-        Box(Modifier.fillMaxSize().background(Color.Black).padding(horizontal = 20.dp, vertical = 35.dp)) {
-            Column(Modifier.padding(start=10.dp, end=10.dp).align(Alignment.Center), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Box(Modifier.fillMaxSize().background(Color.Black)){
+        Scaffold(
+            topBar = {
+                MyTopBar(
+                    onBackClick = { navController.navigate("welcomeScreen"){
+                        popUpTo(0){inclusive = true}
+                    } },
+                    onSkipClick = {
 
-                Row(Modifier.align(Alignment.CenterHorizontally).padding(bottom = 20.dp)) {
-                    Text("SoulScreen", fontSize = 40.sp, color = Color.White)
-                }
-                Row(Modifier.align(Alignment.CenterHorizontally)) {
-                    Text("¡Bienvenido!", fontSize = 26.sp, color = Color.White)
-                }
-                Row(Modifier.align(Alignment.CenterHorizontally)) {
-                    Text("Email o usuario", fontSize = 26.sp, color = Color.White)
-                }
-                Row(Modifier.align(Alignment.CenterHorizontally)) {
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = {email = it},
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.height(60.dp),
-                        label = { Text("Email o usuario", color = Color.White)},
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
+                    } ,
+                    true,
+                    false,
+                    false,
+                    null,
+                    null
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(Color.Black),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(Modifier.padding(start=10.dp, end=10.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Row(Modifier.align(Alignment.CenterHorizontally).padding(bottom = 20.dp)) {
+                        Text("SoulScreen", fontSize = 40.sp, color = Color.White)
+                    }
+                    Row(Modifier.align(Alignment.CenterHorizontally)) {
+                        Text("¡Bienvenido!", fontSize = 26.sp, color = Color.White)
+                    }
+                    Row(Modifier.align(Alignment.CenterHorizontally)) {
+                        Text("Email o usuario", fontSize = 26.sp, color = Color.White)
+                    }
+                    Row(Modifier.align(Alignment.CenterHorizontally)) {
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = {email = it},
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.height(60.dp),
+                            label = { Text("Email o usuario", color = Color.White)},
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                color = Color.White
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Cyan,
+                                unfocusedBorderColor = Color.Gray,
+                                textColor = Color.White,
+                                cursorColor = Color.Cyan
+                            )
                         )
-                    )
-                }
+                    }
 
 
-                Row(Modifier.align(Alignment.CenterHorizontally)) {
-                    Text("Contraseña", fontSize = 26.sp, color = Color.White)
-                }
+                    Row(Modifier.align(Alignment.CenterHorizontally)) {
+                        Text("Contraseña", fontSize = 26.sp, color = Color.White)
+                    }
 
-                Row(Modifier.align(Alignment.CenterHorizontally)) {
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = {password = it},
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.height(60.dp),
-                        label = { Text("Contraseña", color = Color.White)},
+                    Row(Modifier.align(Alignment.CenterHorizontally)) {
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = {password = it},
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.height(60.dp),
+                            label = { Text("Contraseña", color = Color.White)},
 
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                            
-                            val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
 
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(imageVector = icon, contentDescription = description,tint = Color.White)
-                            }
-                        },
-                        singleLine = true,
+                                val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
 
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(imageVector = icon, contentDescription = description,tint = Color.White)
+                                }
+                            },
+                            singleLine = true,
+
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                color = Color.White
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Cyan,
+                                unfocusedBorderColor = Color.Gray,
+                                textColor = Color.White,
+                                cursorColor = Color.Cyan
+                            )
                         )
-                    )
+                    }
+
                 }
-                Row(Modifier.align(Alignment.CenterHorizontally)) {
+                Row( modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .navigationBarsPadding(),
+                    horizontalArrangement = Arrangement.Center) {
                     Button(
                         onClick = {
                             IniciarSesion(email, password, context, navController)
@@ -152,7 +183,7 @@ fun logIn(navController: NavController){
 
                             containerColor = Color.Cyan,
                             disabledContainerColor =  DarkCyan
-                            
+
 
                         ),
                     ) {
@@ -161,6 +192,7 @@ fun logIn(navController: NavController){
                 }
             }
         }
+
     }
 }
 
