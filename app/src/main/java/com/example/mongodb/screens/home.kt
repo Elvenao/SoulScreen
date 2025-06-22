@@ -27,10 +27,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
@@ -422,6 +424,15 @@ fun Home(navController:NavController) {
                                 1 -> navController.navigate("amigosScreen")
                                 2 -> navController.navigate("explorarScreen")
                             }
+                        }
+                    } ,
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = {
+                                navController.navigate("crearPostScreen")
+                            }
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Nuevo post")
                         }
                     }
                 ) { innerPadding ->

@@ -6,6 +6,7 @@ import com.example.mongodb.model.Usuario
 import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
+import com.example.mongodb.model.PostCreated
 import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.model.UserNameRequest
@@ -29,8 +30,8 @@ interface ApiService {
     @POST("signup/userName")
     suspend fun repeteadUserName(@Body userName: UserNameRequest): Response<LoginResponse>
 
-    @POST("posts")
-    fun crearPost(@Body post: Post): Call<Post>
+    @POST("posts/create")
+    fun crearPost(@Body post: Post): Response <PostCreated>
 
     @POST("auth/login")
     suspend fun logIn(@Body loginRequest:LoginRequest): Response<LoginResponse>

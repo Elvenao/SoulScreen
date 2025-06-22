@@ -90,6 +90,7 @@ import org.json.JSONObject
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.screens.Home
 import com.example.mongodb.screens.categoryChoosing
+import com.example.mongodb.screens.crearPost
 import com.example.mongodb.screens.signUp_BirthDate
 import com.example.mongodb.screens.profileScreen
 import com.example.mongodb.screens.signUp_Name
@@ -186,6 +187,10 @@ fun NavigationHost(){
 
         composable("profileScreen") {
             profileScreen(navController)
+        }
+
+        composable("crearPostScreen") {
+            crearPost(navController)
         }
 
         composable("categoryChoosing"){
