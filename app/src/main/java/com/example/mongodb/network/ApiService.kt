@@ -1,6 +1,7 @@
 package com.example.mongodb.network
 
 import android.util.Log
+import com.example.mongodb.model.Category
 import com.example.mongodb.model.Usuario
 import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
@@ -33,5 +34,8 @@ interface ApiService {
 
     @POST("auth/login")
     suspend fun logIn(@Body loginRequest:LoginRequest): Response<LoginResponse>
+
+    @GET("categories")
+    fun getCategories():Call<List<Category>>
 
 }

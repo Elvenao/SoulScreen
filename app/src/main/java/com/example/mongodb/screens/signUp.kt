@@ -71,10 +71,15 @@ fun signUp_Name(navController: NavController){
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
                         value = nombre,
-                        onValueChange = {nombre = it},
+                        onValueChange = { newText ->
+                            // Elimina solo los espacios al final
+                            val trimmed = newText.replace(Regex("\\s+$"), "")
+                            nombre = trimmed
+                        },
+
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.weight(1f),
-                        label = { Text("Nombre", color = Color.White)},
+                        label = { Text("Nombre(s)", color = Color.White)},
                         textStyle = TextStyle(
                             fontSize = 15.sp,
                             color = Color.White
@@ -89,7 +94,11 @@ fun signUp_Name(navController: NavController){
                     )
                     OutlinedTextField(
                         value = apellidos,
-                        onValueChange = {apellidos = it},
+                        onValueChange = { newText ->
+                            // Elimina solo los espacios al final
+                            val trimmed = newText.replace(Regex("\\s+$"), "")
+                            apellidos = trimmed
+                        },
                         label = { Text("Apellidos", color = Color.White) },
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.weight(1f)  ,

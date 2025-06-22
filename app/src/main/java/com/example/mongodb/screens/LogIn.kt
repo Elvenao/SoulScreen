@@ -61,7 +61,7 @@ import kotlinx.coroutines.withContext
 
 import com.example.mongodb.model.LoginRequest
 import retrofit2.HttpException
-import kotlin.math.log
+
 
 @Composable
 fun logIn(navController: NavController){
@@ -81,7 +81,7 @@ fun logIn(navController: NavController){
                     Text("¡Bienvenido!", fontSize = 26.sp, color = Color.White)
                 }
                 Row(Modifier.align(Alignment.CenterHorizontally)) {
-                    Text("Usuario", fontSize = 26.sp, color = Color.White)
+                    Text("Email o usuario", fontSize = 26.sp, color = Color.White)
                 }
                 Row(Modifier.align(Alignment.CenterHorizontally)) {
                     OutlinedTextField(
@@ -89,7 +89,7 @@ fun logIn(navController: NavController){
                         onValueChange = {email = it},
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.height(60.dp),
-                        label = { Text("Correo Electronico", color = Color.White)},
+                        label = { Text("Email o usuario", color = Color.White)},
                         textStyle = TextStyle(
                             fontSize = 15.sp,
                             color = Color.White

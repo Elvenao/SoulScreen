@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.accompanist.flowlayout)
 
     implementation(libs.androidx.material.v182)
     implementation(libs.androidx.material.v154)
@@ -50,6 +51,8 @@ dependencies {
     implementation(libs.jjwt.api)
     runtimeOnly(libs.jjwt.impl)
     runtimeOnly(libs.jjwt.jackson)
+
+
 
     implementation(libs.accompanist.swiperefresh)
     implementation(libs.androidx.security.crypto)

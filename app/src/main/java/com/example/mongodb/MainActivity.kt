@@ -89,6 +89,7 @@ import org.json.JSONObject
 
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.screens.Home
+import com.example.mongodb.screens.categoryChoosing
 import com.example.mongodb.screens.signUp_BirthDate
 import com.example.mongodb.screens.profileScreen
 import com.example.mongodb.screens.signUp_Name
@@ -187,6 +188,10 @@ fun NavigationHost(){
             profileScreen(navController)
         }
 
+        composable("categoryChoosing"){
+            categoryChoosing(navController)
+        }
+
     }
 }
 
@@ -207,13 +212,13 @@ fun BottomBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
             icon = { Icon(Icons.Default.Favorite, contentDescription = "Amigos") },
             label = { Text("Amigos") },
             selected = selectedIndex == 1,
-            onClick = { onItemSelected(1) }
+            onClick = { /*onItemSelected(1)*/ }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Search, contentDescription = "Explorar") },
             label = { Text("Explorar") },
             selected = selectedIndex == 2,
-            onClick = { onItemSelected(2) }
+            onClick = { /*onItemSelected(2)*/ }
         )
     }
 }

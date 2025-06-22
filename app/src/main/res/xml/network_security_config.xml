@@ -15,4 +15,12 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="false">192.168.1.231</domain>
     </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.32.241</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.109.74.237</domain>
+    </domain-config>
+
+
 </network-security-config>

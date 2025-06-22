@@ -109,7 +109,7 @@ fun signUp_UserName(navController: NavController, nombre: String, apellidos: Str
                 }
 
                 Row(Modifier.align(Alignment.Start).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)){
                     OutlinedTextField(
                         value = "@$userName",
                         onValueChange = {

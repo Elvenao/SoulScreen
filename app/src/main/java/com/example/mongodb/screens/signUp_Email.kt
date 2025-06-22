@@ -3,6 +3,7 @@ package com.example.mongodb.screens
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,14 +62,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.toLowerCase
+import androidx.media3.common.util.UnstableApi
+import com.example.mongodb.SecurePrefs
+import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.Usuario
 import com.example.mongodb.network.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @Composable
@@ -237,12 +244,13 @@ fun isEmptyEmail(email: String, password1 :String, password2 :String): Boolean{
 }
 
 fun signUpRequest(nombre: String, apellidos: String, birthDate: String, userName: String, email: String, password: String, navController: NavController, context: Context, isRepeated: MutableState<Boolean>, message: MutableState<String>){
+    val emailLowerCase = email.lowercase(Locale.ROOT)
     val today = LocalDate.now()
-    val nombre = nombre.trim() + " " + apellidos
+    val nombre = nombre + " " + apellidos
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val joininDate = today.format(formatter)
     val genre = emptyList<String>()
-    val usuario = Usuario(null,userName,nombre,"",genre,birthDate,joininDate,password,email,"/Images/no_photo.jpg")
+    val usuario = Usuario(null,userName,nombre,"",genre,birthDate,joininDate,password,emailLowerCase,"/Images/no_photo.jpg")
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = RetrofitClient.instance.signUp(usuario)
@@ -250,7 +258,7 @@ fun signUpRequest(nombre: String, apellidos: String, birthDate: String, userName
                 val signUpResponse = response.body()
                 if(signUpResponse != null && signUpResponse.success ){
                     Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
-                    IniciarSesion(email,password,context,navController)
+                    PrimerIniciarSesion(email,password,context,navController)
                     isRepeated.value = false
                 }else if(signUpResponse?.message == "Correo electronico ya registrado") {
                     Log.d("GH","GHla")
@@ -273,4 +281,68 @@ fun signUpRequest(nombre: String, apellidos: String, birthDate: String, userName
             }
         }
     }
+}
+
+@OptIn(UnstableApi::class)
+fun PrimerIniciarSesion(email: String, password: String, context: Context, navController: NavController): Boolean{
+    val loginRequest = LoginRequest(email,password)
+    var errorMessage = ""
+    var result: Boolean = false
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitClient.instance.logIn(loginRequest)
+
+            withContext(Dispatchers.Main) {
+
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()
+                    val securePrefs = SecurePrefs(context)
+
+                    if (loginResponse != null && loginResponse.success) {
+                        // Inicio de sesión exitoso
+                        // Aquí podrías guardar el token, navegar a otra pantalla, etc.
+
+                        Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
+                        navController.navigate("categoryChoosing") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                        errorMessage = ""
+                        if(loginResponse.accessToken != null){
+                            securePrefs.saveAccessToken(loginResponse.accessToken)
+                            androidx.media3.common.util.Log.d("AccessToken",loginResponse.accessToken)
+                        }
+                        if(loginResponse.refreshToken != null){
+                            securePrefs.saveRefreshToken(loginResponse.refreshToken)
+                            androidx.media3.common.util.Log.d("RefreshToken",loginResponse.refreshToken)
+                        }
+
+
+                        result = true
+                    }else{
+                        errorMessage = loginResponse?.message ?: "Error desconocido"
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    errorMessage = "Credenciales incorrectas"
+
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                    response.body()?.let { androidx.media3.common.util.Log.e("error", it.message) }
+                }
+
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                androidx.media3.common.util.Log.e("LOGIN", "Excepción: ${e.message}")
+                // Captura la respuesta cruda si existe
+                if (e is HttpException) {
+                    val errorBody = e.response()?.errorBody()?.string()
+                    androidx.media3.common.util.Log.e("LOGIN", "Respuesta no JSON: $errorBody")
+                }
+                errorMessage = "Error en la conexion"
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+
+            }
+        }
+    }
+    return result
 }
