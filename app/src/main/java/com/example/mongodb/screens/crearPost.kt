@@ -3,6 +3,7 @@ package com.example.mongodb.screens
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -45,6 +47,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.String
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -57,10 +61,11 @@ fun crearPost(navController: NavController) {
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
-    val opciones = listOf("Opción 1", "Opción 2", "Opción 3", "Opción 4", "Opción 5", "Opción 6", "Opción 7", "Opción 8", "Opción 9", "Opción 10")
+    val opciones = listOf("SPOILER", "Opinion", "Meme","Consejos","Pregunta","Debate","Noticia", "Curiosidad","Otro")
     var seleccion by remember { mutableStateOf(opciones[0]) }
     val listState = rememberLazyListState()
     val context = LocalContext.current
+    val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
     Scaffold(
         topBar = {
@@ -78,21 +83,30 @@ fun crearPost(navController: NavController) {
             verticalArrangement = Arrangement.Top
         ) {
             item {
-                Text("Titulo", modifier = Modifier.padding(bottom = 8.dp))
+                Text("Titulo del post.", modifier = Modifier.padding(bottom = 8.dp))
                 TextField(
                     value = title,
-                    onValueChange = { title = it },
+                    onValueChange = { if (it.length <= 80) title = it },
                     label = { Text("Título") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp)
+                        .height(100.dp)
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Text(
+                        text = "${title.length} / 80",
+                        style = MaterialTheme.typography.caption
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text("¿A que contenido te refieres?", modifier = Modifier.padding(bottom = 8.dp))
                 TextField(
                     value = "Pelicula 1",
-                    onValueChange = {}, // No hace nada
+                    onValueChange = { },
                     readOnly = true,
                     label = { Text("Media") },
                     modifier = Modifier
@@ -103,13 +117,24 @@ fun crearPost(navController: NavController) {
                 Text("Contenido del post", modifier = Modifier.padding(bottom = 8.dp))
                 TextField(
                     value = content,
-                    onValueChange = { content = it },
+                    onValueChange = { if(it.length<=300) content=it },
                     label = { Text("¿Qué estás pensando?") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                )
+                {
+                    Text(
+                        text = "${content.length} / 300",
+                        style = MaterialTheme.typography.caption
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
+                Text("Selecciona el tipo de post.", modifier = Modifier.padding(bottom = 8.dp))
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = !expanded }
@@ -118,7 +143,7 @@ fun crearPost(navController: NavController) {
                         value = seleccion,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Selecciona una opción") },
+                        label = { Text("Selecciona un tipo") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -144,9 +169,23 @@ fun crearPost(navController: NavController) {
                             Toast.makeText(context, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
-                        val post = Post(null,currentUserData?.userName ?: "",currentUserData?.id ?: "",
-                            title, "","",currentUserData?.avatar.toString(),"0",content,"/Images/no_photo.jpg",
-                            seleccion,emptyList()
+                        val fechaHoraActual = LocalDateTime.now()
+                        val fechaHoraFormateada = fechaHoraActual.format(formato)
+                        val fecha = fechaHoraFormateada.split(" ")[0]
+                        val time = fechaHoraFormateada.split(" ")[1]
+                        val post = Post(
+                            id=null,
+                            user=currentUserData?.userName ?: "",
+                            userId=currentUserData?.id ?: "",
+                            title=title,
+                            content=content,
+                            date= fecha,
+                            time= time,
+                            userImg =  currentUserData?.avatar.toString(),
+                            mediaId="0",
+                            mediaImg = "/Images/no_photo.jpg",
+                            postType = seleccion,
+                            comments = emptyList()
                         )
                         CoroutineScope(Dispatchers.IO).launch {
                             try {

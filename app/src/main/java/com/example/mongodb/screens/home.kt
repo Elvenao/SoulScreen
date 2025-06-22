@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,9 +35,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -48,6 +52,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
@@ -195,10 +202,14 @@ fun Home(navController:NavController) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet(modifier = Modifier.width(280.dp)) {
+            ModalDrawerSheet(modifier = Modifier
+                    .width(280.dp)
+            ) {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxHeight(),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .background(Color(0xFF222222)),
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     item {
@@ -227,11 +238,13 @@ fun Home(navController:NavController) {
                                 Text(
                                     text = currentUserData.name,
                                     fontSize = 20.sp,
+                                    color = Color.White,
                                     modifier = Modifier.padding(8.dp)
                                 )
                                 Text(
                                     text = "@${currentUserData.userName}",
                                     fontSize = 16.sp,
+                                    color = Color.White,
                                     modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
                                 )
                             }
@@ -248,11 +261,13 @@ fun Home(navController:NavController) {
                         ) {
                             Text(
                                 text = "n Seguidores",
-                                fontSize = 15.sp
+                                fontSize = 15.sp,
+                                color = Color.White
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = "n Seguidos",
+                                color = Color.White,
                                 fontSize = 15.sp,
                                 modifier = Modifier.align(Alignment.CenterVertically)
                             )
@@ -277,6 +292,7 @@ fun Home(navController:NavController) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
                                 contentDescription = "UserIcon",
+                                tint = Color.White,
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
@@ -284,6 +300,7 @@ fun Home(navController:NavController) {
                             Text(
                                 text = "Perfil",
                                 fontSize = 18.sp,
+                                color = Color.White,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
@@ -306,6 +323,7 @@ fun Home(navController:NavController) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
                                 contentDescription = "Settings Icon",
+                                tint = Color.White,
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
@@ -313,6 +331,7 @@ fun Home(navController:NavController) {
                             Text(
                                 text = "Configuración",
                                 fontSize = 18.sp,
+                                color = Color.White,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
@@ -331,6 +350,7 @@ fun Home(navController:NavController) {
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = "Help Icon",
+                                tint = Color.White,
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
@@ -338,6 +358,7 @@ fun Home(navController:NavController) {
                             Text(
                                 text = "Ayuda",
                                 fontSize = 18.sp,
+                                color = Color.White,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
@@ -358,11 +379,13 @@ fun Home(navController:NavController) {
                                 contentDescription = "Support Icon",
                                 modifier = Modifier
                                     .padding(10.dp)
-                                    .size(24.dp)
+                                    .size(24.dp),
+                                tint = Color.White
                             )
                             Text(
                                 text = "Contacta con Soporte",
                                 fontSize = 18.sp,
+                                color = Color.White,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
@@ -402,27 +425,66 @@ fun Home(navController:NavController) {
                 .fillMaxSize()
                 .pullRefresh(pullRefreshState)
         ) { Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = { Text("") },
-                            navigationIcon = {
-                                IconButton(onClick = {
-                                    scope.launch {
-                                        drawerState.open() // <- abre el drawer
-                                    }
-                                }) {
-                                    Icon(Icons.Default.Menu, contentDescription = "Abrir menú")
-                                }
-                            }
+                topBar = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(80.dp)
+                            .background(Color(0xFF222222))
+                    ) {
+                        IconButton(
+                            onClick = { scope.launch { drawerState.open() } },
+                            modifier = Modifier.align(Alignment.CenterStart)
+                        ) {
+                            Icon(Icons.Default.Menu, contentDescription = "Abrir menú", tint = Color.White)
+                        }
+                        Text(
+                            "SoulScreen",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.align(Alignment.Center)
                         )
-                    },
+                    }
+                },
                     bottomBar = {
-                        BottomBar(selectedIndex) { index ->
-                            selectedIndex = index
-                            when (index) {
-                                0 -> navController.navigate("Posts")
-                                1 -> navController.navigate("amigosScreen")
-                                2 -> navController.navigate("explorarScreen")
+                        NavigationBar(
+                            containerColor = Color(0xFF222222),
+                            tonalElevation = 0.dp
+                        ) {
+                            val items = listOf("Posts", "Amigos", "Explorar")
+                            val icons = listOf(
+                                Icons.Default.Home,
+                                Icons.Default.Group,
+                                Icons.Default.Search
+                            )
+                            items.forEachIndexed { index, label ->
+                                NavigationBarItem(
+                                    selected = selectedIndex == index,
+                                    onClick = {
+                                        selectedIndex = index
+                                        when (index) {
+                                            0 -> navController.navigate("Posts")
+                                            1 -> navController.navigate("amigosScreen")
+                                            2 -> navController.navigate("explorarScreen")
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            imageVector = icons[index],
+                                            contentDescription = label,
+                                            tint = if (selectedIndex == index) Color(0xFF00F7FA) else Color.White
+                                        )
+                                    },
+                                    label = {
+                                        Text(
+                                            label,
+                                            color = if (selectedIndex == index) Color(0xFF00F7FA) else Color.White
+                                        )
+                                    },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        indicatorColor = Color(0x332197D2)
+                                    )
+                                )
                             }
                         }
                     } ,
@@ -471,11 +533,24 @@ fun Home(navController:NavController) {
                                     }
                             ) {
                                 Column {
-                                    Text(
-                                        text = "${post.user}",
-                                        fontSize = 20.sp,
-                                        modifier = Modifier.padding(8.dp)
-                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically){
+                                        AsyncImage(
+                                            model = post.userImg,
+                                            contentDescription = "Imagen de usuario",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(80.dp)
+                                                .clip(CircleShape)
+                                                .padding(8.dp)
+                                        )
+                                        Text(
+                                            text = post.user,
+                                            fontSize = 20.sp,
+                                            modifier = Modifier.padding(8.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+
                                     Text(
                                         text = "${post.title}",
                                         fontSize = 20.sp,
@@ -513,6 +588,7 @@ fun Home(navController:NavController) {
     }
     
 }
+
 
 fun cerrarSesion(context: Context,navController: NavController){
     Toast.makeText(context, "Cerrando Sesion", Toast.LENGTH_SHORT).show()
