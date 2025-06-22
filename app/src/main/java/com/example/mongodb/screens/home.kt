@@ -209,7 +209,7 @@ fun Home(navController:NavController) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .fillMaxHeight()
-                        .background(Color(0xFF222222)),
+                        .background(MaterialTheme.colorScheme.background),
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     item {
@@ -238,13 +238,11 @@ fun Home(navController:NavController) {
                                 Text(
                                     text = currentUserData.name,
                                     fontSize = 20.sp,
-                                    color = Color.White,
                                     modifier = Modifier.padding(8.dp)
                                 )
                                 Text(
                                     text = "@${currentUserData.userName}",
                                     fontSize = 16.sp,
-                                    color = Color.White,
                                     modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
                                 )
                             }
@@ -261,13 +259,11 @@ fun Home(navController:NavController) {
                         ) {
                             Text(
                                 text = "n Seguidores",
-                                fontSize = 15.sp,
-                                color = Color.White
+                                fontSize = 15.sp
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = "n Seguidos",
-                                color = Color.White,
                                 fontSize = 15.sp,
                                 modifier = Modifier.align(Alignment.CenterVertically)
                             )
@@ -292,7 +288,6 @@ fun Home(navController:NavController) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
                                 contentDescription = "UserIcon",
-                                tint = Color.White,
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
@@ -300,7 +295,6 @@ fun Home(navController:NavController) {
                             Text(
                                 text = "Perfil",
                                 fontSize = 18.sp,
-                                color = Color.White,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
@@ -323,7 +317,6 @@ fun Home(navController:NavController) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
                                 contentDescription = "Settings Icon",
-                                tint = Color.White,
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
@@ -331,7 +324,6 @@ fun Home(navController:NavController) {
                             Text(
                                 text = "Configuración",
                                 fontSize = 18.sp,
-                                color = Color.White,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
@@ -350,7 +342,6 @@ fun Home(navController:NavController) {
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = "Help Icon",
-                                tint = Color.White,
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(24.dp)
@@ -358,7 +349,6 @@ fun Home(navController:NavController) {
                             Text(
                                 text = "Ayuda",
                                 fontSize = 18.sp,
-                                color = Color.White,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
@@ -379,13 +369,11 @@ fun Home(navController:NavController) {
                                 contentDescription = "Support Icon",
                                 modifier = Modifier
                                     .padding(10.dp)
-                                    .size(24.dp),
-                                tint = Color.White
+                                    .size(24.dp)
                             )
                             Text(
                                 text = "Contacta con Soporte",
                                 fontSize = 18.sp,
-                                color = Color.White,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
@@ -430,17 +418,16 @@ fun Home(navController:NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(80.dp)
-                            .background(Color(0xFF222222))
+                            .background(MaterialTheme.colorScheme.primary)
                     ) {
                         IconButton(
                             onClick = { scope.launch { drawerState.open() } },
                             modifier = Modifier.align(Alignment.CenterStart)
                         ) {
-                            Icon(Icons.Default.Menu, contentDescription = "Abrir menú", tint = Color.White)
+                            Icon(Icons.Default.Menu, contentDescription = "Abrir menú")
                         }
                         Text(
                             "SoulScreen",
-                            color = Color.White,
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.align(Alignment.Center)
                         )
@@ -448,7 +435,7 @@ fun Home(navController:NavController) {
                 },
                     bottomBar = {
                         NavigationBar(
-                            containerColor = Color(0xFF222222),
+                            containerColor = MaterialTheme.colorScheme.primary,
                             tonalElevation = 0.dp
                         ) {
                             val items = listOf("Posts", "Amigos", "Explorar")
@@ -472,17 +459,17 @@ fun Home(navController:NavController) {
                                         Icon(
                                             imageVector = icons[index],
                                             contentDescription = label,
-                                            tint = if (selectedIndex == index) Color(0xFF00F7FA) else Color.White
+                                            tint = MaterialTheme.colorScheme.onPrimary
                                         )
                                     },
                                     label = {
                                         Text(
                                             label,
-                                            color = if (selectedIndex == index) Color(0xFF00F7FA) else Color.White
+                                            color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     },
                                     colors = NavigationBarItemDefaults.colors(
-                                        indicatorColor = Color(0x332197D2)
+                                        indicatorColor = MaterialTheme.colorScheme.secondary
                                     )
                                 )
                             }
@@ -492,7 +479,8 @@ fun Home(navController:NavController) {
                         FloatingActionButton(
                             onClick = {
                                 navController.navigate("crearPostScreen")
-                            }
+                            },
+                            backgroundColor = MaterialTheme.colorScheme.secondary,
                         ) {
                             Icon(Icons.Default.Add, contentDescription = "Nuevo post")
                         }
@@ -526,7 +514,7 @@ fun Home(navController:NavController) {
                                 modifier = Modifier
                                     .padding(8.dp)
                                     .fillMaxWidth()
-                                    .background(Color(0xFFE0F7FA))
+                                    .background(MaterialTheme.colorScheme.tertiary)
                                     .padding(16.dp)
                                     .clickable {
 
