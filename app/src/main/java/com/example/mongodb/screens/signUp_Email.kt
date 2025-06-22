@@ -54,6 +54,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
 
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -90,150 +91,179 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
     val context = LocalContext.current
 
     Box(Modifier.fillMaxSize().background(Color.Black)){
-        Box(Modifier.fillMaxSize()){
-            Column(modifier = Modifier.align(Alignment.TopStart).padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(Modifier.align(Alignment.Start)) {
-                    Text(
-                        "¿Cual es tu correo electrónico?",
-                        fontSize = 27.sp,
-                        textAlign = TextAlign.Left,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
+        Scaffold(
+            topBar = {
+                MyTopBar(
+                    onBackClick = { navController.navigate("signUp"){
+                        popUpTo(0){inclusive = true}
+                    } },
+                    onSkipClick = {
 
-                }
-                Row(Modifier.align(Alignment.Start)) {
-                    Text(
-                        "Ingresa tu correo electronico y crea una contraseña",
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Left,
-                        color = Color.White,
-                    )
-                }
-                if(isRepeated.value){
+                    } ,
+                    true,
+                    false,
+                    false,
+                    null,
+                    null
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                Column(modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(Modifier.align(Alignment.Start)) {
                         Text(
-                            repeteadUserName.value,
+                            "¿Cual es tu correo electrónico?",
+                            fontSize = 27.sp,
+                            textAlign = TextAlign.Left,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                    }
+                    Row(Modifier.align(Alignment.Start)) {
+                        Text(
+                            "Ingresa tu correo electronico y crea una contraseña",
                             fontSize = 18.sp,
                             textAlign = TextAlign.Left,
-                            color = Color.Red,
+                            color = Color.White,
                         )
                     }
-                }
-                Row(Modifier.align(Alignment.Start).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = {    newText ->
-                            // Eliminar todos los espacios antes de asignar
-                            email = newText.replace(" ", "") },
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Correo Electronico", color = Color.White)},
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
-                        ),
-                        singleLine = true,
-                    )
-
-                    
-                }
-                if(password.length < 8){
+                    if(isRepeated.value){
+                        Row(Modifier.align(Alignment.Start)) {
+                            Text(
+                                repeteadUserName.value,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Left,
+                                color = Color.Red,
+                            )
+                        }
+                    }
                     Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Contraseña demasiado corta", color = Color.White)
-                    }
-                }
-                Row(Modifier.align(Alignment.Start).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = {password = it},
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Contraseña", color = Color.White)},
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                            val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
-
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(imageVector = icon, contentDescription = description, tint = Color.White)
-                            }
-                        },
-                        singleLine = true,
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = {    newText ->
+                                // Eliminar todos los espacios antes de asignar
+                                email = newText.replace(" ", "") },
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.weight(1f),
+                            label = { Text("Correo Electronico", color = Color.White)},
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                color = Color.White
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Cyan,
+                                unfocusedBorderColor = Color.Gray,
+                                textColor = Color.White,
+                                cursorColor = Color.Cyan
+                            ),
+                            singleLine = true,
                         )
-                    )
-                }
-                if(passwordCheck.length < 8){
+
+
+                    }
+                    if(password.length < 8){
+                        Row(Modifier.align(Alignment.Start).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Contraseña demasiado corta", color = Color.White)
+                        }
+                    }
                     Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Contraseña demasiado corta", color = Color.White)
-                    }
-                }
-                Row(Modifier.align(Alignment.Start).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = passwordCheck,
-                        onValueChange = {passwordCheck = it},
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Confirmar contraseña", color = Color.White)},
-                        visualTransformation = if (passwordVisible2) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            val icon = if (passwordVisible2) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                            val description = if (passwordVisible2) "Ocultar contraseña" else "Mostrar contraseña"
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = {password = it},
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.weight(1f),
+                            label = { Text("Contraseña", color = Color.White)},
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                                val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
 
-                            IconButton(onClick = { passwordVisible2 = !passwordVisible2 }) {
-                                Icon(imageVector = icon, contentDescription = description, tint = Color.White)
-                            }
-                        },
-                        singleLine = true,
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(imageVector = icon, contentDescription = description, tint = Color.White)
+                                }
+                            },
+                            singleLine = true,
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                color = Color.White
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Cyan,
+                                unfocusedBorderColor = Color.Gray,
+                                textColor = Color.White,
+                                cursorColor = Color.Cyan
+                            )
                         )
-                    )
-                }
-                Row(Modifier.align(Alignment.Start).fillMaxWidth()){
-                    Button(onClick = {
-                        signUpRequest(nombre,apellidos,birthDate,userName,email,password,navController, context,isRepeated,repeteadUserName)
-                    },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Cyan,
-                            disabledContainerColor = DarkCyan
-                        ),
-                        enabled = isEmptyEmail(email,password,passwordCheck)
+                    }
+                    if(passwordCheck.length < 8){
+                        Row(Modifier.align(Alignment.Start).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Contraseña demasiado corta", color = Color.White)
+                        }
+                    }
+                    Row(Modifier.align(Alignment.Start).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = passwordCheck,
+                            onValueChange = {passwordCheck = it},
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.weight(1f),
+                            label = { Text("Confirmar contraseña", color = Color.White)},
+                            visualTransformation = if (passwordVisible2) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                val icon = if (passwordVisible2) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                                val description = if (passwordVisible2) "Ocultar contraseña" else "Mostrar contraseña"
+
+                                IconButton(onClick = { passwordVisible2 = !passwordVisible2 }) {
+                                    Icon(imageVector = icon, contentDescription = description, tint = Color.White)
+                                }
+                            },
+                            singleLine = true,
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                color = Color.White
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Cyan,
+                                unfocusedBorderColor = Color.Gray,
+                                textColor = Color.White,
+                                cursorColor = Color.Cyan
+                            )
+                        )
+                    }
+                    Row(Modifier.align(Alignment.Start).fillMaxWidth()){
+                        Button(onClick = {
+                            if(password == passwordCheck){
+                                signUpRequest(nombre,apellidos,birthDate,userName,email,password,navController, context,isRepeated,repeteadUserName)
+                            }else{
+                                Toast.makeText(context, "Las contraeñas no coinciden", Toast.LENGTH_SHORT).show()
+                            }
+
+                        },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Cyan,
+                                disabledContainerColor = DarkCyan
+                            ),
+                            enabled = isEmptyEmail(email,password,passwordCheck)
                         ) {
-                        Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                            Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                        }
                     }
-                }
 
+                }
             }
         }
+
     }
 }
 

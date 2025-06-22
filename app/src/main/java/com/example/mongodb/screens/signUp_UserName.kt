@@ -52,6 +52,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
 
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -82,73 +83,96 @@ fun signUp_UserName(navController: NavController, nombre: String, apellidos: Str
     val isRepeated = remember { mutableStateOf(false) }
     var repeteadUserName = rememberSaveable { mutableStateOf("") }
     Box(Modifier.fillMaxSize().background(Color.Black)){
-        Box(Modifier.fillMaxSize()){
-            Column(modifier = Modifier.align(Alignment.TopStart).padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(Modifier.align(Alignment.Start)) {
-                    Text(
-                        "¿Como quieres que te llamen?",
-                        fontSize = 27.sp,
-                        textAlign = TextAlign.Left,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
+        Scaffold(
+            topBar = {
+                MyTopBar(
+                    onBackClick = { navController.navigate("signUp"){
+                        popUpTo(0){inclusive = true}
+                    } },
+                    onSkipClick = {
 
-                }
-                Row(Modifier.align(Alignment.Start)) {
-                    Text(
-                        "Ingresa tu nombre de Usuario",
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Left,
-                        color = Color.White,
-                    )
-                }
-                if(isRepeated.value){
+                    } ,
+                    true,
+                    false,
+                    false,
+                    null,
+                    null
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                Column(modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(Modifier.align(Alignment.Start)) {
-                        Text(repeteadUserName.value, color = Red)
-                    }
-                }
+                        Text(
+                            "¿Como quieres que te llamen?",
+                            fontSize = 27.sp,
+                            textAlign = TextAlign.Left,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
 
-                Row(Modifier.align(Alignment.Start).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)){
-                    OutlinedTextField(
-                        value = "@$userName",
-                        onValueChange = {
-                            val input = it.removePrefix("@")               // Elimina cualquier arroba que ya esté
-                                .replace("@", "")            // Elimina arrobas adicionales en el resto
-                            userName = input
+                    }
+                    Row(Modifier.align(Alignment.Start)) {
+                        Text(
+                            "Ingresa tu nombre de Usuario",
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Left,
+                            color = Color.White,
+                        )
+                    }
+                    if(isRepeated.value){
+                        Row(Modifier.align(Alignment.Start)) {
+                            Text(repeteadUserName.value, color = Red)
+                        }
+                    }
+
+                    Row(Modifier.align(Alignment.Start).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                        OutlinedTextField(
+                            value = "@$userName",
+                            onValueChange = {
+                                val input = it.removePrefix("@")               // Elimina cualquier arroba que ya esté
+                                    .replace("@", "")            // Elimina arrobas adicionales en el resto
+                                userName = input
+                            },
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.weight(1f),
+                            label = { Text("Usuario", color = Color.White) },
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                color = Color.White
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Cyan,
+                                unfocusedBorderColor = Color.Gray,
+                                textColor = Color.White,
+                                cursorColor = Color.Cyan
+                            ),
+                            singleLine = true,
+                        )
+                    }
+                    Row(Modifier.align(Alignment.Start).fillMaxWidth()){
+                        Button(onClick = {
+                            checkUserName(context,userName,navController,nombre,apellidos,birthDate, isRepeated,repeteadUserName)
+
                         },
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Usuario", color = Color.White) },
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
-                        ),
-                        singleLine = true,
-                    )
-                }
-                Row(Modifier.align(Alignment.Start).fillMaxWidth()){
-                    Button(onClick = {
-                        checkUserName(context,userName,navController,nombre,apellidos,birthDate, isRepeated,repeteadUserName)
-
-                    },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Cyan,
-                            disabledContainerColor = DarkCyan
-                        ),
-                        enabled = userName.isNotEmpty()
-                    ) {
-                        Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Cyan,
+                                disabledContainerColor = DarkCyan
+                            ),
+                            enabled = userName.isNotEmpty()
+                        ) {
+                            Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                        }
                     }
-                }
 
+                }
             }
         }
     }

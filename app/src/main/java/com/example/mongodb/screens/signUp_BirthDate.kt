@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
@@ -61,52 +62,76 @@ fun signUp_BirthDate(navController: NavController, nombre: String, apellidos: St
     val fechaSeleccionada = remember { mutableStateOf("") }
 
     Box(Modifier.fillMaxSize().background(Color.Black)){
-        Box(Modifier.fillMaxSize()){
-            Column(modifier = Modifier.align(Alignment.TopStart).padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(Modifier.align(Alignment.Start)) {
-                    Text(
-                        "¿Cuantos años tienes?",
-                        fontSize = 27.sp,
-                        textAlign = TextAlign.Left,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
+        Scaffold(
+            topBar = {
+                MyTopBar(
+                    onBackClick = { navController.navigate("signUp"){
+                        popUpTo(0){inclusive = true}
+                    } },
+                    onSkipClick = {
 
-                }
-                Row(Modifier.align(Alignment.Start)) {
-                    Text(
-                        "Ingresa tu fecha de nacimiento.",
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Left,
-                        color = Color.White,
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    DatePickerFieldToModal(fechaSeleccionada)
-                    Log.d("s",fechaSeleccionada.value)
-                }
-                Row(Modifier.align(Alignment.Start).fillMaxWidth()){
-                    Button(onClick = {
-                        navController.navigate("signUp_UserName/${nombre}/${apellidos}/${fechaSeleccionada.value}")
-                    },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Cyan,
-                            disabledContainerColor = DarkCyan
-                        ),
-                        enabled = fechaSeleccionada.value.isNotEmpty(),
+                    } ,
+                    true,
+                    false,
+                    false,
+                    null,
+                    null
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                Column(modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(Modifier.align(Alignment.Start)) {
+                        Text(
+                            "¿Cuantos años tienes?",
+                            fontSize = 27.sp,
+                            textAlign = TextAlign.Left,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
 
-
-                        ) {
-                        Text("Siguiente", fontSize = 15.sp, color = Color.Black)
                     }
-                }
+                    Row(Modifier.align(Alignment.Start)) {
+                        Text(
+                            "Ingresa tu fecha de nacimiento.",
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Left,
+                            color = Color.White,
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DatePickerFieldToModal(fechaSeleccionada)
+                        Log.d("s",fechaSeleccionada.value)
+                    }
+                    Row(Modifier.align(Alignment.Start).fillMaxWidth()){
+                        Button(onClick = {
+                            navController.navigate("signUp_UserName/${nombre}/${apellidos}/${fechaSeleccionada.value}")
+                        },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Cyan,
+                                disabledContainerColor = DarkCyan
+                            ),
+                            enabled = fechaSeleccionada.value.isNotEmpty(),
 
+
+                            ) {
+                            Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                        }
+                    }
+
+                }
             }
         }
+
     }
 }
 

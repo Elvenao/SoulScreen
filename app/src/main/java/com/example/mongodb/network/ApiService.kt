@@ -9,6 +9,7 @@ import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.PostCreated
 import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
+import com.example.mongodb.model.UpdateCategoriesRequest
 import com.example.mongodb.model.UserNameRequest
 import retrofit2.Call
 import retrofit2.Response
@@ -31,7 +32,13 @@ interface ApiService {
     suspend fun repeteadUserName(@Body userName: UserNameRequest): Response<LoginResponse>
 
     @POST("posts/create")
-    fun crearPost(@Body post: Post): Response <PostCreated>
+    suspend fun crearPost(@Body post: Post): Response<PostCreated>
+
+    @PATCH("users/categories/{id}")
+    suspend fun updateCategories(
+        @Path("id") id: String,
+        @Body body: UpdateCategoriesRequest
+    ): Response<LoginResponse>
 
     @POST("auth/login")
     suspend fun logIn(@Body loginRequest:LoginRequest): Response<LoginResponse>

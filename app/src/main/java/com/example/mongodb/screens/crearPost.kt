@@ -35,6 +35,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.Post
@@ -45,6 +47,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.String
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun crearPost(navController: NavController) {
@@ -155,7 +158,7 @@ fun crearPost(navController: NavController) {
                                     }
                                 }
                             }catch (e: Exception) {
-
+                                 Log.d("Error", e.toString())
                             }
                         }
 

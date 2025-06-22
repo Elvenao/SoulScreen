@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -47,91 +48,126 @@ fun signUp_Name(navController: NavController){
     var nombre by rememberSaveable { mutableStateOf("") }
     var apellidos by rememberSaveable { mutableStateOf("") }
     Box(Modifier.fillMaxSize().background(Color.Black)){
-        Box(Modifier.fillMaxSize()){
-            Column(modifier = Modifier.align(Alignment.TopStart).padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(Modifier.align(Alignment.Start)) {
-                    Text(
-                        "¿Cómo te llamas?",
-                        fontSize = 27.sp,
-                        textAlign = TextAlign.Left,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
+        Scaffold(
+            topBar = {
+                MyTopBar(
+                    onBackClick = { navController.navigate("welcomeScreen"){
+                        popUpTo(0){inclusive = true}
+                    } },
+                    onSkipClick = {
 
-                }
-                Row(Modifier.align(Alignment.Start)) {
-                    Text(
-                        "Ingresa tu nombre completo.",
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Left,
-                        color = Color.White,
+                    } ,
+                    true,
+                    false,
+                    false,
+                    null,
+                    null
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                Column(
+                    modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(Modifier.align(Alignment.Start)) {
+                        Text(
+                            "¿Cómo te llamas?",
+                            fontSize = 27.sp,
+                            textAlign = TextAlign.Left,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
                         )
-                }
-                Row(Modifier.align(Alignment.Start).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = nombre,
-                        onValueChange = { newText ->
-                            // Elimina solo los espacios al final
-                            val trimmed = newText.replace(Regex("\\s+$"), "")
-                            nombre = trimmed
-                        },
 
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Nombre(s)", color = Color.White)},
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
-                        ),
-                        singleLine = true,
-                    )
-                    OutlinedTextField(
-                        value = apellidos,
-                        onValueChange = { newText ->
-                            // Elimina solo los espacios al final
-                            val trimmed = newText.replace(Regex("\\s+$"), "")
-                            apellidos = trimmed
-                        },
-                        label = { Text("Apellidos", color = Color.White) },
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.weight(1f)  ,
-                        textStyle = TextStyle(
-                            fontSize = 15.sp,
-                            color = Color.White
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Cyan,
-                            unfocusedBorderColor = Color.Gray,
-                            textColor = Color.White,
-                            cursorColor = Color.Cyan
-                        ),
-                        singleLine = true,
-                    )
-                }
-                Row(Modifier.align(Alignment.Start).fillMaxWidth()){
-                   Button(onClick = {
-                       navController.navigate("signUp_BirthDate/${nombre}/${apellidos}")
-                   },
-                       modifier = Modifier.weight(1f),
-                       colors = ButtonDefaults.buttonColors(
-                           containerColor = Color.Cyan,
-                           disabledContainerColor = DarkCyan
-                       ),
-                       enabled =  isEmpty(nombre, apellidos),
-                       
+                    }
+                    Row(Modifier.align(Alignment.Start)) {
+                        Text(
+                            "Ingresa tu nombre completo.",
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Left,
+                            color = Color.White,
+                        )
+                    }
+                    Row(
+                        Modifier.align(Alignment.Start).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = nombre,
+                            onValueChange = { newText ->
+                                // Elimina solo los espacios al final
+                                val trimmed = newText.replace(Regex("\\s+$"), "")
+                                nombre = trimmed
+                            },
 
-                       ) {
-                       Text("Siguiente", fontSize = 15.sp, color = Color.Black)
-                   }
-                }
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.weight(1f),
+                            label = { Text("Nombre(s)", color = Color.White) },
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                color = Color.White
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Cyan,
+                                unfocusedBorderColor = Color.Gray,
+                                textColor = Color.White,
+                                cursorColor = Color.Cyan
+                            ),
+                            singleLine = true,
+                        )
 
+                    }
+                    Row(
+                        Modifier.align(Alignment.Start).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = apellidos,
+                            onValueChange = { newText ->
+                                // Elimina solo los espacios al final
+                                val trimmed = newText.replace(Regex("\\s+$"), "")
+                                apellidos = trimmed
+                            },
+                            label = { Text("Apellidos", color = Color.White) },
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.weight(1f),
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                color = Color.White
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Cyan,
+                                unfocusedBorderColor = Color.Gray,
+                                textColor = Color.White,
+                                cursorColor = Color.Cyan
+                            ),
+                            singleLine = true,
+                        )
+                    }
+                    Row(Modifier.align(Alignment.Start).fillMaxWidth()) {
+                        Button(
+                            onClick = {
+                                navController.navigate("signUp_BirthDate/${nombre}/${apellidos}")
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Cyan,
+                                disabledContainerColor = DarkCyan
+                            ),
+                            enabled = isEmpty(nombre, apellidos),
+
+
+                            ) {
+                            Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                        }
+                    }
+
+                }
             }
         }
     }
