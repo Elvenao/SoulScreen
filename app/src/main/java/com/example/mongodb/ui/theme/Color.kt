@@ -18,7 +18,7 @@ val SecondaryDark = Color(0xFF26C6DA)    // Verde agua suave
 val TertiaryDark = Color(0xFF002633)     // Lila claro
 
 val BackgroundDark = Color(0xFF181A20)   // Fondo oscuro elegante
-val SurfaceDark = Color(0xFF23272F)
+val SurfaceDark = Color(0xFF3B3B42)
 val OnPrimaryDark = Color(0xFFF5F5F5)    // Texto claro
 
 // Tema claro

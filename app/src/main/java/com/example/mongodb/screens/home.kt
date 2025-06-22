@@ -480,7 +480,7 @@ fun Home(navController:NavController) {
                             onClick = {
                                 navController.navigate("crearPostScreen")
                             },
-                            backgroundColor = MaterialTheme.colorScheme.secondary,
+                            backgroundColor = MaterialTheme.colorScheme.secondary
                         ) {
                             Icon(Icons.Default.Add, contentDescription = "Nuevo post")
                         }

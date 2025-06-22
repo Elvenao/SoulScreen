@@ -1,6 +1,7 @@
 package com.example.mongodb.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +19,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -49,6 +49,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.MaterialTheme
 import kotlin.String
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -70,20 +72,23 @@ fun crearPost(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Crear nuevo post") }
+                title = { Text("Crear nuevo post", color = MaterialTheme.colorScheme.onPrimary)},
+                backgroundColor = MaterialTheme.colorScheme.primary,
             )
-        }
+        },
+        backgroundColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         LazyColumn(
             state = listState,
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            verticalArrangement = Arrangement.Top,
         ) {
             item {
-                Text("Titulo del post.", modifier = Modifier.padding(bottom = 8.dp))
+                Text("Titulo del post.", modifier = Modifier.padding(bottom = 8.dp), color = MaterialTheme.colorScheme.onBackground)
                 TextField(
                     value = title,
                     onValueChange = { if (it.length <= 80) title = it },
@@ -91,14 +96,14 @@ fun crearPost(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp)
+                        .background(MaterialTheme.colorScheme.surface)
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = "${title.length} / 80",
-                        style = MaterialTheme.typography.caption
+                        text = "${title.length} / 80"
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -129,8 +134,7 @@ fun crearPost(navController: NavController) {
                 )
                 {
                     Text(
-                        text = "${content.length} / 300",
-                        style = MaterialTheme.typography.caption
+                        text = "${content.length} / 300"
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
