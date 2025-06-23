@@ -77,6 +77,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -523,41 +524,75 @@ fun Home(navController:NavController) {
                                 Column {
                                     Row(verticalAlignment = Alignment.CenterVertically){
                                         AsyncImage(
-                                            model = post.userImg,
+                                            model = "http://"+currentUserData.ip+post.userImg,
                                             contentDescription = "Imagen de usuario",
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
-                                                .size(80.dp)
+                                                .size(64.dp)
                                                 .clip(CircleShape)
                                                 .padding(8.dp)
                                         )
                                         Text(
                                             text = post.user,
-                                            fontSize = 20.sp,
-                                            modifier = Modifier.padding(8.dp)
+                                            fontSize = 24.sp,
+                                            modifier = Modifier
+                                                .padding(8.dp)
+                                                .weight(2f), // Da más espacio al usuario, pero deja sitio para la fecha
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
-                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Spacer(modifier = Modifier.weight(1f)) // Empuja la fecha a la derecha
+                                        Text(
+                                            text = post.date,
+                                            fontSize = 16.sp // Sube la fecha
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Tipo de post: "+post.postType,
+                                        fontSize = 18.sp
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(56.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Acerca de: " + post.mediaId,
+                                            fontSize = 16.sp,
+                                            modifier = Modifier
+                                                .weight(1f)
+                                        )
+                                        AsyncImage(
+                                            model = "http://" + currentUserData.ip + post.mediaImg,
+                                            contentDescription = "Imagen del medio",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .height(32.dp)
+                                                .width(32.dp)
+                                                .clip(RoundedCornerShape(8.dp))
+                                        )
                                     }
 
                                     Text(
-                                        text = "${post.title}",
-                                        fontSize = 20.sp,
-                                        modifier = Modifier.padding(8.dp)
+                                        text = post.title,
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier
+                                            .padding(vertical = 8.dp, horizontal = 2.dp)
+                                            .fillMaxWidth()
                                     )
+
                                     Text(
-                                        text = "${post.content}",
-                                        fontSize = 20.sp,
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                    Text(
-                                        text = "${post.date}",
-                                        fontSize = 20.sp,
+                                        text = post.content,
+                                        fontSize = 18.sp,
                                         modifier = Modifier.padding(8.dp)
                                     )
                                     Text(
                                         text = "${post.time}",
-                                        fontSize = 20.sp,
-                                        modifier = Modifier.padding(8.dp)
+                                        fontSize = 20.sp
                                     )
                                 }
                             }
