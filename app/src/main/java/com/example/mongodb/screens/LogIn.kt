@@ -124,7 +124,8 @@ fun logIn(navController: NavController){
                                 unfocusedBorderColor = Color.Gray,
                                 textColor = Color.White,
                                 cursorColor = Color.Cyan
-                            )
+                            ),
+                            singleLine = true,
                         )
                     }
 

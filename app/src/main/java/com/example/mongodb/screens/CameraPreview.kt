@@ -89,6 +89,12 @@ import android.graphics.Path
 
 import android.graphics.Bitmap.Config
 import android.widget.Toast
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.zIndex
 import com.example.mongodb.model.CurrentUserData
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.network.RetrofitClient
@@ -121,13 +127,26 @@ fun Confirmacion(
     val uri = when {
         sharedViewModel.imageBitmap != null -> {
             val file = bitmapToFile(context, sharedViewModel.imageBitmap!!, name)
-            file.toUri() // Convierte el File a Uri
+            file.toUri()
         }
         sharedViewModel.imageUri != null -> {
-            sharedViewModel.imageUri!! // Ya es Uri
+            sharedViewModel.imageUri!!
         }
         else -> null
     }
+    val imageBitmap = when {
+        sharedViewModel.imageBitmap != null -> {
+           sharedViewModel.imageBitmap
+        }
+        sharedViewModel.imageUri != null -> {
+            uriToBitmap(context, sharedViewModel.imageUri!!)
+        }
+        else -> null
+    }
+
+    val painter = uri?.let { rememberAsyncImagePainter(it) }
+
+
     BackHandler {
         navController.navigate("openCamera")
     }
@@ -136,7 +155,8 @@ fun Confirmacion(
         modifier = Modifier
             .fillMaxSize()
             .padding()
-            .navigationBarsPadding(),
+            .navigationBarsPadding()
+        ,
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Spacer(
@@ -144,47 +164,66 @@ fun Confirmacion(
                     .weight(0.09f)
                     .fillMaxWidth()
                     .background(Color.Black)
+                    .zIndex(1f)
             )
+
 
             // Aquí apilas la imagen y el círculo juntos
             Box(
                 modifier = Modifier
                     .weight(0.85f)
-                    .fillMaxWidth()
-                    .onSizeChanged { boxSize = it }
-                    .pointerInput(boxSize) {  // Incluye boxSize para re-evaluar cuando cambie tamaño
-                        detectDragGestures { change, dragAmount ->
-                            change.consume()
+                    .fillMaxSize()
+                    .onSizeChanged {
+                        boxSize = it
 
-                            val radiusPx = circleRadius
+            }
+                    .draggable(
 
-                            val minY = radiusPx
-                            val maxY = boxSize.height.toFloat() - radiusPx
-
-                            // Actualiza solo Y dentro del rango del Box
+                        orientation = Orientation.Vertical,
+                        state = rememberDraggableState { deltaY ->
+                            val minY = circleRadius
+                            val maxY = boxSize.height.toFloat() -  circleRadius
                             circleCenter = circleCenter.copy(
-                                y = (circleCenter.y + dragAmount.y).coerceIn(minY, maxY)
+                                y = (circleCenter.y + deltaY).coerceIn(minY, maxY)
                             )
                         }
-                    }
+                    )
+
+
             ) {
                 // Imagen de fondo
-                Image(
-                    painter = rememberAsyncImagePainter(uri),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if (imageBitmap != null) {
+                    Image(
+                        bitmap = imageBitmap.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            ,
+                        alpha = 1f
 
-                // Círculo encima
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    drawCircle(
-                        color = Color.White,
-                        radius = circleRadius,
-                        center = circleCenter,
-                        style = Stroke(width = 4f)
                     )
                 }
+
+                // Círculo encima (Canvas se mantiene separado)
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        
+                        .zIndex(1f)
+
+
+
+                    ) {
+                    drawCircle(
+                        color = Color.Black,
+                        radius = circleRadius,
+                        center = circleCenter,
+                        style = Stroke(width = 4f),
+
+                    )
+                }
+
             }
 
             Spacer(
@@ -192,6 +231,7 @@ fun Confirmacion(
                     .weight(0.06f)
                     .fillMaxWidth()
                     .background(Color.Black)
+                    .zIndex(1f)
             )
         }
 
@@ -214,7 +254,7 @@ fun Confirmacion(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Close Camera",
-                    tint = Color.White,
+                    tint = Color.Gray,
                     modifier = Modifier.size(32.dp)
                 )
             }
