@@ -74,9 +74,6 @@ fun seePost(id:String, navController: NavController){
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
     var comments = remember { mutableStateOf("")}
     val scrollState = rememberScrollState()
-    LaunchedEffect(comments.value) {
-        scrollState.animateScrollTo(scrollState.maxValue)
-    }
 
     fun cargarPosts() {
         isRefreshing.value = true
@@ -333,7 +330,7 @@ fun seePost(id:String, navController: NavController){
                     }
                     item {
                         post.value?.post?.comments?.let { comentarios ->
-                            if (comentarios.isNotEmpty()) {
+                            if (!comentarios.isNullOrEmpty()) {
                                 Column {
                                     comentarios.forEach { comentario ->
                                         Card(
