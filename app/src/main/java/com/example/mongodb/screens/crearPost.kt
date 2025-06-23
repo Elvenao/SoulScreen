@@ -192,7 +192,6 @@ fun crearPost(navController: NavController) {
                             content =content,
                             date = fecha,
                             time = time,
-                            userImg =  "/Images"+currentUserData?.avatar.toString().substringAfter("/Images"),
                             mediaId ="0",
                             mediaImg = "/Images/Movies/no_photo.jpg",
                             postType = seleccion,

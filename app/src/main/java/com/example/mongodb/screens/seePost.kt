@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.foundation.layout.*
 import androidx.navigation.NavController
+import com.example.mongodb.model.PostWithAvatar
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -52,7 +53,7 @@ fun seePost(id:String, navController: NavController){
     val errorMessage = remember { mutableStateOf<String?>(null) }
     val isRefreshing = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val posts = remember { mutableStateOf<Post?>(null) }
+    val posts = remember { mutableStateOf<PostWithAvatar?>(null) }
 
     fun cargarPosts() {
         isRefreshing.value = true

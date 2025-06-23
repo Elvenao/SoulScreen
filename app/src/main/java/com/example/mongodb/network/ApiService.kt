@@ -7,6 +7,7 @@ import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.PostCreated
+import com.example.mongodb.model.PostWithAvatar
 import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.model.UpdateCategoriesRequest
@@ -24,7 +25,7 @@ interface ApiService {
     fun getUsuarios(): Call<List<Usuario>>
 
     @GET("posts")
-    fun getPosts(): Call<List<Post>>
+    fun getPosts(): Call<List<PostWithAvatar>>
 
     @POST("signup")
     suspend fun signUp(@Body usuario: Usuario): Response<LoginResponse>
@@ -36,7 +37,7 @@ interface ApiService {
     suspend fun crearPost(@Body post: Post): Response<PostCreated>
 
     @GET("posts/details")
-    fun verPost(@Query("id") id: String): Call<Post>
+    fun verPost(@Query("id") id: String): Call<PostWithAvatar>
 
     @PATCH("users/categories/{id}")
     suspend fun updateCategories(

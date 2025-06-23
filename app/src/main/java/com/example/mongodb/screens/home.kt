@@ -100,13 +100,14 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.mongodb.BottomBar
+import com.example.mongodb.model.PostWithAvatar
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Home(navController:NavController) {
     val usuarios = remember { mutableStateOf<List<Usuario>>(emptyList()) }
-    val posts = remember { mutableStateOf<List<Post>>(emptyList())}
+    val posts = remember { mutableStateOf<List<PostWithAvatar>>(emptyList())}
     val errorMessage = remember { mutableStateOf<String?>(null) }
     val isRefreshing = remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -524,13 +525,13 @@ fun Home(navController:NavController) {
                                     .background(MaterialTheme.colorScheme.tertiary)
                                     .padding(16.dp)
                                     .clickable {
-                                        navController.navigate("VerPostScreen/${post.id}")
+                                        navController.navigate("VerPostScreen/${post.post.id}")
                                     }
                             ) {
                                 Column {
                                     Row(verticalAlignment = Alignment.CenterVertically){
                                         AsyncImage(
-                                            model = "http://"+currentUserData.ip+post.userImg,
+                                            model = "http://"+currentUserData.ip+post.userAvatar,
                                             contentDescription = "Imagen de usuario",
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
@@ -539,7 +540,7 @@ fun Home(navController:NavController) {
                                                 .padding(8.dp)
                                         )
                                         Text(
-                                            text = post.user,
+                                            text = post.post.user,
                                             fontSize = 24.sp,
                                             modifier = Modifier
                                                 .padding(8.dp)
@@ -549,14 +550,14 @@ fun Home(navController:NavController) {
                                         )
                                         Spacer(modifier = Modifier.weight(1f)) // Empuja la fecha a la derecha
                                         Text(
-                                            text = post.date,
+                                            text = post.post.date,
                                             fontSize = 16.sp // Sube la fecha
                                         )
                                     }
 
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Tipo de post: "+post.postType,
+                                        text = "Tipo de post: "+post.post.postType,
                                         fontSize = 18.sp
                                     )
                                     Row(
@@ -566,13 +567,13 @@ fun Home(navController:NavController) {
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "Acerca de: " + post.mediaId,
+                                            text = "Acerca de: " + post.post.mediaId,
                                             fontSize = 16.sp,
                                             modifier = Modifier
                                                 .weight(1f)
                                         )
                                         AsyncImage(
-                                            model = "http://" + currentUserData.ip + post.mediaImg,
+                                            model = "http://" + currentUserData.ip + post.post.mediaImg,
                                             contentDescription = "Imagen del medio",
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
@@ -581,7 +582,7 @@ fun Home(navController:NavController) {
                                                 .clip(RoundedCornerShape(8.dp))
                                         )
                                     }
-                                    if(post.postType=="SPOILER"){
+                                    if(post.post.postType=="SPOILER"){
                                         Text(
                                             text = "SPOILER ALERT",
                                             fontSize = 24.sp,
@@ -600,7 +601,7 @@ fun Home(navController:NavController) {
 
                                     }else{
                                         Text(
-                                            text =post.title,
+                                            text =post.post.title,
                                             fontSize = 24.sp,
                                             fontWeight = FontWeight.Bold,
                                             modifier = Modifier
@@ -609,7 +610,7 @@ fun Home(navController:NavController) {
                                         )
 
                                         Text(
-                                            text = post.content,
+                                            text = post.post.content,
                                             fontSize = 18.sp,
                                             modifier = Modifier.padding(8.dp)
                                         )
@@ -618,7 +619,7 @@ fun Home(navController:NavController) {
 
 
                                     Text(
-                                        text = "${post.time}",
+                                        text = "${post.post.time}",
                                         fontSize = 20.sp
                                     )
                                 }
