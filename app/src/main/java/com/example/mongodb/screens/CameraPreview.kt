@@ -1,9 +1,15 @@
 package com.example.mongodb.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.activity.compose.BackHandler
 import androidx.camera.core.CameraSelector
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,13 +42,21 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,10 +65,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.mongodb.R
+import java.io.File
+import java.io.FileOutputStream
+import com.example.mongodb.SecurePrefs
+import java.util.UUID
+
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.ui.layout.onSizeChanged
+
+import androidx.compose.ui.unit.IntSize
+
+
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
+
+import android.graphics.Bitmap.Config
 
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -64,6 +97,24 @@ fun Confirmacion(
     sharedViewModel: SharedViewModel,
     destination: String
 ) {
+    var boxSize by remember { mutableStateOf(IntSize.Zero) }
+    val EncryptedSharedPreferences = SecurePrefs(LocalContext.current)
+    var circleCenter by remember { mutableStateOf(Offset(540f, 1100f)) }
+    val density = LocalDensity.current
+    val circleRadius = with(density) { 190.dp.toPx() }
+    val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
+    val name = currentUserData.userName
+    val context = LocalContext.current
+    val uri = when {
+        sharedViewModel.imageBitmap != null -> {
+            val file = bitmapToFile(context, sharedViewModel.imageBitmap!!, name)
+            file.toUri() // Convierte el File a Uri
+        }
+        sharedViewModel.imageUri != null -> {
+            sharedViewModel.imageUri!! // Ya es Uri
+        }
+        else -> null
+    }
     BackHandler {
         navController.navigate("openCamera")
     }
@@ -75,7 +126,6 @@ fun Confirmacion(
             .navigationBarsPadding(),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-
             Spacer(
                 modifier = Modifier
                     .weight(0.09f)
@@ -83,8 +133,46 @@ fun Confirmacion(
                     .background(Color.Black)
             )
 
-            sharedViewModel.imageBitmap?.let { FullscreenPhoto(it, modifier = Modifier.fillMaxWidth()
-                .weight(0.85f)) }
+            // Aquí apilas la imagen y el círculo juntos
+            Box(
+                modifier = Modifier
+                    .weight(0.85f)
+                    .fillMaxWidth()
+                    .onSizeChanged { boxSize = it }
+                    .pointerInput(boxSize) {  // Incluye boxSize para re-evaluar cuando cambie tamaño
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+
+                            val radiusPx = circleRadius
+
+                            val minY = radiusPx
+                            val maxY = boxSize.height.toFloat() - radiusPx
+
+                            // Actualiza solo Y dentro del rango del Box
+                            circleCenter = circleCenter.copy(
+                                y = (circleCenter.y + dragAmount.y).coerceIn(minY, maxY)
+                            )
+                        }
+                    }
+            ) {
+                // Imagen de fondo
+                Image(
+                    painter = rememberAsyncImagePainter(uri),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                // Círculo encima
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    drawCircle(
+                        color = Color.White,
+                        radius = circleRadius,
+                        center = circleCenter,
+                        style = Stroke(width = 4f)
+                    )
+                }
+            }
 
             Spacer(
                 modifier = Modifier
@@ -126,16 +214,12 @@ fun Confirmacion(
                 .height(60.dp),
             contentAlignment = Alignment.Center
         ) {
-            BotonAceptar(navController, destination)
+            if (uri != null) {
+                BotonAceptar(navController, destination,uri,context)
+            }
         }
-
-
-
-
-
     }
-
-
+    
 }
 
 
@@ -175,14 +259,18 @@ fun BotonRechazar(
 @Composable
 fun BotonAceptar(
     navController: NavController,
-    destination: String
+    destination: String,
+    uri: Uri,
+    context: Context
 
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
         Button(
             onClick = {
+
                 navController.navigate(destination)
+                val bitMap = uriToBitmap(context,uri)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -204,4 +292,53 @@ fun FullscreenPhoto(bitmap: Bitmap, modifier : Modifier = Modifier) {
         modifier = modifier       // Ocupa toda la pantalla
     )
 }
+
+fun bitmapToFile(context: Context, bitmap: Bitmap, fileName: String): File {
+    // Crear archivo temporal
+    val nombreArchivo = UUID.randomUUID()
+    val file = File(context.cacheDir, "${fileName}_${nombreArchivo}.jpg")
+    file.createNewFile()
+
+    // Escribir Bitmap al archivo
+    val outputStream = FileOutputStream(file)
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+    outputStream.flush()
+    outputStream.close()
+
+    return file
+}
+
+
+fun uriToBitmap(context: Context, uri: Uri): Bitmap {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val source = ImageDecoder.createSource(context.contentResolver, uri)
+        ImageDecoder.decodeBitmap(source)
+    } else {
+        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+    }
+}
+
+fun recortarCirculo(bitmap: Bitmap, center: Offset, radius: Float): Bitmap {
+    val diameter = (radius * 2).toInt()
+    val left = (center.x - radius).toInt().coerceIn(0, bitmap.width - diameter)
+    val top = (center.y - radius).toInt().coerceIn(0, bitmap.height - diameter)
+
+    // Recorte cuadrado alrededor del círculo
+    val squareBitmap = Bitmap.createBitmap(bitmap, left, top, diameter, diameter)
+
+    // Recorte circular
+    val output = Bitmap.createBitmap(diameter, diameter, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(output)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val path = Path().apply {
+        addCircle(radius, radius, radius, Path.Direction.CCW)
+    }
+
+    canvas.clipPath(path)
+    canvas.drawBitmap(squareBitmap, 0f, 0f, paint)
+
+    return output
+}
+
+
 

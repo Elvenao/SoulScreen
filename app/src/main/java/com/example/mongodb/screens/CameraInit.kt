@@ -5,8 +5,11 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture.OnImageCapturedCallback
 import androidx.camera.core.ImageCaptureException
@@ -28,6 +31,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Collections
@@ -50,17 +55,31 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import java.io.File
+import java.io.FileOutputStream
 
 
 class SharedViewModel : ViewModel() {
     var imageBitmap by mutableStateOf<Bitmap?>(null)
+    var imageUri by mutableStateOf<Uri?>(null)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun CameraUI(nav: NavController, destination : String, sharedViewModel: SharedViewModel) {
+    val imageUri = remember { mutableStateOf<Uri?>(null) }
+    sharedViewModel.imageBitmap = null
+    sharedViewModel.imageUri = null
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            sharedViewModel.imageUri = it
+            nav.navigate("takenPhoto/${destination}") // Navega a otra pantalla
+        }
+    }
     fun addPhoto(bitmap: Bitmap) {
         
         sharedViewModel.imageBitmap = bitmap
@@ -172,7 +191,7 @@ fun CameraUI(nav: NavController, destination : String, sharedViewModel: SharedVi
             // Galería
             IconButton(
                 onClick = {
-                    // Lógica para abrir la galería
+                    launcher.launch("image/*") // ✅ Esto abre la galería
                 },
                 modifier = Modifier.size(64.dp)
             ) {
@@ -301,3 +320,22 @@ fun CameraPreview(
         modifier = modifier
     )
 }
+
+@Composable
+fun AbrirGaleria(onImageSelected: (Uri) -> Unit) {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            onImageSelected(it)
+        }
+    }
+
+    Button(onClick = {
+        launcher.launch("image/*") // Esto abre la galería
+    }) {
+        Text("Seleccionar imagen de galería")
+    }
+}
+
+
