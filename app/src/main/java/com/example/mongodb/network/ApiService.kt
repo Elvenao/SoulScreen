@@ -7,6 +7,7 @@ import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.PostCreated
+import com.example.mongodb.model.PostRequest
 import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.model.UpdateCategoriesRequest
@@ -34,6 +35,9 @@ interface ApiService {
 
     @POST("posts/create")
     suspend fun crearPost(@Body post: Post): Response<PostCreated>
+
+    @POST("posts/details")
+    suspend fun verPost(@Body postRequest: PostRequest): Call<Post>
 
     @PATCH("users/categories/{id}")
     suspend fun updateCategories(

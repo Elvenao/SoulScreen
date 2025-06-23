@@ -518,7 +518,9 @@ fun Home(navController:NavController) {
                                     .background(MaterialTheme.colorScheme.tertiary)
                                     .padding(16.dp)
                                     .clickable {
-
+                                        navController.navigate("CrearPostScreen/${post.id}") {
+                                            popUpTo(0) { inclusive = true }
+                                        }
                                     }
                             ) {
                                 Column {
@@ -575,21 +577,42 @@ fun Home(navController:NavController) {
                                                 .clip(RoundedCornerShape(8.dp))
                                         )
                                     }
+                                    if(post.postType=="SPOILER"){
+                                        Text(
+                                            text = "SPOILER ALERT",
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier
+                                                .padding(vertical = 8.dp, horizontal = 2.dp)
+                                                .fillMaxWidth(),
+                                            color= Color.Red
+                                        )
+                                        Text(
+                                            text = "Presiona para ver detalles (Bajo tu propio riesgo)",
+                                            fontSize = 18.sp,
+                                            color = Color.Red,
+                                            modifier = Modifier.padding(8.dp)
+                                        )
 
-                                    Text(
-                                        text =post.title,
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier
-                                            .padding(vertical = 8.dp, horizontal = 2.dp)
-                                            .fillMaxWidth()
-                                    )
+                                    }else{
+                                        Text(
+                                            text =post.title,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier
+                                                .padding(vertical = 8.dp, horizontal = 2.dp)
+                                                .fillMaxWidth()
+                                        )
 
-                                    Text(
-                                        text = post.content,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(8.dp)
-                                    )
+                                        Text(
+                                            text = post.content,
+                                            fontSize = 18.sp,
+                                            modifier = Modifier.padding(8.dp)
+                                        )
+
+                                    }
+
+
                                     Text(
                                         text = "${post.time}",
                                         fontSize = 20.sp
