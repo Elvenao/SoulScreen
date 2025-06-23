@@ -13,19 +13,21 @@ val Pink40 = Color(0xFF7D5260)
 val DarkCyan= Color(0xFF008787)
 
 // Tema oscuro
-val PrimaryDark = Color(0xFF23272F)      // Gris azulado profundo
-val SecondaryDark = Color(0xFF26C6DA)    // Verde agua suave
-val TertiaryDark = Color(0xFF002633)     // Lila claro
+val PrimaryDark = Color(0xFF23272F)
+val SecondaryDark = Color(0xFF26C6DA)
+val TertiaryDark = Color(0xFF002633)
 
-val BackgroundDark = Color(0xFF181A20)   // Fondo oscuro elegante
+val BackgroundDark = Color(0xFF181A20)
 val SurfaceDark = Color(0xFF3B3B42)
-val OnPrimaryDark = Color(0xFFF5F5F5)    // Texto claro
+val OnPrimaryDark = Color(0xFFF5F5F5)
+
+
 
 // Tema claro
-val PrimaryLight = Color(0xFFFFFFFF)     // Azul grisáceo claro
-val SecondaryLight = Color(0xFF73FFEE)   // Cian vibrante
-val TertiaryLight = Color(0xFFDAFFFA)    // Lila pastel
+val PrimaryLight = Color(0xFFFFFFFF)
+val SecondaryLight = Color(0xFF788DEC)
+val TertiaryLight = Color(0xFFC2C6FA)
 
-val BackgroundLight = Color(0xFFF8F9FA)  // Fondo casi blanco
+val BackgroundLight = Color(0xFFF8F9FA)
 val SurfaceLight = Color(0xFFFFFFFF)
-val OnPrimaryLight = Color(0xFF23272F)   // Texto oscuro
+val OnPrimaryLight = Color(0xFF23272F)

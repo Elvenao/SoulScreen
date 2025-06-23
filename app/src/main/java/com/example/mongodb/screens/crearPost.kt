@@ -10,18 +10,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
@@ -51,6 +52,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextField
+import androidx.compose.ui.text.TextStyle
 import kotlin.String
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -74,9 +77,10 @@ fun crearPost(navController: NavController) {
             TopAppBar(
                 title = { Text("Crear nuevo post", color = MaterialTheme.colorScheme.onPrimary)},
                 backgroundColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.height(80.dp)
             )
         },
-        backgroundColor = MaterialTheme.colorScheme.background
+        backgroundColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         LazyColumn(
             state = listState,
@@ -92,41 +96,47 @@ fun crearPost(navController: NavController) {
                 TextField(
                     value = title,
                     onValueChange = { if (it.length <= 80) title = it },
-                    label = { Text("Título") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp)
-                        .background(MaterialTheme.colorScheme.surface)
+                        .background(MaterialTheme.colorScheme.surface),
+                    textStyle = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = "${title.length} / 80"
+                        text = "${title.length} / 80",
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("¿A que contenido te refieres?", modifier = Modifier.padding(bottom = 8.dp))
+                Text("¿A que contenido te refieres?", modifier = Modifier.padding(bottom = 8.dp), color = MaterialTheme.colorScheme.onPrimary)
                 TextField(
                     value = "Pelicula 1",
                     onValueChange = { },
                     readOnly = true,
-                    label = { Text("Media") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
+                        .background(MaterialTheme.colorScheme.surface),
+                    textStyle = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Contenido del post", modifier = Modifier.padding(bottom = 8.dp))
+                Text("Contenido del post", modifier = Modifier.padding(bottom = 8.dp),color = MaterialTheme.colorScheme.onPrimary)
                 TextField(
                     value = content,
                     onValueChange = { if(it.length<=300) content=it },
-                    label = { Text("¿Qué estás pensando?") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
+                        .background(MaterialTheme.colorScheme.surface)
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -134,11 +144,13 @@ fun crearPost(navController: NavController) {
                 )
                 {
                     Text(
-                        text = "${content.length} / 300"
+                        text = "${content.length} / 300",
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Selecciona el tipo de post.", modifier = Modifier.padding(bottom = 8.dp))
+                Text("Selecciona el tipo de post.", modifier = Modifier.padding(bottom = 8.dp)
+                    .background(MaterialTheme.colorScheme.background), color = MaterialTheme.colorScheme.onPrimary)
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = !expanded }
@@ -147,17 +159,24 @@ fun crearPost(navController: NavController) {
                         value = seleccion,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Selecciona un tipo") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         modifier = Modifier.fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface),
+                        textStyle = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.surface)
                     ) {
                         opciones.forEach { opcion ->
                             DropdownMenuItem(
-                                text = { Text(opcion) },
+                                text = { Text(
+                                    opcion,
+                                    color = MaterialTheme.colorScheme.onPrimary) },
                                 onClick = {
                                     seleccion = opcion
                                     expanded = false
@@ -208,9 +227,13 @@ fun crearPost(navController: NavController) {
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp)
+                        .padding(top = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
                 ) {
-                    Text("Publicar")
+                    Text("Publicar", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         }

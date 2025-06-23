@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
@@ -110,7 +111,7 @@ fun profileScreen(
 
     if (currentUserData == null) {
         // Handle the case where user data is not available
-        Text(text = "No user data available")
+        Text(text = "No user data available", color= Color.Red, modifier = Modifier.padding(16.dp))
         return
     }
 
@@ -118,24 +119,19 @@ fun profileScreen(
         modifier = Modifier
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
+            .background(MaterialTheme.colorScheme.background)
     ){
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally
             , modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ){
             item {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    /*modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.LightGray)
-                        .padding(16.dp)*/
                 ) {
                     AsyncImage(
                         model = currentUserData.avatar,
@@ -163,22 +159,25 @@ fun profileScreen(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(8.dp),
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
                         text = "@${currentUserData.userName}",
                         fontSize = 16.sp,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
                         text = "${currentUserData.biography}",
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
                         text = "Generos que me interesan: ",
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     FlowRow(
                         mainAxisSpacing = 8.dp,
@@ -188,14 +187,14 @@ fun profileScreen(
                                 modifier = Modifier
                                     .border(
                                         width = 2.dp,
-                                        color = Color.Black,
+                                        color = MaterialTheme.colorScheme.secondary,
                                         shape = RoundedCornerShape(50) // 50% de redondeo (circular)
                                     )
                                     .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
                                 Text(
                                     text = genre,
-                                    color = Color.Black
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -208,30 +207,34 @@ fun profileScreen(
                     ) {
                         Text(
                             text = "n Seguidores |",
-                            fontSize = 18.sp
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                         Text(
                             text = " n Seguidos",
                             fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     Text(
                         text = "Fecha de nacimiento: ${currentUserData.birthDate}",
                         fontSize = 16.sp,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+                        modifier = Modifier.padding(start = 8.dp, bottom = 4.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
 
                     Text(
                         text = "Se unió en: ${currentUserData.birthDate}",
                         fontSize = 16.sp,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 18.dp)
+                        modifier = Modifier.padding(start = 8.dp, bottom = 18.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
 
             item{
                 HorizontalDivider(
-                    color = Color.LightGray,
+                    color = MaterialTheme.colorScheme.secondary,
                     thickness = 2.dp,
                 )
             }
@@ -239,8 +242,8 @@ fun profileScreen(
             item {
                 ScrollableTabRow(
                     selectedTabIndex = selectedTabIndex,
-                    backgroundColor = Color.White,
-                    contentColor = Color(0xFF7C4DFF),
+                    backgroundColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.secondary,
                     edgePadding = 0.dp,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -254,7 +257,7 @@ fun profileScreen(
                                 Text(
                                     text = title,
                                     fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (selectedTabIndex == index) Color(0xFF7C4DFF) else Color.Gray,
+                                    color = if (selectedTabIndex == index) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onPrimary,
                                     fontSize = 16.sp,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                                 )
@@ -265,28 +268,28 @@ fun profileScreen(
                 when (selectedTabIndex) {
                     0 -> {
                         // Contenido para Peliculas
-                        Text(text = "Contenido de Peliculas", modifier = Modifier.padding(16.dp))
+                        Text(text = "Contenido de Peliculas", modifier = Modifier.padding(16.dp),color = MaterialTheme.colorScheme.onPrimary)
                     }
                     1 -> {
                         // Contenido para Series
-                        Text(text = "Contenido de Series", modifier = Modifier.padding(16.dp))
+                        Text(text = "Contenido de Series", modifier = Modifier.padding(16.dp),color = MaterialTheme.colorScheme.onPrimary)
                     }
                     2 -> {
                         // Contenido para Videojuegos
-                        Text(text = "Contenido de Videojuegos", modifier = Modifier.padding(16.dp))
+                        Text(text = "Contenido de Videojuegos", modifier = Modifier.padding(16.dp),color = MaterialTheme.colorScheme.onPrimary)
                     }
                     3 -> {
                         // Contenido para Música
-                        Text(text = "Contenido de Música", modifier = Modifier.padding(16.dp))
+                        Text(text = "Contenido de Música", modifier = Modifier.padding(16.dp),color = MaterialTheme.colorScheme.onPrimary)
                     }
                     4 -> {
                         // Contenido para Libros
-                        Text(text = "Contenido de Libros", modifier = Modifier.padding(16.dp))
+                        Text(text = "Contenido de Libros", modifier = Modifier.padding(16.dp),color = MaterialTheme.colorScheme.onPrimary)
                     }
 
                     else -> {
                         // Manejo de caso por defecto
-                        Text(text = "Contenido no disponible", modifier = Modifier.padding(16.dp))
+                        Text(text = "Contenido no disponible", modifier = Modifier.padding(16.dp),color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
 
