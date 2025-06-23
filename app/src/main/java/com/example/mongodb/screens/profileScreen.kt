@@ -57,6 +57,8 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mongodb.SecurePrefs
+import com.example.mongodb.model.RefreshTokenRequest
+import com.example.mongodb.network.RetrofitClient
 import com.google.accompanist.flowlayout.FlowRow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,6 +73,7 @@ fun profileScreen(
 ) {
     val context = LocalContext.current
     val EncryptedSharedPreferences = SecurePrefs(LocalContext.current)
+    val refreshToken = EncryptedSharedPreferences.getRefreshToken()
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
     val isRefreshing = remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -90,23 +93,28 @@ fun profileScreen(
         }
     }
 
-    fun cargarUsuario() {
+    fun cargarUsuario(refreshToken: String?) {
         //TODO: Implementar la lógica para cargar los datos del usuario
         isRefreshing.value = true
         CoroutineScope(Dispatchers.IO).launch {
             delay(2000)
+            refreshToken?.let {
+                RefreshTokenRequest(
+                    it
+                )
+            }?.let { RetrofitClient.getInstance(context).refreshToken(it) }
             withContext(Dispatchers.Main) {
                 isRefreshing.value = false
             }
         }
     }
     LaunchedEffect(Unit) {
-        cargarUsuario()
+        cargarUsuario(refreshToken)
     }
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing.value,
-        onRefresh = { cargarUsuario() }
+        onRefresh = { cargarUsuario(refreshToken) }
     )
 
     if (currentUserData == null) {

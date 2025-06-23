@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.jjwt.api)
     implementation(libs.androidx.camera.view)
+    implementation(libs.common)
     runtimeOnly(libs.jjwt.impl)
     runtimeOnly(libs.jjwt.jackson)
     

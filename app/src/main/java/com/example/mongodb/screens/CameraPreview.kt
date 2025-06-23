@@ -88,6 +88,19 @@ import android.graphics.Paint
 import android.graphics.Path
 
 import android.graphics.Bitmap.Config
+import android.widget.Toast
+import com.example.mongodb.model.CurrentUserData
+import com.example.mongodb.model.RefreshTokenRequest
+import com.example.mongodb.network.RetrofitClient
+import com.google.ai.client.generativeai.common.shared.Part
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.http.Multipart
 
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -215,7 +228,7 @@ fun Confirmacion(
             contentAlignment = Alignment.Center
         ) {
             if (uri != null) {
-                BotonAceptar(navController, destination,uri,context)
+                BotonAceptar(navController, destination,uri,context,circleCenter, circleRadius,currentUserData)
             }
         }
     }
@@ -239,7 +252,7 @@ fun BotonRechazar(
             onClick = {
                 sharedViewModel.imageBitmap = null
 
-                navController.navigate("${destination}/${id}/${productName}/${price}/${description}")
+                navController.navigate("profileScreen")
             },
             modifier = Modifier
                 .width(140.dp)
@@ -261,16 +274,27 @@ fun BotonAceptar(
     navController: NavController,
     destination: String,
     uri: Uri,
-    context: Context
+    context: Context,
+    center: Offset,
+    radius: Float,
+    currentUserData: CurrentUserData
 
 ) {
+    val fileName = currentUserData.userName
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
         Button(
             onClick = {
 
-                navController.navigate(destination)
+                navController.navigate("profileScreen") {
+                    popUpTo(0){inclusive = true}
+                }
                 val bitMap = uriToBitmap(context,uri)
+                val cropedImage = recortarCuadro(bitMap,center,radius)
+                val finalImage = bitmapToFile(context,cropedImage,fileName)
+                val multipartBody = prepareImagePart(finalImage)
+                sendImage(multipartBody,context,currentUserData)
+                
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -281,6 +305,38 @@ fun BotonAceptar(
             Text("Listo", color = Color.Black, fontSize = 20.sp)
         }
     }
+}
+
+fun sendImage(multipart: MultipartBody.Part, context: Context, currentUserData: CurrentUserData){
+    val id = currentUserData.id
+    val encryptedSharedPreferences = SecurePrefs(context)
+
+    val refreshToken = encryptedSharedPreferences.getRefreshToken()
+
+     CoroutineScope(Dispatchers.IO).launch{
+         try {
+             val response = RetrofitClient.getInstance(context).updateAvatar(id,multipart)
+             withContext(Dispatchers.Main) {
+                 if(response.isSuccessful){
+                     Toast.makeText(context, "Avatar actualizado", Toast.LENGTH_SHORT).show()
+                     refreshToken?.let {
+                         RefreshTokenRequest(
+                             it
+                         )
+                     }?.let { RetrofitClient.getInstance(context).refreshToken(it) }
+                 }else{
+                     Toast.makeText(context, "Hubo problemas, intente de nuevo", Toast.LENGTH_SHORT).show()
+                 }
+             }
+         }catch(e : Exception){
+             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+         }
+     }
+}
+
+fun prepareImagePart(file: File): MultipartBody.Part {
+    val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+    return MultipartBody.Part.createFormData("image", file.name, requestFile)
 }
 
 @Composable
@@ -340,5 +396,14 @@ fun recortarCirculo(bitmap: Bitmap, center: Offset, radius: Float): Bitmap {
     return output
 }
 
+
+fun recortarCuadro(bitmap: Bitmap, center: Offset, radius: Float): Bitmap {
+    val diameter = (radius * 2).toInt()
+    val left = (center.x - radius).toInt().coerceIn(0, bitmap.width - diameter)
+    val top = (center.y - radius).toInt().coerceIn(0, bitmap.height - diameter)
+
+    // Recorte cuadrado directamente (sin máscara circular)
+    return Bitmap.createBitmap(bitmap, left, top, diameter, diameter)
+}
 
 

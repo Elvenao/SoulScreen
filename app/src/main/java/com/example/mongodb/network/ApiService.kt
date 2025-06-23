@@ -11,6 +11,7 @@ import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.model.UpdateCategoriesRequest
 import com.example.mongodb.model.UserNameRequest
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -38,6 +39,13 @@ interface ApiService {
     suspend fun updateCategories(
         @Path("id") id: String,
         @Body body: UpdateCategoriesRequest
+    ): Response<LoginResponse>
+
+    @Multipart
+    @PATCH("users/avatar/{id}")
+    suspend fun updateAvatar(
+        @Path("id") id: String,
+        @Part image: MultipartBody.Part
     ): Response<LoginResponse>
 
     @POST("auth/login")

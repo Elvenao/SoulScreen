@@ -280,7 +280,7 @@ fun signUpRequest(nombre: String, apellidos: String, birthDate: String, userName
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val joininDate = today.format(formatter)
     val genre = emptyList<String>()
-    val usuario = Usuario(null,userName,nombre,"",genre,birthDate,joininDate,password,emailLowerCase,"/Images/no_photo.jpg")
+    val usuario = Usuario(null,userName,nombre,"",genre,birthDate,joininDate,password,emailLowerCase,"/Images/Users/no_photo.jpg")
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = RetrofitClient.instance.signUp(usuario)
