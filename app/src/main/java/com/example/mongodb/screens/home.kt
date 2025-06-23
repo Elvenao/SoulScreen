@@ -97,6 +97,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.mongodb.BottomBar
 
 
@@ -118,7 +120,11 @@ fun Home(navController:NavController) {
     val EncryptedSharedPreferences = SecurePrefs(context)
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
     var selectedIndex by remember { mutableStateOf(0) }
-
+    val request = ImageRequest.Builder(context)
+        .data(currentUserData.avatar + "?t=${System.currentTimeMillis()}")
+        .diskCachePolicy(CachePolicy.DISABLED)
+        .memoryCachePolicy(CachePolicy.DISABLED)
+        .build()
 
     fun cargarUsuarios() {
         isRefreshing.value = true
@@ -227,7 +233,7 @@ fun Home(navController:NavController) {
                                 }
                         ) {
                             AsyncImage(
-                                model = currentUserData.avatar,
+                                model = request,
                                 contentDescription = "Imagen desde URL",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier

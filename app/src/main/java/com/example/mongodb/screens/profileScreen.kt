@@ -56,6 +56,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.network.RetrofitClient
@@ -77,6 +79,12 @@ fun profileScreen(
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
     val isRefreshing = remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableStateOf(0) }
+
+    val request = ImageRequest.Builder(context)
+        .data(currentUserData.avatar + "?t=${System.currentTimeMillis()}")
+        .diskCachePolicy(CachePolicy.DISABLED)
+        .memoryCachePolicy(CachePolicy.DISABLED)
+        .build()
     val tabs = listOf("Peliculas", "Series", "Videojuegos", "Música", "Libros")
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -94,7 +102,7 @@ fun profileScreen(
     }
 
     fun cargarUsuario(refreshToken: String?) {
-        //TODO: Implementar la lógica para cargar los datos del usuario
+
         isRefreshing.value = true
         CoroutineScope(Dispatchers.IO).launch {
             delay(2000)
@@ -142,7 +150,7 @@ fun profileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     AsyncImage(
-                        model = currentUserData.avatar,
+                        model = request,
                         contentDescription = "Imagen desde URL",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
