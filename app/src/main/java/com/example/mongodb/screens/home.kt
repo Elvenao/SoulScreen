@@ -577,7 +577,7 @@ fun Home(navController:NavController) {
                                     }
 
                                     Text(
-                                        text = post.title,
+                                        text =post.title,
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier
