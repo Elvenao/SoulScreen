@@ -85,7 +85,6 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import androidx.security.crypto.EncryptedSharedPreferences
 import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.Post
 import com.example.mongodb.model.RefreshTokenRequest
@@ -619,7 +618,7 @@ fun Home(navController:NavController) {
 
 
                                     Text(
-                                        text = "${post.post.time}",
+                                        text = post.post.time,
                                         fontSize = 20.sp
                                     )
                                 }

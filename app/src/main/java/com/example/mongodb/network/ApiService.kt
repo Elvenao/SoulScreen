@@ -6,6 +6,7 @@ import com.example.mongodb.model.Usuario
 import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
+import com.example.mongodb.model.NuevoComentarioRequest
 import com.example.mongodb.model.PostCreated
 import com.example.mongodb.model.PostWithAvatar
 import com.example.mongodb.model.TokenResponse
@@ -38,6 +39,12 @@ interface ApiService {
 
     @GET("posts/details")
     fun verPost(@Query("id") id: String): Call<PostWithAvatar>
+
+    @POST("posts/{id}/comment")
+    suspend fun commentPost(
+        @Path("id") id: String,
+        @Body comentario: NuevoComentarioRequest
+    ): Response<PostWithAvatar>
 
     @PATCH("users/categories/{id}")
     suspend fun updateCategories(
