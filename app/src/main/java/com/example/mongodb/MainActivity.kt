@@ -153,14 +153,6 @@ fun NavigationHost(){
         composable("UIPrincipal") {
             Home(navController)
         }
-        composable("seePost/{user}/{title}/{content}/{date}/{time}") { backStackEntry ->
-            val user = backStackEntry.arguments?.getString("user") ?: " "
-            val title = backStackEntry.arguments?.getString("title") ?: " "
-            val content = backStackEntry.arguments?.getString("content") ?: " "
-            val date = backStackEntry.arguments?.getString("date") ?: " "
-            val time = backStackEntry.arguments?.getString("time") ?: " "
-            seePost(user, title, content, date, time)
-        }
 
         composable("logIn") {
             logIn(navController)
@@ -172,7 +164,9 @@ fun NavigationHost(){
             welcomeScreen(navController)
         }
 
-        composable("seePost") {
+        composable("VerPostScreen/{postId}") { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId") ?: " "
+            seePost(postId, navController)
 
         }
         composable("signUp_BirthDate/{nombre}/{apellidos}"){ backStackEntry ->

@@ -3,19 +3,14 @@ package com.example.mongodb.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
@@ -26,17 +21,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
@@ -50,11 +40,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
 import androidx.compose.ui.text.TextStyle
-import kotlin.String
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterialApi::class)
@@ -197,15 +185,15 @@ fun crearPost(navController: NavController) {
                         val fecha = fechaHoraFormateada.split(" ")[0]
                         val time = fechaHoraFormateada.split(" ")[1]
                         val post = Post(
-                            id=null,
-                            user=currentUserData?.userName ?: "",
-                            userId=currentUserData?.id ?: "",
-                            title=title,
-                            content=content,
-                            date= fecha,
-                            time= time,
+                            id =null,
+                            user =currentUserData?.userName ?: "",
+                            userId =currentUserData?.id ?: "",
+                            title =title,
+                            content =content,
+                            date = fecha,
+                            time = time,
                             userImg =  "/Images"+currentUserData?.avatar.toString().substringAfter("/Images"),
-                            mediaId="0",
+                            mediaId ="0",
                             mediaImg = "/Images/Movies/no_photo.jpg",
                             postType = seleccion,
                             comments = emptyList()

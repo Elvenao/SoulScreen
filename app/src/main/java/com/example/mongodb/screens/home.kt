@@ -518,9 +518,7 @@ fun Home(navController:NavController) {
                                     .background(MaterialTheme.colorScheme.tertiary)
                                     .padding(16.dp)
                                     .clickable {
-                                        navController.navigate("CrearPostScreen/${post.id}") {
-                                            popUpTo(0) { inclusive = true }
-                                        }
+                                        navController.navigate("VerPostScreen/${post.id}")
                                     }
                             ) {
                                 Column {

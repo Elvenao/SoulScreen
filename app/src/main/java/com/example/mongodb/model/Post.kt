@@ -12,6 +12,6 @@ data class Post(
     val userImg: String,
     val mediaId: String,
     val mediaImg: String,
-    val postType : String,
-    var comments: List<Any>
+    val postType: String,
+    var comments: List<Any>? = null,
 )
