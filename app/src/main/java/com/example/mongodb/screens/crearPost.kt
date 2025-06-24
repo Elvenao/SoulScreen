@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +65,9 @@ fun crearPost(navController: NavController) {
     val EncryptedSharedPreferences = SecurePrefs(LocalContext.current)
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
     var title by remember { mutableStateOf("") }
+    var idMedia = remember { mutableStateOf("") }
+    var mediaName = remember { mutableStateOf("") }
+    var mediaImg = remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     val opciones = listOf("SPOILER", "Opinion", "Meme","Consejos","Pregunta","Debate","Noticia", "Curiosidad","Otro")
@@ -118,7 +123,7 @@ fun crearPost(navController: NavController) {
 
                 Text("¿A que contenido te refieres?", modifier = Modifier.padding(bottom = 8.dp), color = MaterialTheme.colorScheme.onPrimary)
 
-                Seleccionado()
+                Seleccionado(idMedia,mediaName,mediaImg)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("Contenido del post", modifier = Modifier.padding(bottom = 8.dp),color = MaterialTheme.colorScheme.onPrimary)
                 TextField(
@@ -195,10 +200,11 @@ fun crearPost(navController: NavController) {
                             content =content,
                             date = fecha,
                             time = time,
-                            mediaId ="0",
-                            mediaImg = "/Images/Movies/no_photo.jpg",
+                            mediaId = idMedia.value,
+                            mediaImg = mediaImg.value,
                             postType = seleccion,
-                            comments = emptyList()
+                            comments = emptyList(),
+
                         )
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
@@ -237,7 +243,10 @@ fun crearPost(navController: NavController) {
 )
 @Composable
 fun BuscadorPeliculas(
-    onSeleccionar: (String) -> Unit
+    onSeleccionar: (String) -> Unit,
+    id: MutableState<String>,
+    name: MutableState<String>,
+    mediaImg: MutableState<String>
 ) {
     // 1. FocusRequester y KeyboardController
     val focusRequester = remember { FocusRequester() }
@@ -247,7 +256,7 @@ fun BuscadorPeliculas(
     var query by remember { mutableStateOf("") }
     val peliculas = remember { mutableStateListOf<Multimedia>() }
     var expanded by remember { mutableStateOf(false) }
-
+     
     // 3. Lógica de llamada a la API
 
     fun buscarPeliculas(input: String) {
@@ -282,13 +291,15 @@ fun BuscadorPeliculas(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .fillMaxHeight()
+            
             .background(MaterialTheme.colorScheme.surface)
     ) {
         OutlinedTextField(
             value = query,
             onValueChange = { text ->
                 query = text
+
                 if (text.isBlank()) {
                     peliculas.clear()
                     expanded = false
@@ -327,6 +338,9 @@ fun BuscadorPeliculas(
                     text = { Text(película.name, color = Color.White) },
                     onClick = {
                         query = película.name
+                        id.value = película.id
+                        name.value = película.name
+                        mediaImg.value = película.poster
                         onSeleccionar(película.name)
                         expanded = false
                     },
@@ -339,7 +353,7 @@ fun BuscadorPeliculas(
 }
 
 @Composable
-fun Seleccionado() {
+fun Seleccionado(id : MutableState<String>, name: MutableState<String>, mediaImg: MutableState<String>) {
     var peliculaSeleccionada by remember { mutableStateOf("") }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -351,7 +365,10 @@ fun Seleccionado() {
         BuscadorPeliculas(
             onSeleccionar = { seleccion ->
                 peliculaSeleccionada = seleccion
-            }
+            },
+            id,
+            name,
+            mediaImg
         )
         
 
