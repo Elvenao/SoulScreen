@@ -200,6 +200,7 @@ fun crearPost(navController: NavController) {
                             content =content,
                             date = fecha,
                             time = time,
+                            mediaName = mediaName.value ,
                             mediaId = idMedia.value,
                             mediaImg = mediaImg.value,
                             postType = seleccion,
