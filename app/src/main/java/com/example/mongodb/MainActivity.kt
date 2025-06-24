@@ -105,6 +105,7 @@ import com.example.mongodb.screens.help
 import com.example.mongodb.screens.signUp_BirthDate
 import com.example.mongodb.screens.profileScreen
 import com.example.mongodb.screens.seeProfileUser
+import com.example.mongodb.screens.seguidoresUser
 import com.example.mongodb.screens.signUp_Name
 import com.example.mongodb.screens.signUp_UserName
 
