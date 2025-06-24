@@ -209,11 +209,7 @@ fun Confirmacion(
                 Canvas(
                     modifier = Modifier
                         .fillMaxSize()
-                        
                         .zIndex(1f)
-
-
-
                     ) {
                     drawCircle(
                         color = Color.Black,
@@ -439,11 +435,18 @@ fun recortarCirculo(bitmap: Bitmap, center: Offset, radius: Float): Bitmap {
 
 fun recortarCuadro(bitmap: Bitmap, center: Offset, radius: Float): Bitmap {
     val diameter = (radius * 2).toInt()
-    val left = (center.x - radius).toInt().coerceIn(0, bitmap.width - diameter)
-    val top = (center.y - radius).toInt().coerceIn(0, bitmap.height - diameter)
 
-    // Recorte cuadrado directamente (sin máscara circular)
-    return Bitmap.createBitmap(bitmap, left, top, diameter, diameter)
+    val maxLeft = maxOf(0, bitmap.width - diameter)
+    val maxTop = maxOf(0, bitmap.height - diameter)
+
+    val left = (center.x - radius).toInt().coerceIn(0, maxLeft)
+    val top = (center.y - radius).toInt().coerceIn(0, maxTop)
+
+    // Ajustar ancho y alto para que no se salga del bitmap
+    val width = minOf(diameter, bitmap.width - left)
+    val height = minOf(diameter, bitmap.height - top)
+
+    return Bitmap.createBitmap(bitmap, left, top, width, height)
 }
 
 

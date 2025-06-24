@@ -6,6 +6,7 @@ import com.example.mongodb.model.Usuario
 import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
+import com.example.mongodb.model.Multimedia
 import com.example.mongodb.model.NuevoComentarioRequest
 import com.example.mongodb.model.PostCreated
 import com.example.mongodb.model.PostWithAvatar
@@ -64,5 +65,8 @@ interface ApiService {
 
     @GET("categories")
     fun getCategories():Call<List<Category>>
+
+    @GET("multimedia/buscar")
+    suspend fun getMoviesBusqueda(@Query("q") texto : String):Response<List<Multimedia>>
 
 }
