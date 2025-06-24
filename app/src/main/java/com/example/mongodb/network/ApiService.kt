@@ -84,6 +84,6 @@ interface ApiService {
     @GET("users/username/{id}")
     fun getUserIdImgById(@Path("id") id: String): Call<UserIdImg>
 
-    @GET("idimg")
+    @GET("multimedia/idimg")
     fun getNameAndImgById(@Query("id") id: String): Call<MultimediaIdImg>
 }
