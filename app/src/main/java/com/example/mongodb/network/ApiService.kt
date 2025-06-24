@@ -13,6 +13,7 @@ import com.example.mongodb.model.PostWithAvatar
 import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.model.UpdateCategoriesRequest
+import com.example.mongodb.model.UserData
 import com.example.mongodb.model.UserNameRequest
 import okhttp3.MultipartBody
 import retrofit2.Call
@@ -68,5 +69,14 @@ interface ApiService {
 
     @GET("multimedia/buscar")
     suspend fun getMoviesBusqueda(@Query("q") texto : String):Response<List<Multimedia>>
+
+    @GET("users/{id}")
+    fun getUserProfile(@Path("id") id: String): Call<UserData>
+
+    @POST("follow/toggle")
+    fun toggleFollow(
+        @Query("target") target: String,
+        @Query("follower") follower: String
+    ):Call<Void>
 
 }
