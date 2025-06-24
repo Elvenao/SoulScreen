@@ -1,1 +1,4 @@
 # SoulScreen
+Esta es una aplicación para dispositivos moviles para hacer uso de la red social homonima. Esta red social busca que las personas creen post de diferentes categorias (Spoiler, Opinion, meme, consejos, pregunta, debate, noticia, curiosidad, otros) sobre diferentes contenidos multimedia (Series, Peliculas, Videojuegos, etc.). Para ello podran seleccionar dentro de nuestra base de datos sobre que contenido se habla. En la red social cada persona puede seguir a sus amigos, ver los post mas recientes y poner comentarios, buscar contenido y nuevos usuarios y seleccionar sus categorias favoritas. En personalizacion puede cambiar el tema claro a oscuro y la fuente y el tamaño de fuente y editar su perfil (Contraseña y Correo, Nombre de Usuario).
+
+Nuestra base de datos esta echa en MongoDB dvividida en las Multimedia, Users y Posts teniendo la sincronizacion automatica con lo del dispositivo y la base de datos alojada en el servidor.
