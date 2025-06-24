@@ -168,7 +168,11 @@ fun seePost(id:String, navController: NavController){
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier
                                             .clickable {
-                                                navController.navigate("seeprofileuser/${post.post.userId}")
+                                                if(post.post.userId== currentUserData.id){
+                                                    navController.navigate("ProfileScreen")
+                                                }else{
+                                                    navController.navigate("seeprofileuser/${post.post.userId}")
+                                                }
                                             }
                                     ) {
                                         AsyncImage(

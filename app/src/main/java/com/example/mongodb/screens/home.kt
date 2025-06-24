@@ -446,7 +446,7 @@ fun Home(navController:NavController) {
                             containerColor = MaterialTheme.colorScheme.primary,
                             tonalElevation = 0.dp
                         ) {
-                            val items = listOf("Posts", "Amigos", "Explorar")
+                            val items = listOf("Posts", "Explorar", "Mis gustos")
                             val icons = listOf(
                                 Icons.Default.Home,
                                 Icons.Default.Search,
