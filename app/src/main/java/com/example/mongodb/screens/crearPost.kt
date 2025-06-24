@@ -228,7 +228,8 @@ fun crearPost(navController: NavController) {
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
-                    )
+                    ),
+                    enabled = true
                 ) {
                     Text("Publicar", color = MaterialTheme.colorScheme.onPrimary)
                 }

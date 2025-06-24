@@ -246,7 +246,12 @@ fun explorar(navController: NavController){
                                         .background(androidx.compose.material3.MaterialTheme.colorScheme.tertiary)
                                         .padding(10.dp)
                                         .clickable {
-
+                                            if(usuario.id == currentUserData.id){
+                                                navController.navigate("ProfileScreen")
+                                            }else{
+                                                navController.navigate("seeprofileuser/${usuario.id}")
+                                            }
+                                            
                                         },
                                     verticalAlignment = Alignment.CenterVertically,
 
