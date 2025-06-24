@@ -447,7 +447,7 @@ fun Home(navController:NavController) {
                                     onClick = {
                                         selectedIndex = index
                                         when (index) {
-                                            0 -> navController.navigate("Posts")
+                                            0 -> {}
                                             1 -> navController.navigate("ExplorarScreen")
                                             2 -> navController.navigate("GustosScreen")
                                         }

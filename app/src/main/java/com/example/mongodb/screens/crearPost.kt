@@ -336,7 +336,7 @@ fun BuscadorPeliculas(
         ) {
             peliculas.forEach { película ->
                 DropdownMenuItem(
-                    text = { Text(película.name, color = Color.White) },
+                    text = { Text(película.name, color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary) },
                     onClick = {
                         query = película.name
                         id.value = película.id

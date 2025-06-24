@@ -1,26 +1,32 @@
 package com.example.mongodb.network
 
-import android.util.Log
 import com.example.mongodb.model.Category
-import com.example.mongodb.model.Usuario
-import com.example.mongodb.model.Post
-import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
+import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.Multimedia
 import com.example.mongodb.model.MultimediaIdImg
 import com.example.mongodb.model.NuevoComentarioRequest
+import com.example.mongodb.model.Post
 import com.example.mongodb.model.PostCreated
 import com.example.mongodb.model.PostWithAvatar
-import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
+import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.UpdateCategoriesRequest
 import com.example.mongodb.model.UserData
 import com.example.mongodb.model.UserIdImg
 import com.example.mongodb.model.UserNameRequest
+import com.example.mongodb.model.Usuario
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/refresh")
@@ -71,6 +77,9 @@ interface ApiService {
 
     @GET("multimedia/buscar")
     suspend fun getMoviesBusqueda(@Query("q") texto : String):Response<List<Multimedia>>
+
+    @GET("users/buscar")
+    suspend fun getUsuariosBusqueda(@Query("q") texto : String):Response<List<Usuario>>
 
     @GET("users/{id}")
     fun getUserProfile(@Path("id") id: String): Call<UserData>
