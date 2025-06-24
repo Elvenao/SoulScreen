@@ -48,11 +48,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.mongodb.SecurePrefs
 import com.example.mongodb.network.RetrofitClient
 import com.example.mongodb.ui.theme.DarkCyan
@@ -264,4 +266,11 @@ fun IniciarSesion(email: String, password: String, context: Context, navControll
 fun isEmpty(email: String, password: String):Boolean{
     if(!email.isEmpty() && !password.isEmpty()) return true
     else return false
+}
+
+@Preview
+@Composable
+fun Previsualizacion() {
+    val navController = rememberNavController()
+    logIn(navController)
 }

@@ -164,7 +164,13 @@ fun seePost(id:String, navController: NavController){
                                     .padding(16.dp)
                             ) {
                                 Column {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .clickable {
+                                                navController.navigate("seeprofileuser/${post.post.userId}")
+                                            }
+                                    ) {
                                         AsyncImage(
                                             model = "http://" + currentUserData.ip + post.userAvatar,
                                             contentDescription = "Imagen de usuario",
@@ -179,12 +185,12 @@ fun seePost(id:String, navController: NavController){
                                             fontSize = 24.sp,
                                             modifier = Modifier
                                                 .padding(8.dp)
-                                                .weight(2f), // Da más espacio al usuario, pero deja sitio para la fecha
+                                                .weight(2f),
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
-                                        Spacer(modifier = Modifier.weight(1f)) // Empuja la fecha a la derecha
+                                        Spacer(modifier = Modifier.weight(1f))
                                         Text(
                                             text = post.post.date,
                                             fontSize = 16.sp,
