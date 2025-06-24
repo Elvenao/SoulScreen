@@ -218,16 +218,19 @@ fun profileScreen(
 
                     Row(
                         modifier = Modifier
-                            .padding(start = 8.dp, bottom = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(start = 8.dp, bottom = 15.dp)
+                            .clickable{
+                                navController.navigate("SeguidoresUser/${currentUserData.id}")
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "n Seguidores |",
+                            text = currentUserData.followers?.size.toString() +" Seguidores |",
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Text(
-                            text = " n Seguidos",
+                            text = currentUserData.following?.size.toString() +" Seguidos",
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onPrimary
                         )

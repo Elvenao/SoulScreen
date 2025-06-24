@@ -14,6 +14,7 @@ import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.model.UpdateCategoriesRequest
 import com.example.mongodb.model.UserData
+import com.example.mongodb.model.UserIdImg
 import com.example.mongodb.model.UserNameRequest
 import okhttp3.MultipartBody
 import retrofit2.Call
@@ -79,4 +80,6 @@ interface ApiService {
         @Query("follower") follower: String
     ):Call<Void>
 
+    @GET("users/username/{id}")
+    fun getUserIdImgById(@Path("id") id: String): Call<UserIdImg>
 }

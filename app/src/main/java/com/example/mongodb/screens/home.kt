@@ -250,12 +250,12 @@ fun Home(navController:NavController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "n Seguidores",
+                                text = currentUserData.followers?.size.toString()+" Seguidores",
                                 fontSize = 15.sp
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = "n Seguidos",
+                                text = currentUserData.followers?.size.toString()+" Seguidos",
                                 fontSize = 15.sp,
                                 modifier = Modifier.align(Alignment.CenterVertically)
                             )
@@ -551,7 +551,7 @@ fun Home(navController:NavController) {
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "Acerca de: " + post.post.mediaId,
+                                            text = "Acerca de: " + post.post.mediaName,
                                             fontSize = 16.sp,
                                             modifier = Modifier
                                                 .weight(1f)

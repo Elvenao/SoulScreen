@@ -12,6 +12,9 @@ val Pink40 = Color(0xFF7D5260)
 
 val DarkCyan= Color(0xFF008787)
 
+
+
+
 // Tema oscuro
 val PrimaryDark = Color(0xFF23272F)
 val SecondaryDark = Color(0xFF26C6DA)

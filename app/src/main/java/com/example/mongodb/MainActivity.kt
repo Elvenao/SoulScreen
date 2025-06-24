@@ -245,6 +245,11 @@ fun NavigationHost(){
             detalleMedia(mediaId, navController)
         }
 
+        composable("seguidoresUser/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: " "
+            seguidoresUser(userId, navController)
+        }
+
 
     }
 }
