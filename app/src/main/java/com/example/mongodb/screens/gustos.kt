@@ -1,6 +1,7 @@
 package com.example.mongodb.screens
 
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mongodb.SecurePrefs
@@ -47,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(UnstableApi::class)
 @Composable
 fun gustos(navController: NavController) {
     val context = LocalContext.current
@@ -64,17 +68,21 @@ fun gustos(navController: NavController) {
             try {
                 val response = RetrofitClient.getInstance(context).getUserProfile(currentUserData.id).execute()
                 withContext(Dispatchers.Main) {
+
                     if (response.isSuccessful) {
                         response.body()?.let { user ->
+
                             userData = user
+                            Log.d("Usuario", userData!!.name )
                             // Cargar likes y dislikes en segundo plano
                             CoroutineScope(Dispatchers.IO).launch {
                                 val likesList = user.like.orEmpty().mapNotNull { id ->
-                                    val res = RetrofitClient.getInstance(context).getNameAndImgById(id)
+                                    val res = RetrofitClient.getInstance(context).getNameAndImgById(id).execute()
+ 
                                     if (res.isSuccessful) res.body() else null
                                 }
                                 val dislikesList = user.dislike.orEmpty().mapNotNull { id ->
-                                    val res = RetrofitClient.getInstance(context).getNameAndImgById(id)
+                                    val res = RetrofitClient.getInstance(context).getNameAndImgById(id).execute()
                                     if (res.isSuccessful) res.body() else null
                                 }
                                 withContext(Dispatchers.Main) {
