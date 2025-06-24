@@ -13,7 +13,9 @@ data class Usuario(
     val email: String,
     val avatar: String? = null,
     var following: List<String>? = null,
-    var followers: List<String>? = null
+    var followers: List<String>? = null,
+    var like: List<String>? = null,
+    var dislike: List<String>? = null
 )
 
 

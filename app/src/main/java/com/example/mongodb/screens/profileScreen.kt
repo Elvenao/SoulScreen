@@ -105,7 +105,6 @@ fun profileScreen(
 
         isRefreshing.value = true
         CoroutineScope(Dispatchers.IO).launch {
-            delay(2000)
             refreshToken?.let {
                 RefreshTokenRequest(
                     it

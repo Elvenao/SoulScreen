@@ -9,5 +9,7 @@ data class UserData(
     val genres: List<String>?,
     val birthDate: String,
     var following: List<String>? = null,
-    var followers: List<String>? = null
+    var followers: List<String>? = null,
+    var like: List<String>? = null,
+    var dislike: List<String>? = null
 )

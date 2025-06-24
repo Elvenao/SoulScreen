@@ -7,6 +7,7 @@ import com.example.mongodb.model.Post
 import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.Multimedia
+import com.example.mongodb.model.MultimediaIdImg
 import com.example.mongodb.model.NuevoComentarioRequest
 import com.example.mongodb.model.PostCreated
 import com.example.mongodb.model.PostWithAvatar
@@ -82,4 +83,7 @@ interface ApiService {
 
     @GET("users/username/{id}")
     fun getUserIdImgById(@Path("id") id: String): Call<UserIdImg>
+
+    @GET("idimg")
+    fun getNameAndImgById(@Query("id") id: String): Call<MultimediaIdImg>
 }
