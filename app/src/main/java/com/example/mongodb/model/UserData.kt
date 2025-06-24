@@ -8,5 +8,6 @@ data class UserData(
     val biography: String?,
     val genres: List<String>?,
     val birthDate: String,
-    val followers: List<String>
+    var following: List<String>? = null,
+    var followers: List<String>? = null
 )

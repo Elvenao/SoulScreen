@@ -73,7 +73,7 @@ interface ApiService {
     @GET("users/{id}")
     fun getUserProfile(@Path("id") id: String): Call<UserData>
 
-    @POST("follow/toggle")
+    @POST("users/follow/toggle")
     fun toggleFollow(
         @Query("target") target: String,
         @Query("follower") follower: String
