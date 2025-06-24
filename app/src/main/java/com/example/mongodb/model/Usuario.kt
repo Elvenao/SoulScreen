@@ -11,7 +11,9 @@ data class Usuario(
     val joiningDate: String,
     val password: String,
     val email: String,
-    val avatar: String? = null
+    val avatar: String? = null,
+    var following: List<String>? = null,
+    var followers: List<String>? = null
 )
 
 
