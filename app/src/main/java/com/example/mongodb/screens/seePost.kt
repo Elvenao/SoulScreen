@@ -168,7 +168,7 @@ fun seePost(id:String, navController: NavController){
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier
                                             .clickable {
-                                                navController.navigate("seeprofileuser/${post.post.user}")
+                                                navController.navigate("seeprofileuser/${post.post.userId}")
                                             }
                                     ) {
                                         AsyncImage(

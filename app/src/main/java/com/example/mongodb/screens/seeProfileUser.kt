@@ -63,14 +63,14 @@ fun seeProfileUser(username: String, navController: NavController) {
                     if (response.isSuccessful) {
                         response.body()?.let {
                             userData.value = it
-                            isFollowing.value = it.followers.contains(currentUser.userName)
+                            //isFollowing.value = it.followers.contains(currentUser.userName)
                         }
                     }
                     isRefreshing.value = false
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Error al cargar perfil", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                     isRefreshing.value = false
                 }
             }

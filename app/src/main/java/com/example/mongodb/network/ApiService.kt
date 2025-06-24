@@ -70,8 +70,8 @@ interface ApiService {
     @GET("categories")
     fun getCategories():Call<List<Category>>
 
-    @GET("users/{username}")
-    fun getUserProfile(@Path("username") username: String): Call<UserData>
+    @GET("users/{id}")
+    fun getUserProfile(@Path("id") id: String): Call<UserData>
 
     @POST("follow/toggle")
     fun toggleFollow(
