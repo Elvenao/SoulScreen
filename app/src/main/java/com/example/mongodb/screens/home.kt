@@ -246,7 +246,12 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .padding(10.dp),
+                                .padding(10.dp)
+                                .clickable(
+                                    onClick = {
+                                        navController.navigate("seguidoresUser/${currentUserData.id}")
+                                    }
+                                ),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(

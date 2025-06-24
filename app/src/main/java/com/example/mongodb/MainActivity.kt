@@ -219,9 +219,9 @@ fun NavigationHost(){
             Confirmacion(navController,sharedViewModel,destination)
 
         }
-        composable("seeprofileuser/{username}") { backStackEntry ->
-            val username = backStackEntry.arguments?.getString("username") ?: ""
-            seeProfileUser(username, navController)
+        composable("seeprofileuser/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            seeProfileUser(id, navController)
         }
 
 

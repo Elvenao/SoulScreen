@@ -3,6 +3,7 @@ package com.example.mongodb.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import com.google.accompanist.flowlayout.FlowRow
 import androidx.compose.foundation.lazy.LazyColumn
@@ -176,7 +177,12 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                         }
                         Row(
                             modifier = Modifier
-                                .padding(start = 8.dp, bottom = 15.dp),
+                                .padding(start = 8.dp, bottom = 15.dp)
+                                .clickable(
+                                    onClick = {
+                                        navController.navigate("seguidoresUser/${user.id}")
+                                    }
+                                ),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
