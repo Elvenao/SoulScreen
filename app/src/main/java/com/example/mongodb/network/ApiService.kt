@@ -17,6 +17,11 @@ import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
+import com.example.mongodb.model.UserData
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/refresh")
@@ -65,4 +70,12 @@ interface ApiService {
     @GET("categories")
     fun getCategories():Call<List<Category>>
 
+    @GET("users/{username}")
+    fun getUserProfile(@Path("username") username: String): Call<UserData>
+
+    @POST("follow/toggle")
+    fun toggleFollow(
+        @Query("target") target: String,
+        @Query("follower") follower: String
+    ): Call<Void>
 }

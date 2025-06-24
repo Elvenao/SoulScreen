@@ -99,6 +99,7 @@ import com.example.mongodb.screens.categoryChoosing
 import com.example.mongodb.screens.crearPost
 import com.example.mongodb.screens.signUp_BirthDate
 import com.example.mongodb.screens.profileScreen
+import com.example.mongodb.screens.seeProfileUser
 import com.example.mongodb.screens.signUp_Name
 import com.example.mongodb.screens.signUp_UserName
 
@@ -213,6 +214,11 @@ fun NavigationHost(){
             Confirmacion(navController,sharedViewModel,destination)
 
         }
+        composable("seeprofileuser/{username}") { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            seeProfileUser(username, navController)
+        }
+
 
     }
 }

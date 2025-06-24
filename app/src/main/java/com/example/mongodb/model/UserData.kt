@@ -1,0 +1,12 @@
+package com.example.mongodb.model
+
+data class UserData(
+    val id: String,
+    val name: String,
+    val userName: String,
+    val avatar: String,
+    val biography: String?,
+    val genres: List<String>?,
+    val birthDate: String,
+    val followers: List<String>
+)
