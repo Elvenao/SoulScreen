@@ -96,7 +96,12 @@ import com.example.mongodb.screens.Confirmacion
 import com.example.mongodb.screens.Home
 import com.example.mongodb.screens.SharedViewModel
 import com.example.mongodb.screens.categoryChoosing
+import com.example.mongodb.screens.config
 import com.example.mongodb.screens.crearPost
+import com.example.mongodb.screens.detalleMedia
+import com.example.mongodb.screens.explorar
+import com.example.mongodb.screens.gustos
+import com.example.mongodb.screens.help
 import com.example.mongodb.screens.signUp_BirthDate
 import com.example.mongodb.screens.profileScreen
 import com.example.mongodb.screens.seeProfileUser
@@ -168,7 +173,6 @@ fun NavigationHost(){
         composable("VerPostScreen/{postId}") { backStackEntry ->
             val postId = backStackEntry.arguments?.getString("postId") ?: " "
             seePost(postId, navController)
-
         }
         composable("signUp_BirthDate/{nombre}/{apellidos}"){ backStackEntry ->
             val nombre = backStackEntry.arguments?.getString("nombre")?: " "
@@ -217,6 +221,28 @@ fun NavigationHost(){
         composable("seeprofileuser/{username}") { backStackEntry ->
             val username = backStackEntry.arguments?.getString("username") ?: ""
             seeProfileUser(username, navController)
+        }
+
+
+        composable("ExplorarScreen") {
+            explorar(navController)
+        }
+
+        composable("GustosScreen") {
+            gustos(navController)
+        }
+
+        composable("AyudaScreen") {
+            help(navController)
+        }
+
+        composable("ConfiguracionScreen") {
+            config(navController)
+        }
+
+        composable("DetalleMediaScreen/{mediaId}") { backStackEntry ->
+            val mediaId = backStackEntry.arguments?.getString("mediaId") ?: " "
+            detalleMedia(mediaId, navController)
         }
 
 

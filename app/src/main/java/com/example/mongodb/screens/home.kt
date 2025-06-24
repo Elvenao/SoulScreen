@@ -34,6 +34,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AssignmentTurnedIn
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Home
@@ -314,11 +315,9 @@ fun Home(navController:NavController) {
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                                 .clickable{
-                                Toast.makeText(context, "Configuracion", Toast.LENGTH_SHORT).show()
-                                /*
-                                navController.navigate("Configuracion") {
+                                navController.navigate("ConfiguracionScreen") {
                                     popUpTo(0) { inclusive = true }
-                                }*/
+                                }
                             }
                         ) {
                             Icon(
@@ -343,7 +342,9 @@ fun Home(navController:NavController) {
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                                 .clickable{
-                                Toast.makeText(context, "Ayuda", Toast.LENGTH_SHORT).show()
+                                navController.navigate("AyudaScreen") {
+                                    popUpTo(0) { inclusive = true }
+                                }
                             }
                         ){
                             Icon(
@@ -368,7 +369,7 @@ fun Home(navController:NavController) {
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                                 .clickable{
-                                Toast.makeText(context, "Soporte", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Mandar a numero de emilio", Toast.LENGTH_SHORT).show()
                             }
                         ) {
                             Icon(
@@ -448,8 +449,8 @@ fun Home(navController:NavController) {
                             val items = listOf("Posts", "Amigos", "Explorar")
                             val icons = listOf(
                                 Icons.Default.Home,
-                                Icons.Default.Group,
-                                Icons.Default.Search
+                                Icons.Default.Search,
+                                Icons.Default.AssignmentTurnedIn
                             )
                             items.forEachIndexed { index, label ->
                                 NavigationBarItem(
@@ -458,8 +459,8 @@ fun Home(navController:NavController) {
                                         selectedIndex = index
                                         when (index) {
                                             0 -> navController.navigate("Posts")
-                                            1 -> navController.navigate("amigosScreen")
-                                            2 -> navController.navigate("explorarScreen")
+                                            1 -> navController.navigate("ExplorarScreen")
+                                            2 -> navController.navigate("GustosScreen")
                                         }
                                     },
                                     icon = {
