@@ -94,5 +94,5 @@ interface ApiService {
     fun getUserIdImgById(@Path("id") id: String): Call<UserIdImg>
 
     @GET("multimedia/idimg")
-    fun getNameAndImgById(@Query("id") id: String): Response<MultimediaIdImg>
+    suspend fun getNameAndImgById(@Query("id") id: String): Response<MultimediaIdImg>
 }
