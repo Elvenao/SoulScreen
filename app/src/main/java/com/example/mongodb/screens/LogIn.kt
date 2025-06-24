@@ -1,5 +1,6 @@
 package com.example.mongodb.screens
 
+
 import android.content.Context
 import android.widget.Toast
 import androidx.annotation.OptIn
@@ -14,24 +15,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material3.Button
-
-
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
-
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,12 +35,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,14 +48,12 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mongodb.SecurePrefs
+import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.network.RetrofitClient
-import com.example.mongodb.ui.theme.DarkCyan
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-import com.example.mongodb.model.LoginRequest
 import retrofit2.HttpException
 
 
@@ -85,10 +75,11 @@ fun logIn(navController: NavController){
 
                     } ,
                     true,
-                    false,
-                    false,
+                    true,
+                    true,
+                    "SoulScreen",
                     null,
-                    null
+                    true
                 )
             }
         ) { innerPadding ->
@@ -96,19 +87,19 @@ fun logIn(navController: NavController){
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(Color.Black),
+                    .background(MaterialTheme.colorScheme.background),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(Modifier.padding(start=10.dp, end=10.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Row(Modifier.align(Alignment.CenterHorizontally).padding(bottom = 20.dp)) {
-                        Text("SoulScreen", fontSize = 40.sp, color = Color.White)
+                        
                     }
                     Row(Modifier.align(Alignment.CenterHorizontally)) {
-                        Text("¡Bienvenido!", fontSize = 26.sp, color = Color.White)
+                        Text("¡Bienvenido!", fontSize = 26.sp, color = MaterialTheme.colorScheme.onPrimary)
                     }
                     Row(Modifier.align(Alignment.CenterHorizontally)) {
-                        Text("Email o usuario", fontSize = 26.sp, color = Color.White)
+                        Text("Email o usuario", fontSize = 26.sp, color = MaterialTheme.colorScheme.onPrimary)
                     }
                     Row(Modifier.align(Alignment.CenterHorizontally)) {
                         OutlinedTextField(
@@ -116,16 +107,16 @@ fun logIn(navController: NavController){
                             onValueChange = {email = it},
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.height(60.dp),
-                            label = { Text("Email o usuario", color = Color.White)},
+                            label = { Text("Email o usuario", color = MaterialTheme.colorScheme.onPrimary)},
                             textStyle = TextStyle(
                                 fontSize = 15.sp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             ),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Cyan,
+                                focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = Color.Gray,
-                                textColor = Color.White,
-                                cursorColor = Color.Cyan
+                                textColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.secondary
                             ),
                             singleLine = true,
                         )
@@ -133,7 +124,7 @@ fun logIn(navController: NavController){
 
 
                     Row(Modifier.align(Alignment.CenterHorizontally)) {
-                        Text("Contraseña", fontSize = 26.sp, color = Color.White)
+                        Text("Contraseña", fontSize = 26.sp, color = MaterialTheme.colorScheme.onPrimary)
                     }
 
                     Row(Modifier.align(Alignment.CenterHorizontally)) {
@@ -142,7 +133,7 @@ fun logIn(navController: NavController){
                             onValueChange = {password = it},
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.height(60.dp),
-                            label = { Text("Contraseña", color = Color.White)},
+                            label = { Text("Contraseña", color = MaterialTheme.colorScheme.onPrimary)},
 
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
@@ -151,20 +142,20 @@ fun logIn(navController: NavController){
                                 val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
 
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                    Icon(imageVector = icon, contentDescription = description,tint = Color.White)
+                                    Icon(imageVector = icon, contentDescription = description,tint = MaterialTheme.colorScheme.onPrimary)
                                 }
                             },
                             singleLine = true,
 
                             textStyle = TextStyle(
                                 fontSize = 15.sp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             ),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Cyan,
+                                focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = Color.Gray,
-                                textColor = Color.White,
-                                cursorColor = Color.Cyan
+                                textColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.secondary
                             )
                         )
                     }
@@ -184,13 +175,13 @@ fun logIn(navController: NavController){
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
 
-                            containerColor = Color.Cyan,
-                            disabledContainerColor =  DarkCyan
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            disabledContainerColor =  MaterialTheme.colorScheme.tertiary
 
 
                         ),
                     ) {
-                        Text("Iniciar Sesion", color = Color.Black)
+                        Text("Iniciar Sesion", color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
             }

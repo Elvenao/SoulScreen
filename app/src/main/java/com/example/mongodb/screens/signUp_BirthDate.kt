@@ -1,10 +1,7 @@
 package com.example.mongodb.screens
 
-import android.app.DatePickerDialog
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -25,10 +22,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -41,17 +39,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mongodb.ui.theme.DarkCyan
-import okhttp3.internal.wait
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -75,7 +69,8 @@ fun signUp_BirthDate(navController: NavController, nombre: String, apellidos: St
                     false,
                     false,
                     null,
-                    null
+                    null,
+                    true
                 )
             }
         ) { innerPadding ->
@@ -83,7 +78,7 @@ fun signUp_BirthDate(navController: NavController, nombre: String, apellidos: St
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 Column(modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(Modifier.align(Alignment.Start)) {
@@ -91,7 +86,7 @@ fun signUp_BirthDate(navController: NavController, nombre: String, apellidos: St
                             "¿Cuantos años tienes?",
                             fontSize = 27.sp,
                             textAlign = TextAlign.Left,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
                         )
 
@@ -101,7 +96,7 @@ fun signUp_BirthDate(navController: NavController, nombre: String, apellidos: St
                             "Ingresa tu fecha de nacimiento.",
                             fontSize = 18.sp,
                             textAlign = TextAlign.Left,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     }
                     Row(
@@ -117,14 +112,14 @@ fun signUp_BirthDate(navController: NavController, nombre: String, apellidos: St
                         },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Cyan,
-                                disabledContainerColor = DarkCyan
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                disabledContainerColor = MaterialTheme.colorScheme.tertiary
                             ),
                             enabled = fechaSeleccionada.value.isNotEmpty(),
 
 
                             ) {
-                            Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                            Text("Siguiente", fontSize = 15.sp, color = MaterialTheme.colorScheme.surface)
                         }
                     }
 
@@ -159,10 +154,10 @@ fun DatePickerFieldToModal(dateBirth: MutableState<String>) {
         value = selectedDate?.let { convertMillisToDate(it,dateBirth) } ?: "",
         onValueChange = { },
         shape = RoundedCornerShape(16.dp),
-        label = { Text("Fecha de Nacimiento", color = Color.White)},
-        placeholder = { Text("MM/DD/YYYY", color = Color.White) },
+        label = { Text("Fecha de Nacimiento", color = MaterialTheme.colorScheme.onPrimary)},
+        placeholder = { Text("MM/DD/YYYY", color = MaterialTheme.colorScheme.onPrimary,) },
         trailingIcon = {
-            Icon(Icons.Default.DateRange, contentDescription = "Select date", tint= Color.White)
+            Icon(Icons.Default.DateRange, contentDescription = "Select date", tint= MaterialTheme.colorScheme.onPrimary,)
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -179,14 +174,14 @@ fun DatePickerFieldToModal(dateBirth: MutableState<String>) {
                 }
             },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color.Cyan,
+            focusedBorderColor = MaterialTheme.colorScheme.secondary,
             unfocusedBorderColor = Color.Gray,
-            textColor = Color.White,
-            cursorColor = Color.Cyan
+            textColor = MaterialTheme.colorScheme.onPrimary,
+            cursorColor = MaterialTheme.colorScheme.secondary
         ),
         textStyle = TextStyle(
             fontSize = 15.sp,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onPrimary,
         ),
     )
 
@@ -218,17 +213,17 @@ fun DatePickerModal(
                     onDismiss()
                 }
             ) {
-                Text("Aceptar")
+                Text("Aceptar", color = MaterialTheme.colorScheme.onPrimary)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text("Cancelar",color = MaterialTheme.colorScheme.onPrimary)
             }
         },
         text = {
             DatePicker(state = datePickerState)
-        }
+        },
     )
 }
 

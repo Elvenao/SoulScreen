@@ -1,5 +1,6 @@
 package com.example.mongodb.screens
 
+
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -8,21 +9,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -33,38 +36,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.mongodb.ui.theme.DarkCyan
-
-
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-
-import androidx.compose.foundation.text.KeyboardOptions
-
-import androidx.compose.foundation.layout.fillMaxWidth
-
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.toLowerCase
 import androidx.media3.common.util.UnstableApi
+import androidx.navigation.NavController
 import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.Usuario
@@ -84,6 +65,8 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordCheck by rememberSaveable { mutableStateOf("") }
+    var passLength1 by rememberSaveable { mutableStateOf(false) }
+    var passLength2 by rememberSaveable { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
     var passwordVisible2 by remember { mutableStateOf(false) }
     val isRepeated = remember { mutableStateOf(false) }
@@ -104,7 +87,8 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                     false,
                     false,
                     null,
-                    null
+                    null ,
+                    true
                 )
             }
         ) { innerPadding ->
@@ -112,7 +96,7 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 Column(modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(Modifier.align(Alignment.Start)) {
@@ -120,7 +104,7 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                             "¿Cual es tu correo electrónico?",
                             fontSize = 27.sp,
                             textAlign = TextAlign.Left,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
                         )
 
@@ -130,7 +114,7 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                             "Ingresa tu correo electronico y crea una contraseña",
                             fontSize = 18.sp,
                             textAlign = TextAlign.Left,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     }
                     if(isRepeated.value){
@@ -152,91 +136,93 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                                 email = newText.replace(" ", "") },
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.weight(1f),
-                            label = { Text("Correo Electronico", color = Color.White)},
+                            label = { Text("Correo Electronico", color = MaterialTheme.colorScheme.onPrimary)},
                             textStyle = TextStyle(
                                 fontSize = 15.sp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             ),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Cyan,
+                                focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = Color.Gray,
-                                textColor = Color.White,
-                                cursorColor = Color.Cyan
+                                textColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.secondary
                             ),
                             singleLine = true,
                         )
 
 
                     }
-                    if(password.length < 8){
+                    if(password.length < 8 && passLength1){
                         Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("Contraseña demasiado corta", color = Color.White)
+                            Text("Contraseña demasiado corta", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                     Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = password,
-                            onValueChange = {password = it},
+                            onValueChange = {password = it
+                                           passLength1 = true },
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.weight(1f),
-                            label = { Text("Contraseña", color = Color.White)},
+                            label = { Text("Contraseña", color = MaterialTheme.colorScheme.onPrimary)},
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
                                 val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                                 val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
 
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                    Icon(imageVector = icon, contentDescription = description, tint = Color.White)
+                                    Icon(imageVector = icon, contentDescription = description, tint = MaterialTheme.colorScheme.onPrimary)
                                 }
                             },
                             singleLine = true,
                             textStyle = TextStyle(
                                 fontSize = 15.sp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             ),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Cyan,
+                                focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = Color.Gray,
-                                textColor = Color.White,
-                                cursorColor = Color.Cyan
+                                textColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.secondary
                             )
                         )
                     }
-                    if(passwordCheck.length < 8){
+                    if(passwordCheck.length < 8 && passLength2){
                         Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("Contraseña demasiado corta", color = Color.White)
+                            Text("Contraseña demasiado corta", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                     Row(Modifier.align(Alignment.Start).fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = passwordCheck,
-                            onValueChange = {passwordCheck = it},
+                            onValueChange = {passwordCheck = it
+                                            passLength2 = true},
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.weight(1f),
-                            label = { Text("Confirmar contraseña", color = Color.White)},
+                            label = { Text("Confirmar contraseña", color = MaterialTheme.colorScheme.onPrimary)},
                             visualTransformation = if (passwordVisible2) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
                                 val icon = if (passwordVisible2) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                                 val description = if (passwordVisible2) "Ocultar contraseña" else "Mostrar contraseña"
 
                                 IconButton(onClick = { passwordVisible2 = !passwordVisible2 }) {
-                                    Icon(imageVector = icon, contentDescription = description, tint = Color.White)
+                                    Icon(imageVector = icon, contentDescription = description, tint = MaterialTheme.colorScheme.onPrimary)
                                 }
                             },
                             singleLine = true,
                             textStyle = TextStyle(
                                 fontSize = 15.sp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             ),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Cyan,
+                                focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = Color.Gray,
-                                textColor = Color.White,
-                                cursorColor = Color.Cyan
+                                textColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.secondary
                             )
                         )
                     }
@@ -251,12 +237,12 @@ fun signUp_Email(navController: NavController, nombre: String, apellidos: String
                         },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Cyan,
-                                disabledContainerColor = DarkCyan
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                disabledContainerColor = MaterialTheme.colorScheme.tertiary
                             ),
                             enabled = isEmptyEmail(email,password,passwordCheck)
                         ) {
-                            Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                            Text("Siguiente", fontSize = 15.sp, color = MaterialTheme.colorScheme.surface)
                         }
                     }
 

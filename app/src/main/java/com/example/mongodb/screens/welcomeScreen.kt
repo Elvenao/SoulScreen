@@ -8,17 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,14 +25,14 @@ import androidx.navigation.NavController
 
 @Composable
 fun welcomeScreen(navController: NavController){
-    Box(Modifier.fillMaxSize().background(Color.Black)){
+    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)){
         Box(Modifier
             .fillMaxSize() // Esto es lo importante
             .padding(horizontal = 25.dp, vertical = 70.dp)
         ){
             Column(Modifier.align(Alignment.Center)) {
                 Row(Modifier.align(Alignment.CenterHorizontally)) {
-                    Text("Entérate de las opiniones que tienen tus amigos acerca del contenido multimedia", fontSize = 27.sp, textAlign = TextAlign.Left, color = Color.LightGray, fontWeight = FontWeight.Bold)
+                    Text("Entérate de las opiniones que tienen tus amigos acerca del contenido multimedia", fontSize = 27.sp, textAlign = TextAlign.Left, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                 }
 
             }
@@ -46,10 +43,10 @@ fun welcomeScreen(navController: NavController){
                     },
                         Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.inverseSurface
                         )
                     ) {
-                        Text("Iniciar Sesión", color = Color.Black, fontSize = 15.sp)
+                        Text("Iniciar Sesión", color =MaterialTheme.colorScheme.background, fontSize = 15.sp)
                     }
                 }
                 Row(
@@ -61,14 +58,14 @@ fun welcomeScreen(navController: NavController){
                         modifier = Modifier
                             .weight(1f)
                             .height(1.dp),
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.inverseSurface
                     )
 
                     // Texto "o"
                     Text(
                         "o",
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        color = Color.LightGray
+                        color = MaterialTheme.colorScheme.inverseSurface
                     )
 
                     // Línea derecha
@@ -76,7 +73,7 @@ fun welcomeScreen(navController: NavController){
                         modifier = Modifier
                             .weight(1f)
                             .height(1.dp),
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.inverseSurface
                     )
                 }
                 Row(Modifier.align(Alignment.CenterHorizontally)) {
@@ -85,10 +82,10 @@ fun welcomeScreen(navController: NavController){
                     },
                         Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.onSurface
                         )
                     ) {
-                        Text("Crear Cuenta", color = Color.Black, fontSize = 15.sp)
+                        Text("Crear Cuenta", color = MaterialTheme.colorScheme.background, fontSize = 15.sp)
                     }
                 }
             }

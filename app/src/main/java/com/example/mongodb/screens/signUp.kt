@@ -4,28 +4,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-
-import androidx.compose.material3.TextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,10 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mongodb.ui.theme.DarkCyan
-
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
 
 
 @Composable
@@ -62,6 +51,7 @@ fun signUp_Name(navController: NavController){
                     false,
                     null,
                     null
+                    ,true
                 )
             }
         ) { innerPadding ->
@@ -69,7 +59,7 @@ fun signUp_Name(navController: NavController){
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 Column(
                     modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
@@ -80,7 +70,7 @@ fun signUp_Name(navController: NavController){
                             "¿Cómo te llamas?",
                             fontSize = 27.sp,
                             textAlign = TextAlign.Left,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
                         )
 
@@ -90,7 +80,7 @@ fun signUp_Name(navController: NavController){
                             "Ingresa tu nombre completo.",
                             fontSize = 18.sp,
                             textAlign = TextAlign.Left,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     }
                     Row(
@@ -107,16 +97,16 @@ fun signUp_Name(navController: NavController){
 
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.weight(1f),
-                            label = { Text("Nombre(s)", color = Color.White) },
+                            label = { Text("Nombre(s)", color = MaterialTheme.colorScheme.onPrimary) },
                             textStyle = TextStyle(
                                 fontSize = 15.sp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             ),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Cyan,
+                                focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = Color.Gray,
-                                textColor = Color.White,
-                                cursorColor = Color.Cyan
+                                textColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.secondary
                             ),
                             singleLine = true,
                         )
@@ -133,18 +123,18 @@ fun signUp_Name(navController: NavController){
                                 val trimmed = newText.replace(Regex("\\s+$"), "")
                                 apellidos = trimmed
                             },
-                            label = { Text("Apellidos", color = Color.White) },
+                            label = { Text("Apellidos", color = MaterialTheme.colorScheme.onPrimary) },
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.weight(1f),
                             textStyle = TextStyle(
                                 fontSize = 15.sp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             ),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Cyan,
+                                focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = Color.Gray,
-                                textColor = Color.White,
-                                cursorColor = Color.Cyan
+                                textColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.secondary
                             ),
                             singleLine = true,
                         )
@@ -156,14 +146,14 @@ fun signUp_Name(navController: NavController){
                             },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Cyan,
-                                disabledContainerColor = DarkCyan
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                disabledContainerColor = MaterialTheme.colorScheme.tertiary
                             ),
                             enabled = isEmpty(nombre, apellidos),
 
 
                             ) {
-                            Text("Siguiente", fontSize = 15.sp, color = Color.Black)
+                            Text("Siguiente", fontSize = 15.sp, color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
 

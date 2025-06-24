@@ -1,69 +1,57 @@
 package com.example.mongodb.screens
+
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.Category
-import com.example.mongodb.model.Post
+import com.example.mongodb.model.UpdateCategoriesRequest
 import com.example.mongodb.network.RetrofitClient
+import com.example.mongodb.ui.theme.DarkCyan
+import com.google.accompanist.flowlayout.FlowRow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
-import com.example.mongodb.SecurePrefs
-import com.example.mongodb.model.UpdateCategoriesRequest
-import com.example.mongodb.ui.theme.DarkCyan
-import com.google.accompanist.flowlayout.FlowRow
-import org.json.JSONArray
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
@@ -99,7 +87,8 @@ fun categoryChoosing(navController: NavController){
                         true,
                         true,
                         "¿Qué te gusta?",
-                        "Omitir"
+                        "Omitir",
+                        false
                     )
                 }
         ) { innerPadding ->
@@ -250,7 +239,8 @@ fun MyTopBar(
     skipActivated: Boolean,
     titleActivated: Boolean,
     titleText: String?,
-    skipText: String?
+    skipText: String?,
+    centrar: Boolean
 ) {
     TopAppBar(
         title = {
@@ -260,7 +250,7 @@ fun MyTopBar(
                         Text(
                             text = titleText,
                             modifier = Modifier.align(Alignment.Center),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.inverseSurface,
                             fontSize = 25.sp
                         )
                     }
@@ -275,19 +265,33 @@ fun MyTopBar(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Volver",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.inverseSurface,
                     )
                 }
             }
 
         },
         actions = {
-            if(skipActivated){
+            if (skipActivated) {
+                var color: Color
+                var otherColor: Color
+                if (centrar) {
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.primary
+                    otherColor =  androidx.compose.material3.MaterialTheme.colorScheme.primary
+                }
+                else{
+                    color = Color.White
+                    otherColor = Color.Black
+                }
+
                 OutlinedButton(
                     onClick = onSkipClick,
-                    border = BorderStroke(1.dp, Color.Black),
+                    border = BorderStroke(1.dp, otherColor),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    shape = RoundedCornerShape(15.dp)
+                    shape = RoundedCornerShape(15.dp),
+                    colors = androidx.compose.material.ButtonDefaults.outlinedButtonColors(
+                        backgroundColor = color
+                    )
                 ) {
                     if (skipText != null) {
                         Text(skipText, color = Color.Black)
@@ -297,7 +301,7 @@ fun MyTopBar(
 
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Black
+            containerColor = MaterialTheme.colorScheme.primary
         )
     )
 }
