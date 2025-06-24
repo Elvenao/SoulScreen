@@ -3,15 +3,34 @@ package com.example.mongodb.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AssignmentTurnedIn
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.runtime.*
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,10 +46,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AssignmentTurnedIn
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
 
 @Composable
 fun gustos(navController: NavController) {
@@ -55,11 +70,11 @@ fun gustos(navController: NavController) {
                             // Cargar likes y dislikes en segundo plano
                             CoroutineScope(Dispatchers.IO).launch {
                                 val likesList = user.like.orEmpty().mapNotNull { id ->
-                                    val res = RetrofitClient.getInstance(context).getNameAndImgById(id).execute()
+                                    val res = RetrofitClient.getInstance(context).getNameAndImgById(id)
                                     if (res.isSuccessful) res.body() else null
                                 }
                                 val dislikesList = user.dislike.orEmpty().mapNotNull { id ->
-                                    val res = RetrofitClient.getInstance(context).getNameAndImgById(id).execute()
+                                    val res = RetrofitClient.getInstance(context).getNameAndImgById(id)
                                     if (res.isSuccessful) res.body() else null
                                 }
                                 withContext(Dispatchers.Main) {
