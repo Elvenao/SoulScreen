@@ -191,7 +191,7 @@ fun explorar(navController: NavController){
                                         .background(androidx.compose.material3.MaterialTheme.colorScheme.tertiary)
                                         .padding(10.dp)
                                         .clickable {
-
+                                            navController.navigate("DetalleMediaScreen/${multimedia.id}") // Navegar a detalle de la película
                                         },
                                     verticalAlignment = Alignment.CenterVertically,
 

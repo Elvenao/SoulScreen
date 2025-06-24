@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.VerticalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -68,11 +69,25 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mongodb.SecurePrefs
 import com.example.mongodb.ui.theme.DarkCyan
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.example.mongodb.network.RetrofitClient
 
 @Composable
 fun changeUser(navController: NavController) {
     var newUsername by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+
+    val EncryptedSharedPreferences = SecurePrefs(context)
+    val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
 
     val listState = rememberLazyListState()
 
@@ -148,7 +163,24 @@ fun changeUser(navController: NavController) {
                 ) {
                     Button(
                         onClick = {
-                            // todo
+                            if (newUsername.isNotEmpty()) {
+                                val userId = currentUserData?.id ?: return@Button
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val response = RetrofitClient.getInstance(context).updateUsername(userId, newUsername)
+                                    withContext(Dispatchers.Main) {
+                                        if (response.isSuccessful) {
+                                            Toast.makeText(context, "Usuario actualizado", Toast.LENGTH_SHORT).show()
+                                            navController.navigate("ConfiguracionScreen") {
+                                                popUpTo("ConfiguracionScreen") { inclusive = true }
+                                            }
+                                        } else {
+                                            Toast.makeText(context, response.message().toString(), Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(context, "Por favor, ingresa un usuario", Toast.LENGTH_SHORT).show()
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary

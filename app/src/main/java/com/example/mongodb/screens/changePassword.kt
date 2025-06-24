@@ -68,13 +68,26 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mongodb.SecurePrefs
 import com.example.mongodb.ui.theme.DarkCyan
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.example.mongodb.network.RetrofitClient
 
 @Composable
 fun changePass(navController: NavController) {
     var newContraseña by remember { mutableStateOf("") }
     var newConfirmContraseña by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+    var context = LocalContext.current
+
+    val EncryptedSharedPreferences = SecurePrefs(context)
+    val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
 
     BackHandler {
         navController.navigate("ConfiguracionScreen") {
@@ -173,7 +186,28 @@ fun changePass(navController: NavController) {
                 ) {
                     Button(
                         onClick = {
-                            // todo
+                            if (newContraseña.isNotEmpty() && newConfirmContraseña.isNotEmpty()) {
+                                if (newContraseña == newConfirmContraseña) {
+                                    val userId = currentUserData?.id ?: return@Button
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val response = RetrofitClient.getInstance(context).updatePassword(userId, newContraseña)
+                                        withContext(Dispatchers.Main) {
+                                            if (response.isSuccessful) {
+                                                Toast.makeText(context, "Contraseña actualizada", Toast.LENGTH_SHORT).show()
+                                                navController.navigate("ConfiguracionScreen") {
+                                                    popUpTo("ConfiguracionScreen") { inclusive = true }
+                                                }
+                                            } else {
+                                                Toast.makeText(context, "Error al actualizar contraseña", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                Toast.makeText(context, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary

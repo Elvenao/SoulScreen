@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.VerticalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -69,7 +70,17 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mongodb.SecurePrefs
+import com.example.mongodb.network.RetrofitClient
 import com.example.mongodb.ui.theme.DarkCyan
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+
+
 
 @Composable
 fun changeE(navController: NavController) {
@@ -77,12 +88,18 @@ fun changeE(navController: NavController) {
     var newEmail by remember { mutableStateOf("") }
     var newConfirmEmail by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+    val context = LocalContext.current
+
+    val EncryptedSharedPreferences = SecurePrefs(context)
+    val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
+
 
     BackHandler {
         navController.navigate("ConfiguracionScreen") {
             popUpTo("ConfiguracionScreen") { inclusive = true }
         }
     }
+
 
     Scaffold(
         topBar = {
@@ -175,7 +192,32 @@ fun changeE(navController: NavController) {
                 ) {
                     Button(
                         onClick = {
-                            // todo
+                            if (newEmail.isNotEmpty() && newConfirmEmail.isNotEmpty()) {
+                                if (newEmail == newConfirmEmail) {
+                                    val userId = currentUserData?.id ?: return@Button
+
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val response = RetrofitClient.getInstance(context).updateEmail(userId, newEmail)
+                                        withContext(Dispatchers.Main) {
+                                            if (response.isSuccessful) {
+                                                Toast.makeText(context, "Email actualizado", Toast.LENGTH_SHORT).show()
+                                                navController.navigate("ConfiguracionScreen") {
+                                                    popUpTo("ConfiguracionScreen") { inclusive = true }
+                                                }
+                                            } else {
+                                                Toast.makeText(context, "Error al actualizar email", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                    navController.navigate("ConfiguracionScreen") {
+                                        popUpTo("ConfiguracionScreen") { inclusive = true }
+                                    }
+                                } else {
+                                    Toast.makeText(context, "Los correos no coinciden", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary

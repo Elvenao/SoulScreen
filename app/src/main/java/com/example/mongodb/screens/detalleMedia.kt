@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.Multimedia
 import com.example.mongodb.network.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +36,9 @@ fun detalleMedia(idMedia: String, navController: NavController) {
     val context = LocalContext.current
     val multimedia = remember { mutableStateOf<Multimedia?>(null) }
     val isRefreshing = remember { mutableStateOf(false) }
+
+    val EncryptedSharedPreferences = SecurePrefs(context)
+    val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
 
     fun cargarDetalle() {
         isRefreshing.value = true
@@ -84,7 +88,7 @@ fun detalleMedia(idMedia: String, navController: NavController) {
                     .padding(16.dp)
             ) {
                 AsyncImage(
-                    model = media.poster,
+                    model = "http://"+currentUserData.ip+media.poster,
                     contentDescription = "Poster",
                     modifier = Modifier
                         .size(200.dp)

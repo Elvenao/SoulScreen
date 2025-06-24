@@ -101,4 +101,34 @@ interface ApiService {
 
     @GET("users/{idUser}/posts")
     fun getUserPosts(@Path("idUser")id:String):Call<List<Post>>
+
+    @PATCH("users/like/{id}")
+    fun setLikePost(
+        @Path("id") id: String,
+        @Query("mediaId") mediaId: String
+    ): Response<LoginResponse>
+
+    @PATCH("users/dislike/{id}")
+    fun setDislikePost(
+        @Path("id") id: String,
+        @Query("mediaId") mediaId: String
+    ): Response<LoginResponse>
+
+    @PATCH("users/email/{id}")
+    suspend fun updateEmail(
+        @Path("id") id: String,
+        @Query("newEmail") newEmail: String
+    ): Response<LoginResponse>
+
+    @PATCH("users/password/{id}")
+    suspend fun updatePassword(
+        @Path("id") id: String,
+        @Query("newPassword") newPassword: String
+    ): Response<LoginResponse>
+
+    @PATCH("users/updateusername/{id}")
+    suspend fun updateUsername(
+        @Path("id") id: String,
+        @Query("newUsername") newUsername: String
+    ): Response<LoginResponse>
 }
