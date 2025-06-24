@@ -122,6 +122,9 @@ import com.example.mongodb.ui.theme.SansSerifFont
 import com.example.mongodb.ui.theme.SerifFont
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
+import com.example.mongodb.screens.changeE
+import com.example.mongodb.screens.changePass
+import com.example.mongodb.screens.changeUser
 import com.example.mongodb.ui.theme.DefaultFont
 import com.example.mongodb.ui.theme.MongoDBTheme
 
@@ -229,6 +232,7 @@ fun NavigationHost(onFontSelected: (FontFamily) -> Unit, onFontScaleSelected: (F
             welcomeScreen(navController)
         }
 
+
         composable("VerPostScreen/{postId}") { backStackEntry ->
             val postId = backStackEntry.arguments?.getString("postId") ?: " "
             seePost(postId, navController)
@@ -313,6 +317,17 @@ fun NavigationHost(onFontSelected: (FontFamily) -> Unit, onFontScaleSelected: (F
             seguidoresUser(userId, navController)
         }
 
+        composable("changeUsername") {
+            changeUser(navController)
+        }
+
+        composable("changePassword") {
+            changePass(navController)
+        }
+
+        composable("changeEmail") {
+            changeE(navController)
+        }
 
     }
 }

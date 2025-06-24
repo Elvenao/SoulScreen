@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -108,7 +110,9 @@ fun config(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(15.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(15.dp))
 
             // Selección de tamaño de fuente
             Text("Tamaño de fuente:", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
@@ -131,6 +135,54 @@ fun config(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(15.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(15.dp))
+
+            //Editar Perfil
+            Text("Editar Perfil:", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+            Spacer(modifier = Modifier.height(8.dp))
+            Box{
+                Button(
+                    onClick = {
+                        navController.navigate("changeUsername")
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Cambiar Usuario", color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Box{
+                Button(
+                    onClick = {
+                        navController.navigate("changePassword")
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Cambiar Contraseña", color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Box{
+                Button(
+                    onClick = {
+                        navController.navigate("changeEmail")
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Cambiar Email", color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+
+
         }
     }
 }
