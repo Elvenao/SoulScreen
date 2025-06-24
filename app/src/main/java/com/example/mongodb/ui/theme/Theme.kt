@@ -46,6 +46,7 @@ fun MongoDBTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     selectedFont: FontFamily = DefaultFont,
+    fontScale: Float = 1.0f,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -56,10 +57,21 @@ fun MongoDBTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    val scaledTypography = Typography(
+        bodyLarge = Typography().bodyLarge.copy(
+            fontFamily = selectedFont,
+            fontSize = Typography().bodyLarge.fontSize * fontScale
+        ),
+        titleLarge = Typography().titleLarge.copy(
+            fontFamily = selectedFont,
+            fontSize = Typography().titleLarge.fontSize * fontScale
+        )
+        // Puedes escalar más estilos si quieres
+    )
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = appTypography(selectedFont),
+        typography = scaledTypography,
         content = content
     )
 }

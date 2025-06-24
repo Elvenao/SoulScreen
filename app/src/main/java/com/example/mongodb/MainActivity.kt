@@ -129,19 +129,57 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var selectedFont: FontFamily by remember { mutableStateOf(FontFamily.Default) }
+            val context = LocalContext.current
+            val (savedFontName, savedFontScale) = loadFontConfig(context)
+
+            val fontMap = mapOf(
+                "Default" to DefaultFont,
+                "Monospace" to MonospaceFont,
+                "Serif" to SerifFont,
+                "Sans Serif" to SansSerifFont
+            )
+
+            var selectedFont: FontFamily by remember { mutableStateOf(fontMap[savedFontName] ?: FontFamily.Default) }
+            var selectedFontScale by remember { mutableStateOf(savedFontScale) }
 
             MongoDBTheme(
                 darkTheme = isSystemInDarkTheme(),
                 dynamicColor = false,
-                selectedFont = selectedFont
+                selectedFont = selectedFont,
+                fontScale = selectedFontScale
             ) {
-                NavigationHost(onFontSelected = { font: FontFamily ->
-                    selectedFont = font
-                })
+                NavigationHost(
+                    onFontSelected = { font: FontFamily ->
+                        selectedFont = font
+                        val selectedFontName = fontMap.entries.firstOrNull { it.value == font }?.key ?: "Default"
+                        saveFontConfig(context, selectedFontName, selectedFontScale)
+                    },
+                    onFontScaleSelected = { scale: Float ->
+                        selectedFontScale = scale
+                        val selectedFontName = fontMap.entries.firstOrNull { it.value == selectedFont }?.key ?: "Default"
+                        saveFontConfig(context, selectedFontName, scale)
+                    }
+                )
             }
+
         }
     }
+}
+
+fun saveFontConfig(context: Context, fontName: String, fontScale: Float) {
+    val prefs = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
+    prefs.edit().apply {
+        putString("font_name", fontName)
+        putFloat("font_scale", fontScale)
+        apply()
+    }
+}
+
+fun loadFontConfig(context: Context): Pair<String, Float> {
+    val prefs = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
+    val fontName = prefs.getString("font_name", "Default") ?: "Default"
+    val fontScale = prefs.getFloat("font_scale", 1.0f)
+    return Pair(fontName, fontScale)
 }
 
 fun isTokenValid(token: String): Boolean {
@@ -161,7 +199,7 @@ fun isTokenValid(token: String): Boolean {
 }
 
 @Composable
-fun NavigationHost(onFontSelected: (FontFamily) -> Unit){
+fun NavigationHost(onFontSelected: (FontFamily) -> Unit, onFontScaleSelected: (Float) -> Unit){
     val sharedViewModel: SharedViewModel = viewModel()
     var initialDestination = "welcomeScreen"
     val context = LocalContext.current
@@ -258,7 +296,11 @@ fun NavigationHost(onFontSelected: (FontFamily) -> Unit){
         }
 
         composable("ConfiguracionScreen") {
-            config(navController, onFontSelected)
+            config(
+                navController = navController,
+                onFontSelected = onFontSelected,
+                onFontScaleSelected = onFontScaleSelected
+            )
         }
 
         composable("DetalleMediaScreen/{mediaId}") { backStackEntry ->

@@ -3,13 +3,18 @@ package com.example.mongodb.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mongodb.loadFontConfig
+import com.example.mongodb.saveFontConfig
 import com.example.mongodb.ui.theme.DefaultFont
 import com.example.mongodb.ui.theme.MonospaceFont
 import com.example.mongodb.ui.theme.SansSerifFont
@@ -17,33 +22,58 @@ import com.example.mongodb.ui.theme.SerifFont
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun config(navController: NavController, onFontSelected: (FontFamily) -> Unit) {
-    BackHandler {
-        navController.navigate("UIPrincipal") {
-            popUpTo("UIPrincipal") { inclusive = true }
-        }
-    }
+fun config(
+    navController: NavController,
+    onFontSelected: (FontFamily) -> Unit,
+    onFontScaleSelected: (Float) -> Unit
+) {
+    val context = LocalContext.current
 
-    var expanded by remember { mutableStateOf(false) }
+    // Cargar la configuración guardada
+    val (savedFontName, savedFontScale) = loadFontConfig(context)
+
     val fontOptions: List<Pair<String, FontFamily>> = listOf(
         "Default" to DefaultFont,
         "Monospace" to MonospaceFont,
         "Serif" to SerifFont,
         "Sans Serif" to SansSerifFont
     )
-    var selectedFontName by remember { mutableStateOf("Default") }
+    val fontScaleOptions = listOf(
+        "Pequeña" to 0.85f,
+        "Normal" to 1.0f,
+        "Grande" to 1.2f
+    )
+
+    var expanded by remember { mutableStateOf(false) }
+    var fontSizeExpanded by remember { mutableStateOf(false) }
+
+    // ✅ Estado sincronizado con lo guardado
+    var selectedFontName by remember { mutableStateOf(savedFontName) }
+    var selectedFontScaleName by remember {
+        mutableStateOf(
+            fontScaleOptions.firstOrNull { it.second == savedFontScale }?.first ?: "Normal"
+        )
+    }
+
+    BackHandler {
+        navController.navigate("UIPrincipal") {
+            popUpTo("UIPrincipal") { inclusive = true }
+        }
+    }
 
     Scaffold(
         topBar = {
-            androidx.compose.material.TopAppBar(
+            TopAppBar(
                 title = {
-                    androidx.compose.material.Text(
+                    Text(
                         "Configuración",
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
-                backgroundColor = MaterialTheme.colorScheme.primary,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
                 modifier = Modifier.height(80.dp)
             )
         },
@@ -54,31 +84,16 @@ fun config(navController: NavController, onFontSelected: (FontFamily) -> Unit) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                "Selecciona una tipografía:",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
+            // Selección de fuente
+            Text("Selecciona una tipografía:", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
             Spacer(modifier = Modifier.height(8.dp))
-
             Box {
-                OutlinedButton(
-                    onClick = { expanded = true },
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
-                ) {
-                    Text(selectedFontName)
+                OutlinedButton(onClick = { expanded = true }) {
+                    Text(selectedFontName, color = MaterialTheme.colorScheme.onSurface)
                 }
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                ) {
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     fontOptions.forEach { (name, font) ->
                         DropdownMenuItem(
                             text = { Text(name, color = MaterialTheme.colorScheme.onSurface) },
@@ -86,6 +101,31 @@ fun config(navController: NavController, onFontSelected: (FontFamily) -> Unit) {
                                 selectedFontName = name
                                 expanded = false
                                 onFontSelected(font)
+                                saveFontConfig(context, name, fontScaleOptions.firstOrNull { it.first == selectedFontScaleName }?.second ?: 1.0f)
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Selección de tamaño de fuente
+            Text("Tamaño de fuente:", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+            Spacer(modifier = Modifier.height(8.dp))
+            Box {
+                OutlinedButton(onClick = { fontSizeExpanded = true }) {
+                    Text(selectedFontScaleName, color = MaterialTheme.colorScheme.onSurface)
+                }
+                DropdownMenu(expanded = fontSizeExpanded, onDismissRequest = { fontSizeExpanded = false }) {
+                    fontScaleOptions.forEach { (name, scale) ->
+                        DropdownMenuItem(
+                            text = { Text(name, color = MaterialTheme.colorScheme.onSurface) },
+                            onClick = {
+                                selectedFontScaleName = name
+                                fontSizeExpanded = false
+                                onFontScaleSelected(scale)
+                                saveFontConfig(context, selectedFontName, scale)
                             }
                         )
                     }
