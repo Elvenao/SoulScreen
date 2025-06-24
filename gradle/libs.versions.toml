@@ -16,6 +16,7 @@ activityCompose = "1.10.1"
 composeBom = "2024.09.00"
 material = "1.5.0"
 material3 = "1.3.2"
+material3Version = "1.2.1"
 materialIconsExtended = "1.7.8"
 materialPullrefresh = "1.2.0-alpha03"
 materialVersion = "1.8.2"
@@ -32,6 +33,7 @@ common = "0.10.0"
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-material3-v121 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
 androidx-security-crypto = "androidx.security:security-crypto:1.1.0-alpha03"
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

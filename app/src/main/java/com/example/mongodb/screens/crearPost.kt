@@ -3,6 +3,7 @@ package com.example.mongodb.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,22 +17,34 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.mongodb.SecurePrefs
+import com.example.mongodb.model.Multimedia
 import com.example.mongodb.model.Post
 import com.example.mongodb.network.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
@@ -40,9 +53,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextField
-import androidx.compose.ui.text.TextStyle
+
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterialApi::class)
@@ -59,6 +70,8 @@ fun crearPost(navController: NavController) {
     val listState = rememberLazyListState()
     val context = LocalContext.current
     val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    var pelicula by remember { mutableStateOf("") }
+    var peliculas = remember { mutableListOf<Multimedia>() }
 
     Scaffold(
         topBar = {
@@ -104,18 +117,8 @@ fun crearPost(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text("¿A que contenido te refieres?", modifier = Modifier.padding(bottom = 8.dp), color = MaterialTheme.colorScheme.onPrimary)
-                TextField(
-                    value = "Pelicula 1",
-                    onValueChange = { },
-                    readOnly = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .background(MaterialTheme.colorScheme.surface),
-                    textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                )
+
+                Seleccionado()
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("Contenido del post", modifier = Modifier.padding(bottom = 8.dp),color = MaterialTheme.colorScheme.onPrimary)
                 TextField(
@@ -224,5 +227,134 @@ fun crearPost(navController: NavController) {
                 }
             }
         }
+    }
+}
+
+
+@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
+    ExperimentalMaterialApi::class
+)
+@Composable
+fun BuscadorPeliculas(
+    onSeleccionar: (String) -> Unit
+) {
+    // 1. FocusRequester y KeyboardController
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // 2. Estado de la búsqueda
+    var query by remember { mutableStateOf("") }
+    val peliculas = remember { mutableStateListOf<Multimedia>() }
+    var expanded by remember { mutableStateOf(false) }
+
+    // 3. Lógica de llamada a la API
+
+    fun buscarPeliculas(input: String) {
+        // sólo lanza la búsqueda si hay texto
+        if (input.isBlank()) return
+        // cancelable coroutine ligada al scope de composición
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val resp = RetrofitClient.instance.getMoviesBusqueda(input)
+                if (resp.isSuccessful) {
+                    val lista = resp.body().orEmpty()
+                    peliculas.clear()
+                    peliculas.addAll(lista)
+                    expanded = lista.isNotEmpty()
+                }
+            } catch (e: Exception) {
+                Log.e("Buscador", "error: ${e.message}")
+            }
+        }
+    }
+
+    // 4. UI
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = it
+            // si abrimos manualmente, pedimos foco y mostramos teclado
+            if (it) {
+                focusRequester.requestFocus()
+                keyboardController?.show()
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = { text ->
+                query = text
+                if (text.isBlank()) {
+                    peliculas.clear()
+                    expanded = false
+                } else {
+                    buscarPeliculas(text)
+                }
+            },
+            label = { Text("Buscar película", color = MaterialTheme.colorScheme.onPrimary) },
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+                           // aquí se ancla el dropdown
+                .focusRequester(focusRequester),
+            trailingIcon = {
+               
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                // aquí defines el color de fondo del campo
+                backgroundColor = MaterialTheme.colorScheme.surface,
+                // color del texto y del placeholder
+                textColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+
+
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
+
+        ) {
+            peliculas.forEach { película ->
+                DropdownMenuItem(
+                    text = { Text(película.name, color = Color.White) },
+                    onClick = {
+                        query = película.name
+                        onSeleccionar(película.name)
+                        expanded = false
+                    },
+                    
+                    
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun Seleccionado() {
+    var peliculaSeleccionada by remember { mutableStateOf("") }
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // TextField que solo muestra la selección
+
+
+        // Aquí está el buscador en sí, que mostrará el dropdown
+
+        BuscadorPeliculas(
+            onSeleccionar = { seleccion ->
+                peliculaSeleccionada = seleccion
+            }
+        )
+        
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }

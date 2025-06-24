@@ -66,6 +66,7 @@ dependencies {
     implementation ("androidx.compose.material:material-icons-extended")
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    implementation(libs.androidx.material3.v121) // o la más reciente
 
     implementation(libs.accompanist.swiperefresh)
     implementation(libs.androidx.security.crypto)
@@ -78,7 +79,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.navigation.compose.android)

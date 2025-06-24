@@ -9,5 +9,7 @@ data class CurrentUserData (
     val genres: List<String>? = null,
     val avatar: String,
     val ip: String? = null,
-    val joiningDate: String
+    val joiningDate: String,
+    var following: List<String>? = null,
+    var followers: List<String>? = null
 )

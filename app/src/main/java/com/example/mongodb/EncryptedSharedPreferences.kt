@@ -1,16 +1,13 @@
 package com.example.mongodb
 
 import android.content.Context
-import android.provider.Settings.Global.putString
-import androidx.security.crypto.EncryptedSharedPreferences
-
-import androidx.security.crypto.MasterKey
-import androidx.security.crypto.MasterKeys
 import androidx.core.content.edit
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.security.Keys
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.example.mongodb.model.CurrentUserData
 import com.example.mongodb.utils.CryptoUtils
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.security.Keys
 
 class SecurePrefs(context: Context) {
     private val secretKey = Keys.hmacShaKeyFor("8da949392%1!5423_381j39ja2$6asdfas12".toByteArray())
@@ -69,7 +66,9 @@ class SecurePrefs(context: Context) {
         val ip = claims["ip"] as? String ?: ""
         val joiningDate = claims["joiningDate"] as? String?: ""
         avatar = "http://$ip$avatar"
-        val userData = CurrentUserData(id,userName,name,birthDate, biography,genres,avatar,ip,joiningDate)
+        val following = (claims["following"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
+        val followers = (claims["followers"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
+        val userData = CurrentUserData(id,userName,name,birthDate, biography,genres,avatar,ip,joiningDate,following,followers)
         return userData
     }
 
