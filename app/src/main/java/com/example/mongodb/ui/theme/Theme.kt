@@ -11,6 +11,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.text.font.FontFamily
+
 
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryDark,
@@ -30,10 +36,16 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = OnPrimaryLight
 )
 
+val DefaultFont = FontFamily.Default
+val MonospaceFont = FontFamily.Monospace
+val SerifFont = FontFamily.Serif
+val SansSerifFont = FontFamily.SansSerif
+
 @Composable
 fun MongoDBTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
+    selectedFont: FontFamily = DefaultFont,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -47,7 +59,7 @@ fun MongoDBTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = appTypography(selectedFont),
         content = content
     )
 }

@@ -109,16 +109,36 @@ import com.example.mongodb.screens.seguidoresUser
 import com.example.mongodb.screens.signUp_Name
 import com.example.mongodb.screens.signUp_UserName
 
-class MainActivity : ComponentActivity() {
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontFamily
+import com.example.mongodb.ui.theme.MongoDBTheme
+import com.example.mongodb.ui.theme.DefaultFont
+import com.example.mongodb.ui.theme.MonospaceFont
+import com.example.mongodb.ui.theme.SansSerifFont
+import com.example.mongodb.ui.theme.SerifFont
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.*
+import com.example.mongodb.ui.theme.DefaultFont
+import com.example.mongodb.ui.theme.MongoDBTheme
 
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            var selectedFont: FontFamily by remember { mutableStateOf(FontFamily.Default) }
+
             MongoDBTheme(
                 darkTheme = isSystemInDarkTheme(),
-                dynamicColor = false
+                dynamicColor = false,
+                selectedFont = selectedFont
             ) {
-                NavigationHost()
+                NavigationHost(onFontSelected = { font: FontFamily ->
+                    selectedFont = font
+                })
             }
         }
     }
@@ -141,7 +161,7 @@ fun isTokenValid(token: String): Boolean {
 }
 
 @Composable
-fun NavigationHost(){
+fun NavigationHost(onFontSelected: (FontFamily) -> Unit){
     val sharedViewModel: SharedViewModel = viewModel()
     var initialDestination = "welcomeScreen"
     val context = LocalContext.current
@@ -238,7 +258,7 @@ fun NavigationHost(){
         }
 
         composable("ConfiguracionScreen") {
-            config(navController)
+            config(navController, onFontSelected)
         }
 
         composable("DetalleMediaScreen/{mediaId}") { backStackEntry ->
