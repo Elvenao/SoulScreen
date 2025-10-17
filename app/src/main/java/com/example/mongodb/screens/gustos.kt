@@ -37,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -73,7 +72,7 @@ fun gustos(navController: NavController) {
                         response.body()?.let { user ->
 
                             userData = user
-                            Log.d("Usuario", userData!!.name )
+                            
                             // Cargar likes y dislikes en segundo plano
                             CoroutineScope(Dispatchers.IO).launch {
                                 val likesList = user.like.orEmpty().mapNotNull { id ->
@@ -172,16 +171,19 @@ fun gustos(navController: NavController) {
                     Text("Likes", color = MaterialTheme.colorScheme.onPrimary)
                 }
                 // Mostrar los IDs de likes para depuración
-                Text("IDs: ${userData?.like?.joinToString() ?: "(vacío)"}", color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(8.dp))
+                //Text("IDs: ${userData?.like?.joinToString() ?: "(vacío)"}", color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(8.dp))
                 // Mostrar resultado de la consulta a getNameAndImgById para cada ID
+                /*
                 userData?.like?.forEach { id ->
                     val res = likes.find { it.id == id }
                     if (res != null) {
-                        Text("✔️ $id: ${res.name}", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 8.dp))
+                        //Text("✔️ ${res.name}", color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(start = 8.dp))
                     } else {
-                        Text("❌ $id: No encontrado", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(start = 8.dp))
+                        //Text("❌ $id: No encontrado", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(start = 8.dp))
                     }
                 }
+                
+                 */
                 LazyColumn(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                     items(likes) { media ->
                         Row(
@@ -189,6 +191,7 @@ fun gustos(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
+                                    navController.navigate("DetalleMediaScreen/${media.id}") // Navegar a detalle de la película
                                     // Puedes navegar a detalles del medio si lo deseas
                                     // navController.navigate("mediaDetail/${media.id}")
                                 }
@@ -220,8 +223,9 @@ fun gustos(navController: NavController) {
                     Text("Dislikes", color = MaterialTheme.colorScheme.onPrimary)
                 }
                 // Mostrar los IDs de dislikes para depuración
-                Text("IDs: ${userData?.dislike?.joinToString() ?: "(vacío)"}", color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(8.dp))
+                //Text("IDs: ${userData?.dislike?.joinToString() ?: "(vacío)"}", color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(8.dp))
                 // Mostrar resultado de la consulta a getNameAndImgById para cada ID
+                /*
                 userData?.dislike?.forEach { id ->
                     val res = dislikes.find { it.id == id }
                     if (res != null) {
@@ -230,6 +234,8 @@ fun gustos(navController: NavController) {
                         Text("❌ $id: No encontrado", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(start = 8.dp))
                     }
                 }
+
+                 */
                 LazyColumn(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                     items(dislikes) { media ->
                         Row(
@@ -237,6 +243,7 @@ fun gustos(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
+                                    navController.navigate("DetalleMediaScreen/${media.id}") // Navegar a detalle de la película
                                     // Puedes navegar a detalles del medio si lo deseas
                                     // navController.navigate("mediaDetail/${media.id}")
                                 }

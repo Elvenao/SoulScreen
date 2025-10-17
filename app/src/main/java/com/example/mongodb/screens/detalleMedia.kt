@@ -2,22 +2,38 @@ package com.example.mongodb.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.PlayDisabled
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -93,7 +109,7 @@ fun detalleMedia(idMedia: String, navController: NavController) {
                     modifier = Modifier
                         .size(200.dp)
                         .padding(12.dp)
-                        .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(16.dp))
+                        .background(Color.Transparent, RoundedCornerShape(16.dp))
                 )
                 Text(
                     text = media.name,
@@ -106,7 +122,8 @@ fun detalleMedia(idMedia: String, navController: NavController) {
                     text = media.descripcion,
                     fontSize = 18.sp,
                     modifier = Modifier.padding(bottom = 8.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    textAlign = TextAlign.Center
                 )
                 Text(
                     text = "Director: ${media.director}",
@@ -141,7 +158,8 @@ fun detalleMedia(idMedia: String, navController: NavController) {
                 Text(
                     text = "Reparto: ${media.cast.joinToString()}",
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    textAlign = TextAlign.Center
                 )
                 Button(
                     onClick = { navController.popBackStack() },
@@ -155,6 +173,74 @@ fun detalleMedia(idMedia: String, navController: NavController) {
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
+                Row{
+                    IconButton(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    val mediaId = media.id
+                                    val userId = currentUserData.id
+                                    val response = RetrofitClient.getInstance(context)
+                                        .setLikePost(userId,mediaId)
+                                    withContext(Dispatchers.Main) {
+                                        if (response.isSuccessful) {
+                                            Toast.makeText(context, response.body()?.message, Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(context, "It was not possible to like", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                } catch (e: Exception){
+                                    withContext(Dispatchers.Main){
+                                        Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier.background(MaterialTheme.colorScheme.primary).size(40.dp).clip(
+                            RoundedCornerShape(12.dp)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow, // o el ícono que tú quieras
+                            contentDescription = "Me gusto",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    val mediaId = media.id
+                                    val userId = currentUserData.id
+                                    val response = RetrofitClient.getInstance(context)
+                                        .setDislikePost(userId,mediaId)
+                                    withContext(Dispatchers.Main) {
+                                        if (response.isSuccessful) {
+
+                                            Toast.makeText(context, response.body()?.message, Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(context, "It was not possible to dislike", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                } catch (e: Exception){
+                                    withContext(Dispatchers.Main){
+                                        Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier.background(MaterialTheme.colorScheme.primary).size(40.dp).clip(
+                            RoundedCornerShape(12.dp)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayDisabled, // o el ícono que tú quieras
+                            contentDescription = "No me gusto",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
             }
         } ?: run {
             if (!isRefreshing.value) {

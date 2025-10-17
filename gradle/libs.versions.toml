@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.30.1"
 accompanistSwiperefresh = "0.31.5-beta"
-agp = "8.9.1"
+agp = "8.13.0"
 androidxMaterial = "1.5.4"
 coilCompose = "2.4.0"
 converterGson = "2.9.0"
