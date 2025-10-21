@@ -204,6 +204,8 @@ fun crearPost(navController: NavController) {
                             mediaId = idMedia.value,
                             mediaImg = mediaImg.value,
                             postType = seleccion,
+                            likes = 0,
+                            likesInformation = emptyList(),
                             comments = emptyList(),
 
                         )

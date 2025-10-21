@@ -191,7 +191,7 @@ fun logIn(navController: NavController){
 }
 
 @OptIn(UnstableApi::class)
-suspend fun IniciarSesion(email: String, password: String, context: Context, navController: NavController): Boolean{
+fun IniciarSesion(email: String, password: String, context: Context, navController: NavController): Boolean{
     val loginRequest = LoginRequest(email,password)
     var errorMessage = ""
     var result: Boolean = false

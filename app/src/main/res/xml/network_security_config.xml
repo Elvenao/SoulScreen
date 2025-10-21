@@ -20,7 +20,9 @@
     </domain-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="false">192.168.0.40</domain>
+
     </domain-config>
+
 
 
 </network-security-config>
