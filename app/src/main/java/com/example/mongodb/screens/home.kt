@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AssignmentTurnedIn
+import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
@@ -77,6 +78,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.mongodb.SecurePrefs
+import com.example.mongodb.model.LikeInformation
 import com.example.mongodb.model.PostWithAvatar
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.model.Usuario
@@ -520,7 +522,7 @@ fun Home(navController:NavController) {
                                 Column {
                                     Row(verticalAlignment = Alignment.CenterVertically){
                                         AsyncImage(
-                                            model = "http://"+currentUserData.ip+post.userAvatar,
+                                            model = currentUserData.ip+post.userAvatar,
                                             contentDescription = "Imagen de usuario",
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
@@ -562,7 +564,7 @@ fun Home(navController:NavController) {
                                                 .weight(1f)
                                         )
                                         AsyncImage(
-                                            model = "http://" + currentUserData.ip + post.post.mediaImg,
+                                            model = currentUserData.ip + post.post.mediaImg,
                                             contentDescription = "Imagen del medio",
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
@@ -589,7 +591,7 @@ fun Home(navController:NavController) {
 
                                     }else{
                                         Text(
-                                            text =post.post.title,
+                                            text = post.post.title,
                                             fontSize = 24.sp,
                                             fontWeight = FontWeight.Bold,
                                             modifier = Modifier
@@ -610,6 +612,50 @@ fun Home(navController:NavController) {
                                         text = post.post.time,
                                         fontSize = 20.sp
                                     )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    val likeNumber = remember { mutableStateOf(0) }
+                                    Row(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(30.dp),
+                                        horizontalArrangement = Arrangement.Start
+                                    ){
+                                        IconButton(
+                                            onClick = {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    try {
+                                                        val likeInformation = LikeInformation(
+                                                            currentUserData.id,
+                                                            currentUserData.userName,
+                                                            currentUserData.avatar
+                                                        )
+                                                        val response = RetrofitClient.getInstance(context).likePost(post.post.id, likeInformation)
+                                                        withContext(Dispatchers.Main) {
+                                                            if (response.isSuccessful) {
+                                                                Toast.makeText(context, response.body()?.message, Toast.LENGTH_SHORT).show()
+                                                                likeNumber.value = response.body()?.likes?.toInt()!!
+                                                            } else {
+                                                                Toast.makeText(context, "It was not possible to like", Toast.LENGTH_SHORT).show()
+                                                                likeNumber.value = post.post.likes.toInt()
+                                                            }
+                                                        }
+                                                    } catch (e: Exception){
+                                                        withContext(Dispatchers.Main){
+                                                            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                                        }
+                                                    }
+                                                }
+                                            },
+
+                                        ) {
+                                            Icon(Icons.Default.HeartBroken, contentDescription = "Abrir menú")
+                                        }
+                                        Text(
+                                            text = likeNumber.value.toString(),
+                                            fontSize = 20.sp
+                                        )
+                                    }
+
                                 }
                             }
                         }
@@ -637,6 +683,10 @@ fun cerrarSesion(context: Context,navController: NavController){
     navController.navigate("welcomeScreen"){
         popUpTo(0) { inclusive = true }
     }
+}
+
+suspend fun likePost(context: Context, userId: String, userName: String, avatar: String, idPost: String ){
+
 }
 
 @Preview

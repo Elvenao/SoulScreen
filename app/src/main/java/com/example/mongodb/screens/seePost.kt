@@ -218,7 +218,7 @@ fun seePost(id:String, navController: NavController){
                                         )
 
                                         AsyncImage(
-                                            model = "http://" + currentUserData.ip + post.post.mediaImg,
+                                            model = currentUserData.ip + post.post.mediaImg,
                                             contentDescription = "Imagen del medio",
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier

@@ -198,7 +198,7 @@ fun explorar(navController: NavController){
                                 ) {
                                     // Imagen a la izquierda
                                     AsyncImage(
-                                        model = "http://${currentUserData.ip}${multimedia.poster}",
+                                        model = "${currentUserData.ip}${multimedia.poster}",
                                         contentDescription = "Imagen del medio",
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier

@@ -198,7 +198,7 @@ fun gustos(navController: NavController) {
                                 .padding(vertical = 8.dp)
                         ) {
                             AsyncImage(
-                                model = "http://" + currentUserData.ip + media.img,
+                                model = currentUserData.ip + media.img,
                                 contentDescription = "Poster",
                                 modifier = Modifier
                                     .size(48.dp)
@@ -250,7 +250,7 @@ fun gustos(navController: NavController) {
                                 .padding(vertical = 8.dp)
                         ) {
                             AsyncImage(
-                                model = "http://" + currentUserData.ip + media.img,
+                                model = currentUserData.ip + media.img,
                                 contentDescription = "Poster",
                                 modifier = Modifier
                                     .size(48.dp)

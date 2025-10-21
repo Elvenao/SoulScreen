@@ -104,7 +104,7 @@ fun detalleMedia(idMedia: String, navController: NavController) {
                     .padding(16.dp)
             ) {
                 AsyncImage(
-                    model = "http://"+currentUserData.ip+media.poster,
+                    model = currentUserData.ip+media.poster,
                     contentDescription = "Poster",
                     modifier = Modifier
                         .size(200.dp)

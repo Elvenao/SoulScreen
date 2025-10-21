@@ -1,6 +1,7 @@
 package com.example.mongodb.network
 
 import com.example.mongodb.model.Category
+import com.example.mongodb.model.LikeInformation
 import com.example.mongodb.model.LoginRequest
 import com.example.mongodb.model.LoginResponse
 import com.example.mongodb.model.Multimedia
@@ -28,10 +29,16 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+
+data class LikeInformationUptaded(
+    val message: String,
+    val likes: Long,
+    val likesList: List<LikeInformation>
+)
 interface ApiService {
     @POST("auth/refresh")
     fun refreshToken(@Body refreshToken: RefreshTokenRequest): Call<TokenResponse>
-
+    
     @GET("users")
     fun getUsuarios(): Call<List<Usuario>>
 
@@ -56,6 +63,11 @@ interface ApiService {
         @Body comentario: NuevoComentarioRequest
     ): Response<PostWithAvatar>
 
+    @POST("posts/like/{id}")
+    suspend fun likePost(
+        @Path("id") id: String?,
+        @Body likeInformation: LikeInformation,
+    ): Response<LikeInformationUptaded>
     @PATCH("users/categories/{id}")
     suspend fun updateCategories(
         @Path("id") id: String,
