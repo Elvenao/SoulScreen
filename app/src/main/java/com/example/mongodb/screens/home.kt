@@ -55,6 +55,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -614,7 +615,8 @@ fun Home(navController:NavController) {
                                     )
 
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    val likeNumber = remember { mutableStateOf(0) }
+                                    var likeNumber by remember { mutableIntStateOf(post.post.likes.toInt()) }
+                                    
                                     Row(modifier = Modifier
                                         .fillMaxWidth()
                                         .height(30.dp),
@@ -633,10 +635,10 @@ fun Home(navController:NavController) {
                                                         withContext(Dispatchers.Main) {
                                                             if (response.isSuccessful) {
                                                                 Toast.makeText(context, response.body()?.message, Toast.LENGTH_SHORT).show()
-                                                                likeNumber.value = response.body()?.likes?.toInt()!!
+                                                                likeNumber = response.body()?.likes?.toInt() ?: likeNumber
                                                             } else {
                                                                 Toast.makeText(context, "It was not possible to like", Toast.LENGTH_SHORT).show()
-                                                                likeNumber.value = post.post.likes.toInt()
+                                                                likeNumber = response.body()?.likes?.toInt() ?: likeNumber
                                                             }
                                                         }
                                                     } catch (e: Exception){
@@ -651,8 +653,11 @@ fun Home(navController:NavController) {
                                             Icon(Icons.Default.HeartBroken, contentDescription = "Abrir menú")
                                         }
                                         Text(
-                                            text = likeNumber.value.toString(),
-                                            fontSize = 20.sp
+                                            text = likeNumber.toString(),
+                                            fontSize = 20.sp,
+                                            modifier = Modifier.clickable{
+                                                
+                                            }
                                         )
                                     }
 
