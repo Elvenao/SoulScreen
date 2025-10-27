@@ -189,7 +189,7 @@ fun seguidoresUser(userId: String, navController: NavController) {
                                             navController.navigate("seeProfileUser/${user.id}")
                                         }
                                     }
-                                    .padding(vertical = 8.dp)
+                                    .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
                             ) {
                                 AsyncImage(
                                     model = currentUserData.ip + user.img,
@@ -230,7 +230,7 @@ fun seguidoresUser(userId: String, navController: NavController) {
                                             navController.navigate("seeProfileUser/${user.id}")
                                         }
                                     }
-                                    .padding(vertical = 8.dp)
+                                    .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
                             ) {
                                 AsyncImage(
                                     model = currentUserData.ip + user.img,

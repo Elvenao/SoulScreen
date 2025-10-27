@@ -263,7 +263,7 @@ fun Home(navController:NavController) {
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = currentUserData.followers?.size.toString()+" Seguidos",
+                                text = currentUserData.following?.size.toString()+" Seguidos",
                                 fontSize = 15.sp,
                                 modifier = Modifier.align(Alignment.CenterVertically)
                             )
