@@ -41,6 +41,9 @@ android {
 }
 
 dependencies {
+
+    implementation("id.zelory:compressor:3.0.1")
+
     implementation(libs.accompanist.flowlayout)
 
     implementation(libs.androidx.material.v182)
@@ -53,6 +56,7 @@ dependencies {
     implementation(libs.common)
     runtimeOnly(libs.jjwt.impl)
     runtimeOnly(libs.jjwt.jackson)
+
     
     val camerax_version = "1.4.2"
     implementation("androidx.camera:camera-core:$camerax_version")

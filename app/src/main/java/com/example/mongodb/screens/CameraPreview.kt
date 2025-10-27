@@ -1,40 +1,38 @@
 package com.example.mongodb.screens
 
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.ImageDecoder
+import android.graphics.Paint
+import android.graphics.Path
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.camera.core.CameraSelector
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -48,57 +46,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.net.toUri
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
-import com.example.mongodb.R
-import java.io.File
-import java.io.FileOutputStream
-import com.example.mongodb.SecurePrefs
-import java.util.UUID
-
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.ui.layout.onSizeChanged
-
-import androidx.compose.ui.unit.IntSize
-
-
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
-
-import android.graphics.Bitmap.Config
-import android.widget.Toast
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.zIndex
+import androidx.core.net.toUri
+import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.CurrentUserData
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.network.RetrofitClient
-import com.google.ai.client.generativeai.common.shared.Part
+import com.example.mongodb.utils.Compressor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -106,7 +74,9 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.http.Multipart
+import java.io.File
+import java.io.FileOutputStream
+import java.util.UUID
 
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -328,9 +298,10 @@ fun BotonAceptar(
                 val bitMap = uriToBitmap(context,uri)
                 val cropedImage = recortarCuadro(bitMap,center,radius)
                 val finalImage = bitmapToFile(context,cropedImage,fileName)
-                val multipartBody = prepareImagePart(finalImage)
-                sendImage(multipartBody,context,currentUserData)
-                
+                CoroutineScope(Dispatchers.IO).launch {
+                    val multipartBody = prepareImagePart(context, finalImage)
+                    sendImage(multipartBody, context, currentUserData)
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -370,8 +341,9 @@ fun sendImage(multipart: MultipartBody.Part, context: Context, currentUserData: 
      }
 }
 
-fun prepareImagePart(file: File): MultipartBody.Part {
-    val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+suspend fun prepareImagePart(context: Context, file: File): MultipartBody.Part {
+    val compressedImage = Compressor.compressImage(context,file)
+    val requestFile = compressedImage.asRequestBody("image/jpeg".toMediaTypeOrNull())
     return MultipartBody.Part.createFormData("image", file.name, requestFile)
 }
 

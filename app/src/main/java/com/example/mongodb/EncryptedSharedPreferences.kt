@@ -65,7 +65,7 @@ class SecurePrefs(context: Context) {
         var avatar =  claims["avatar"] as? String ?: ""
         val ip = claims["ip"] as? String ?: ""
         val joiningDate = claims["joiningDate"] as? String?: ""
-        avatar = "http://$ip$avatar"
+        avatar = "$ip$avatar"
         val following = (claims["following"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
         val followers = (claims["followers"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
         val userData = CurrentUserData(id,userName,name,birthDate, biography,genres,avatar,ip,joiningDate,following,followers)
