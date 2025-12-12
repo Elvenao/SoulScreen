@@ -191,7 +191,7 @@ fun seePost(id:String, navController: NavController){
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
                                         Text(
-                                            text = post.post.date,
+                                            text = post.post.date.toString(),
                                             fontSize = 16.sp,
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
