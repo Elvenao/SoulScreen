@@ -133,12 +133,12 @@ fun seePost(id:String, navController: NavController){
                     TopAppBar(
                         title = {
                             Text(
-                                "Crear nuevo post",
+                                "Detalles del post",
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                         },
                         backgroundColor = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.height(80.dp)
+                        modifier = Modifier.height(60.dp)
                     )
                 },
                 backgroundColor = MaterialTheme.colorScheme.background,
@@ -152,114 +152,125 @@ fun seePost(id:String, navController: NavController){
                 ) {
                     item {
                         post.value?.let { post ->
-                            Box(
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp, horizontal = 8.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(MaterialTheme.colorScheme.tertiary)
-                                    .padding(16.dp)
                             ) {
-                                Column {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        // Avatar del usuario
-                                        AsyncImage(
-                                            model = currentUserData.ip + post.userAvatar,
-                                            contentDescription = "Avatar de usuario",
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(50.dp)
-                                                .clip(CircleShape)
-                                                .clickable {
-                                                    if (post.post.userId == currentUserData.id) {
-                                                        navController.navigate("ProfileScreen")
-                                                    } else {
-                                                        navController.navigate("seeprofileuser/${post.post.userId}")
-                                                    }
+                                // Cabecera
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 12.dp), // Padding para darle altura y aire
+                                    verticalAlignment = Alignment.Top, // Alinear al tope para que el título no "empuje" al avatar hacia abajo
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    //Avatar y titulo
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.clickable {
+                                                if (post.post.userId == currentUserData.id) {
+                                                    navController.navigate("ProfileScreen")
+                                                } else {
+                                                    navController.navigate("seeprofileuser/${post.post.userId}")
                                                 }
-                                        )
-
-                                        Spacer(modifier = Modifier.width(12.dp))
-
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(
-                                                text = post.post.user,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 18.sp,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                color = MaterialTheme.colorScheme.onPrimary
+                                            }
+                                        ) {
+                                            AsyncImage(
+                                                model = currentUserData.ip + post.userAvatar,
+                                                contentDescription = "Avatar de usuario",
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .size(50.dp)
+                                                    .clip(CircleShape)
                                             )
-                                            Text(
-                                                text = timeAgo(LocalDateTime.parse(post.post.date)),
-                                                fontSize = 14.sp,
-                                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f) // Color más sutil
-                                            )
+
+                                            Spacer(modifier = Modifier.width(12.dp))
+
+                                            // Nombre y fecha
+                                            Column {
+                                                Text(
+                                                    text = post.post.user,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 18.sp,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                )
+                                                Text(
+                                                    text = timeAgo(LocalDateTime.parse(post.post.date)),
+                                                    fontSize = 14.sp,
+                                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                                )
+                                            }
                                         }
+
+                                        // titulo
+                                        Spacer(modifier = Modifier.height(16.dp)) // Espacio entre info de autor y título
+                                        Text(
+                                            text = post.post.title,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            // El padding derecho evita que el texto se pegue a la imagen del media
+                                            modifier = Modifier.padding(end = 16.dp)
+                                        )
                                     }
 
-                                    Spacer(modifier = Modifier.height(12.dp))
+                                    // Imagen
+                                    // Se mantiene a la derecha, alineada con el conjunto
+                                    AsyncImage(
+                                        model = currentUserData.ip + post.post.mediaImg,
+                                        contentDescription = "Imagen del medio",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier
+                                            .size(80.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                    )
+                                }
 
-                                    // --- CUERPO DEL POST: TÍTULO Y CONTENIDO ---
-                                    // Título del post
+                                //Cuerpo del post
+                                Text(
+                                    text = post.post.content,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 4.dp) // Añadido padding
+                                )
+
+                                // acerca de
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 10.dp)
+                                ) {
                                     Text(
-                                        text = post.post.title,
-                                        fontSize = 22.sp,
+                                        text = "ACERCA DE",
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        modifier = Modifier.fillMaxWidth()
+                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                                     )
-
-                                    Spacer(modifier = Modifier.height(8.dp))
-
-                                    // Contenido completo del post (sin "Ver mas...")
-                                    Text(
-                                        text = post.post.content,
-                                        fontSize = 16.sp,
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // --- INFORMACIÓN EXTRA: "Acerca de" y PostType ---
-                                    // Fila para el tipo de post y la imagen del medio
+                                    Spacer(modifier = Modifier.height(4.dp))
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(12.dp))
-                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                                            .background(MaterialTheme.colorScheme.tertiary)
                                             .padding(horizontal = 12.dp, vertical = 8.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Column {
-                                            Text(
-                                                text = "Acerca de: ${post.post.mediaName}",
-                                                fontSize = 14.sp,
-                                                color = MaterialTheme.colorScheme.onPrimary
-                                            )
-                                            Text(
-                                                text = "Tipo: ${post.post.postType}",
-                                                fontSize = 14.sp,
-                                                color = MaterialTheme.colorScheme.onPrimary
-                                            )
-                                        }
-
-                                        AsyncImage(
-                                            model = currentUserData.ip + post.post.mediaImg, // Agregado el protocolo http
-                                            contentDescription = "Imagen del medio",
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(40.dp) // Tamaño consistente
-                                                .clip(RoundedCornerShape(8.dp))
+                                        Text(
+                                            text = "${post.post.mediaName} • ${post.post.postType}",
+                                            fontSize = 14.sp,
+                                            color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
                                 }
                             }
+
+                            //comentarios
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
