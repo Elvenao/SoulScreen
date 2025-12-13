@@ -269,8 +269,24 @@ fun seePost(id:String, navController: NavController){
                                     }
                                 }
                             }
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                            //comentarios
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp), // Padding horizontal para que no toque los bordes
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start // Centra el contenido horizontalmente
+                            ) {
+                                Text(
+                                    text = "Comentarios",
+                                    fontSize = 22.sp, // Un tamaño un poco más sutil
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -279,8 +295,8 @@ fun seePost(id:String, navController: NavController){
                                     .clip(RoundedCornerShape(8.dp))
                             ) {
                                 Text(
-                                    text = "Comentarios",
-                                    fontSize = 24.sp,
+                                    text = "Crear comentario",
+                                    fontSize = 18.sp,
                                     modifier = Modifier
                                         .padding(8.dp)
                                         .fillMaxWidth(),
@@ -351,6 +367,8 @@ fun seePost(id:String, navController: NavController){
                                 }
                             }
 
+
+
                         }
                     }
                     item {
@@ -360,32 +378,60 @@ fun seePost(id:String, navController: NavController){
                                     comentarios.forEach { comentario ->
                                         Card(
                                             modifier = Modifier
-                                                .fillMaxWidth(),
-                                            shape = RoundedCornerShape(8.dp),
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp), // Espacio entre cada comentario
+                                            shape = RoundedCornerShape(16.dp),
                                             colors = CardDefaults.cardColors(
-                                                containerColor = MaterialTheme.colorScheme.primary
+                                                containerColor = MaterialTheme.colorScheme.tertiary // Color de fondo sutil
                                             )
                                         ) {
-                                            Column(modifier = Modifier.padding(8.dp)) {
+                                            // Usamos un Row para alinear la imagen y el texto
+                                            Row(
+                                                modifier = Modifier.padding(12.dp),
+                                                verticalAlignment = Alignment.Top // Alinea los elementos en la parte superior
+                                            ) {
+                                                // FOTO DE PERFIL DEL USUARIO QUE COMENTÓ
                                                 AsyncImage(
                                                     model = comentario.userMedia,
-                                                    contentDescription = "Avatar de usuario"
+                                                    contentDescription = "Avatar de ${comentario.userName}",
+                                                    contentScale = ContentScale.Crop,
+                                                    modifier = Modifier
+                                                        .size(40.dp)
+                                                        .clip(CircleShape) // Avatar circular
                                                 )
-                                                Text(
-                                                    text = comentario.userName,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = MaterialTheme.colorScheme.onPrimary
-                                                )
-                                                Text(
-                                                    text = formatearFecha(comentario.fecha),
-                                                    fontSize = 12.sp,
-                                                    color = MaterialTheme.colorScheme.onPrimary
-                                                )
-                                                Text(
-                                                    text = comentario.comentario,
-                                                    color = MaterialTheme.colorScheme.onPrimary,
-                                                    modifier = Modifier.padding(top = 4.dp)
-                                                )
+
+                                                // Espacio entre la foto y el texto
+                                                Spacer(modifier = Modifier.width(12.dp))
+
+                                                // COLUMNA PARA EL NOMBRE, FECHA Y TEXTO DEL COMENTARIO
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    // Fila para el nombre y la fecha
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Text(
+                                                            text = comentario.userName,
+                                                            fontWeight = FontWeight.Bold,
+                                                            color = MaterialTheme.colorScheme.onPrimary,
+                                                            fontSize = 16.sp
+                                                        )
+                                                        Text(
+                                                            text = timeAgo(LocalDateTime.parse(comentario.fecha)), // Usando timeAgo
+                                                            fontSize = 12.sp,
+                                                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                                        )
+                                                    }
+
+                                                    // El texto del comentario
+                                                    Text(
+                                                        text = comentario.comentario,
+                                                        color = MaterialTheme.colorScheme.onPrimary,
+                                                        modifier = Modifier.padding(top = 4.dp),
+                                                        fontSize = 15.sp
+                                                    )
+                                                }
                                             }
                                         }
                                     }
