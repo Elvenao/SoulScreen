@@ -67,7 +67,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -598,8 +600,8 @@ fun Home(navController:NavController) {
                                                     }
                                                 }else{
                                                     Text(
-                                                        text = post.post.content,
-                                                        fontSize = 16.sp
+                                                        text = getText(post.post.content),
+                                                        fontSize = 14.sp
                                                     )
                                                 }
                                             }
@@ -719,6 +721,24 @@ fun Home(navController:NavController) {
 
     }
     
+}
+
+fun getText(content: String): String{
+    if(content.length < 150) {
+        return content
+    }
+    else{
+        var modifiedText = " "
+        for(c in 150 downTo 0){
+            if(content[c] == ' '){
+                modifiedText = content.substring(0,c)
+                modifiedText += " Ver mas..."
+                break
+            }
+        }
+        return modifiedText
+    }
+
 }
 
 fun timeAgo(from: LocalDateTime): String {
