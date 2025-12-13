@@ -29,6 +29,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.AssignmentTurnedIn
 import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material.icons.filled.Home
@@ -67,10 +68,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,6 +97,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.LocalDateTime
+import kotlin.text.append
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -283,11 +289,11 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .clickable{
-                                navController.navigate("profileScreen") {
-                                    popUpTo(0) { inclusive = true }
+                                .clickable {
+                                    navController.navigate("profileScreen") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
-                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
@@ -310,11 +316,11 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .clickable{
-                                navController.navigate("ConfiguracionScreen") {
-                                    popUpTo(0) { inclusive = true }
+                                .clickable {
+                                    navController.navigate("ConfiguracionScreen") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
-                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
@@ -337,11 +343,11 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .clickable{
-                                navController.navigate("AyudaScreen") {
-                                    popUpTo(0) { inclusive = true }
+                                .clickable {
+                                    navController.navigate("AyudaScreen") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
-                            }
                         ){
                             Icon(
                                 imageVector = Icons.Default.Info,
@@ -364,9 +370,13 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .clickable{
-                                    Toast.makeText(context, "Mandar a numero de emilio", Toast.LENGTH_SHORT).show()
-                            }
+                                .clickable {
+                                    Toast.makeText(
+                                        context,
+                                        "Mandar a numero de emilio",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Phone,
@@ -390,7 +400,7 @@ fun Home(navController:NavController) {
                                 .clickable {
                                     cerrarSesion(context, navController)
                                 }
-                                .padding(4.dp,0.dp),
+                                .padding(4.dp, 0.dp),
                             horizontalAlignment = Alignment.Start
                         ) {
                             Row(
@@ -529,7 +539,8 @@ fun Home(navController:NavController) {
                                     modifier = Modifier.fillMaxWidth()
                                 ){
                                     Column(
-                                        modifier = Modifier.fillMaxHeight()
+                                        modifier = Modifier
+                                            .fillMaxHeight()
                                             .weight(2f)
                                             .padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
                                             
@@ -644,13 +655,13 @@ fun Home(navController:NavController) {
                                                     },
 
                                                     ) {
-                                                    Icon(Icons.Default.HeartBroken, contentDescription = "Abrir menú")
+                                                    Icon(Icons.Default.ArrowCircleUp, contentDescription = "Abrir menú")
                                                 }
                                                 Text(
                                                     text = likeNumber.toString(),
                                                     fontSize = 20.sp,
                                                     modifier = Modifier
-                                                        .clickable{
+                                                        .clickable {
 
                                                         }
                                                         .padding(top = 2.dp)
@@ -659,7 +670,8 @@ fun Home(navController:NavController) {
                                         }
                                     }
                                     Column(
-                                        modifier = Modifier.fillMaxHeight()
+                                        modifier = Modifier
+                                            .fillMaxHeight()
                                             .weight(1.2f)
                                             .padding(8.dp)
                                     ) {
@@ -723,22 +735,33 @@ fun Home(navController:NavController) {
     
 }
 
-fun getText(content: String): String{
-    if(content.length < 150) {
-        return content
-    }
-    else{
-        var modifiedText = " "
-        for(c in 150 downTo 0){
-            if(content[c] == ' '){
-                modifiedText = content.substring(0,c)
-                modifiedText += " Ver mas..."
+fun getText(content: String): AnnotatedString {
+    if (content.length < 150) {
+        // Si el texto es corto, lo devolvemos como un AnnotatedString sin estilos.
+        return AnnotatedString(content)
+    } else {
+        // Si es largo, construimos el texto con estilos.
+        var cutIndex = 150
+        for (i in 150 downTo 0) {
+            if (content[i] == ' ') {
+                cutIndex = i
                 break
             }
         }
-        return modifiedText
-    }
+        val initialText = content.substring(0, cutIndex)
 
+        // Usamos buildAnnotatedString para crear texto con múltiples estilos
+        return buildAnnotatedString {
+            // 1. Añadimos la primera parte del texto (sin estilo especial)
+            append(initialText)
+            append(" ") // Añadimos un espacio
+
+            // 2. Añadimos el "Ver mas..." con un estilo de color azul
+            withStyle(style = SpanStyle(color = Color.Gray)) {
+                append("Ver mas...")
+            }
+        }
+    }
 }
 
 fun timeAgo(from: LocalDateTime): String {
