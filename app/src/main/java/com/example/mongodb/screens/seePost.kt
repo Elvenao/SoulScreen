@@ -321,7 +321,8 @@ fun seePost(id:String, navController: NavController){
                                                     val request = NuevoComentarioRequest(
                                                         userId = currentUserData.id,
                                                         userName = currentUserData.userName,
-                                                        comentario = comments.value
+                                                        userMedia = currentUserData.avatar,
+                                                        comentario = comments.value,
                                                     )
                                                     val response = RetrofitClient.getInstance(context)
                                                         .commentPost(id, request)
@@ -366,6 +367,10 @@ fun seePost(id:String, navController: NavController){
                                             )
                                         ) {
                                             Column(modifier = Modifier.padding(8.dp)) {
+                                                AsyncImage(
+                                                    model = comentario.userMedia,
+                                                    contentDescription = "Avatar de usuario"
+                                                )
                                                 Text(
                                                     text = comentario.userName,
                                                     fontWeight = FontWeight.Bold,
