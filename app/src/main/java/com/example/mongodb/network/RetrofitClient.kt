@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
     //private const val BASE_URL = "http://192.168.1.231:8080/api/"
-    private const val BASE_URL = "https://80f0c87b6b11.ngrok-free.app/api/"
+    private const val BASE_URL = "https://2867a6c757db.ngrok-free.app/api/"
     //private const val BASE_URL = "http://10.109.74.237:8080/api/"
 
 

@@ -576,7 +576,7 @@ fun Home(navController:NavController) {
                                             ) {
                                                 Text(
                                                     text = post.post.mediaName,
-                                                    fontSize = 24.sp,
+                                                    fontSize = 22.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier
                                                         .weight(2f)
@@ -736,13 +736,13 @@ fun Home(navController:NavController) {
 }
 
 fun getText(content: String): AnnotatedString {
-    if (content.length < 150) {
+    if (content.length < 140) {
         // Si el texto es corto, lo devolvemos como un AnnotatedString sin estilos.
         return AnnotatedString(content)
     } else {
         // Si es largo, construimos el texto con estilos.
-        var cutIndex = 150
-        for (i in 150 downTo 0) {
+        var cutIndex = 140
+        for (i in 140 downTo 0) {
             if (content[i] == ' ') {
                 cutIndex = i
                 break
