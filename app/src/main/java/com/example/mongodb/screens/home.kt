@@ -29,6 +29,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.AssignmentTurnedIn
 import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material.icons.filled.Home
@@ -67,8 +68,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -88,6 +95,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Duration
+import java.time.LocalDateTime
+import kotlin.text.append
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -226,8 +236,8 @@ fun Home(navController:NavController) {
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(64.dp)
-                                    .clip(CircleShape)
                                     .padding(8.dp)
+                                    .clip(CircleShape)
                             )
                             Column {
                                 Text(
@@ -279,11 +289,11 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .clickable{
-                                navController.navigate("profileScreen") {
-                                    popUpTo(0) { inclusive = true }
+                                .clickable {
+                                    navController.navigate("profileScreen") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
-                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
@@ -306,11 +316,11 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .clickable{
-                                navController.navigate("ConfiguracionScreen") {
-                                    popUpTo(0) { inclusive = true }
+                                .clickable {
+                                    navController.navigate("ConfiguracionScreen") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
-                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
@@ -333,11 +343,11 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .clickable{
-                                navController.navigate("AyudaScreen") {
-                                    popUpTo(0) { inclusive = true }
+                                .clickable {
+                                    navController.navigate("AyudaScreen") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
-                            }
                         ){
                             Icon(
                                 imageVector = Icons.Default.Info,
@@ -360,9 +370,13 @@ fun Home(navController:NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .clickable{
-                                    Toast.makeText(context, "Mandar a numero de emilio", Toast.LENGTH_SHORT).show()
-                            }
+                                .clickable {
+                                    Toast.makeText(
+                                        context,
+                                        "Mandar a numero de emilio",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Phone,
@@ -386,7 +400,7 @@ fun Home(navController:NavController) {
                                 .clickable {
                                     cerrarSesion(context, navController)
                                 }
-                                .padding(4.dp,0.dp),
+                                .padding(4.dp, 0.dp),
                             horizontalAlignment = Alignment.Start
                         ) {
                             Row(
@@ -514,153 +528,195 @@ fun Home(navController:NavController) {
                                 modifier = Modifier
                                     .padding(8.dp)
                                     .fillMaxWidth()
+                                    .height(300.dp)
+                                    .clip(RoundedCornerShape(16.dp))
                                     .background(MaterialTheme.colorScheme.tertiary)
-                                    .padding(16.dp)
                                     .clickable {
                                         navController.navigate("VerPostScreen/${post.post.id}")
                                     }
                             ) {
-                                Column {
-                                    Row(verticalAlignment = Alignment.CenterVertically){
-                                        AsyncImage(
-                                            model = currentUserData.ip+post.userAvatar,
-                                            contentDescription = "Imagen de usuario",
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(64.dp)
-                                                .clip(CircleShape)
-                                                .padding(8.dp)
-                                        )
-                                        Text(
-                                            text = post.post.user,
-                                            fontSize = 24.sp,
-                                            modifier = Modifier
-                                                .padding(8.dp)
-                                                .weight(2f), // Da más espacio al usuario, pero deja sitio para la fecha
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        Spacer(modifier = Modifier.weight(1f)) // Empuja la fecha a la derecha
-                                        Text(
-                                            text = post.post.date,
-                                            fontSize = 16.sp // Sube la fecha
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "Tipo de post: "+post.post.postType,
-                                        fontSize = 18.sp
-                                    )
-                                    Row(
+                                Row(
+                                    modifier = Modifier.fillMaxWidth()
+                                ){
+                                    Column(
                                         modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(120.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                            .fillMaxHeight()
+                                            .weight(2f)
+                                            .padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+                                            
                                     ) {
-                                        Text(
-                                            text = "Acerca de: " + post.post.mediaName,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier
-                                                .weight(1f)
-                                        )
-                                        AsyncImage(
-                                            model = currentUserData.ip + post.post.mediaImg,
-                                            contentDescription = "Imagen del medio",
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(80.dp)
-                                                .clip(RoundedCornerShape(8.dp))
-                                        )
-                                    }
-                                    if(post.post.postType=="SPOILER"){
-                                        Text(
-                                            text = "SPOILER ALERT",
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier
-                                                .padding(vertical = 8.dp, horizontal = 2.dp)
-                                                .fillMaxWidth(),
-                                            color= Color.Red
-                                        )
-                                        Text(
-                                            text = "Presiona para ver detalles (Bajo tu propio riesgo)",
-                                            fontSize = 18.sp,
-                                            color = Color.Red,
-                                            modifier = Modifier.padding(8.dp)
-                                        )
+                                        Column(
+                                             modifier = Modifier.weight(7.5f)
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
 
-                                    }else{
-                                        Text(
-                                            text = post.post.title,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier
-                                                .padding(vertical = 8.dp, horizontal = 2.dp)
-                                                .fillMaxWidth()
-                                        )
+                                                ) {
+                                                AsyncImage(
+                                                    model = currentUserData.ip + post.userAvatar,
+                                                    contentDescription = "Imagen de usuario",
+                                                    contentScale = ContentScale.Crop,
+                                                    modifier = Modifier
+                                                        .padding(top = 8.dp)
+                                                        .size(52.dp)
+                                                        .clip(CircleShape)
+                                                )
+                                                Text(
+                                                    text = "@" + post.post.user,
+                                                    fontSize = 18.sp,
+                                                    modifier = Modifier
+                                                        .padding(top = 10.dp, start = 8.dp)
+                                                        .weight(2f), // Da más espacio al usuario, pero deja sitio para la fecha
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
+                                            Row(
 
-                                        Text(
-                                            text = post.post.content,
-                                            fontSize = 18.sp,
-                                            modifier = Modifier.padding(8.dp)
-                                        )
+                                            ) {
+                                                Text(
+                                                    text = post.post.mediaName,
+                                                    fontSize = 22.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier
+                                                        .weight(2f)
+                                                        .padding(top = 8.dp, bottom = 0.dp),
 
-                                    }
-
-
-                                    Text(
-                                        text = post.post.time,
-                                        fontSize = 20.sp
-                                    )
-
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    var likeNumber by remember { mutableIntStateOf(post.post.likes.toInt()) }
-                                    
-                                    Row(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(30.dp),
-                                        horizontalArrangement = Arrangement.Start
-                                    ){
-                                        IconButton(
-                                            onClick = {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    try {
-                                                        val likeInformation = LikeInformation(
-                                                            currentUserData.id,
-                                                            currentUserData.userName,
-                                                            currentUserData.avatar
-                                                        )
-                                                        val response = RetrofitClient.getInstance(context).likePost(post.post.id, likeInformation)
-                                                        withContext(Dispatchers.Main) {
-                                                            if (response.isSuccessful) {
-                                                                Toast.makeText(context, response.body()?.message, Toast.LENGTH_SHORT).show()
-                                                                likeNumber = response.body()?.likes?.toInt() ?: likeNumber
-                                                            } else {
-                                                                Toast.makeText(context, "It was not possible to like", Toast.LENGTH_SHORT).show()
-                                                                likeNumber = response.body()?.likes?.toInt() ?: likeNumber
-                                                            }
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
+                                            Row(){
+                                                if(post.post.postType=="SPOILER"){
+                                                    Column(
+                                                        modifier = Modifier
+                                                            .fillMaxHeight()
+                                                    ){
+                                                        Row(){
+                                                            Text(
+                                                                text = "SPOILER ALERT",
+                                                                fontSize = 24.sp,
+                                                                fontWeight = FontWeight.Bold,
+                                                                color= Color.Red,
+                                                                modifier = Modifier.padding(top=8.dp)
+                                                            )
                                                         }
-                                                    } catch (e: Exception){
-                                                        withContext(Dispatchers.Main){
-                                                            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                                        Row(){
+                                                            Text(
+                                                                text = "Presiona para ver detalles (Bajo tu propio riesgo)",
+                                                                fontSize = 16.sp,
+                                                                color = Color.Red,
+                                                                modifier = Modifier
+                                                            )
                                                         }
                                                     }
+                                                }else{
+                                                    Text(
+                                                        text = getText(post.post.content),
+                                                        fontSize = 14.sp
+                                                    )
                                                 }
-                                            },
-
-                                        ) {
-                                            Icon(Icons.Default.HeartBroken, contentDescription = "Abrir menú")
-                                        }
-                                        Text(
-                                            text = likeNumber.toString(),
-                                            fontSize = 20.sp,
-                                            modifier = Modifier.clickable{
-                                                
                                             }
-                                        )
-                                    }
+                                        }
+                                        Column(
+                                            modifier = Modifier.weight(1f)
+                                        ){
+                                            var likeNumber by remember { mutableIntStateOf(post.post.likes.toInt()) }
 
+                                            Row(modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(30.dp),
+                                                horizontalArrangement = Arrangement.Start
+                                            ){
+                                                IconButton(
+                                                    onClick = {
+                                                        CoroutineScope(Dispatchers.IO).launch {
+                                                            try {
+                                                                val likeInformation = LikeInformation(
+                                                                    currentUserData.id,
+                                                                    currentUserData.userName,
+                                                                    currentUserData.avatar
+                                                                )
+                                                                val response = RetrofitClient.getInstance(context).likePost(post.post.id, likeInformation)
+                                                                withContext(Dispatchers.Main) {
+                                                                    if (response.isSuccessful) {
+                                                                        Toast.makeText(context, response.body()?.message, Toast.LENGTH_SHORT).show()
+                                                                        likeNumber = response.body()?.likes?.toInt() ?: likeNumber
+                                                                    } else {
+                                                                        Toast.makeText(context, "It was not possible to like", Toast.LENGTH_SHORT).show()
+                                                                        likeNumber = response.body()?.likes?.toInt() ?: likeNumber
+                                                                    }
+                                                                }
+                                                            } catch (e: Exception){
+                                                                withContext(Dispatchers.Main){
+                                                                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+
+                                                    ) {
+                                                    Icon(Icons.Default.ArrowCircleUp, contentDescription = "Abrir menú")
+                                                }
+                                                Text(
+                                                    text = likeNumber.toString(),
+                                                    fontSize = 20.sp,
+                                                    modifier = Modifier
+                                                        .clickable {
+
+                                                        }
+                                                        .padding(top = 2.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .weight(1.2f)
+                                            .padding(8.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.weight(0.2f)
+                                        ){
+                                            
+                                        }
+
+                                        Row(
+                                            modifier = Modifier.weight(0.5f)
+                                        ){
+                                            Text(
+                                                text = post.post.postType,
+                                                fontSize = 20.sp,
+                                            )
+                                        }
+                                        Row(
+                                            modifier = Modifier.weight(3f)
+                                        ){
+                                            AsyncImage(
+                                                model = currentUserData.ip + post.post.mediaImg,
+                                                contentDescription = "Imagen del medio",
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxHeight()
+                                                    .clip(RoundedCornerShape(8.dp))
+                                            )
+                                        }
+                                        Row(
+                                            modifier = Modifier.weight(0.2f)
+                                        ){
+
+                                        }
+
+                                        Row(
+                                            modifier = Modifier.weight(0.5f)
+                                        ){
+                                            Text(
+                                                text = timeAgo(LocalDateTime.parse(post.post.date)),
+                                                fontSize = 14.sp,
+                                            )
+                                        }
+
+                                    }
                                 }
                             }
                         }
@@ -679,6 +735,57 @@ fun Home(navController:NavController) {
     
 }
 
+fun getText(content: String): AnnotatedString {
+    if (content.length < 140) {
+        // Si el texto es corto, lo devolvemos como un AnnotatedString sin estilos.
+        return AnnotatedString(content)
+    } else {
+        // Si es largo, construimos el texto con estilos.
+        var cutIndex = 140
+        for (i in 140 downTo 0) {
+            if (content[i] == ' ') {
+                cutIndex = i
+                break
+            }
+        }
+        val initialText = content.substring(0, cutIndex)
+
+        // Usamos buildAnnotatedString para crear texto con múltiples estilos
+        return buildAnnotatedString {
+            // 1. Añadimos la primera parte del texto (sin estilo especial)
+            append(initialText)
+            append(" ") // Añadimos un espacio
+
+            // 2. Añadimos el "Ver mas..." con un estilo de color azul
+            withStyle(style = SpanStyle(color = Color.Gray)) {
+                append("Ver mas...")
+            }
+        }
+    }
+}
+
+fun timeAgo(from: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    val duration = Duration.between(from, now)
+
+    val seconds = duration.seconds
+    val minutes = duration.toMinutes()
+    val hours = duration.toHours()
+    val days = duration.toDays()
+
+    return when {
+        seconds < 60 -> "Justo ahora"
+        minutes == 1L -> "Hace 1 minuto"
+        minutes < 60 -> "Hace $minutes minutos"
+        hours == 1L -> "Hace 1 hora"
+        hours < 24 -> "Hace $hours horas"
+        days == 1L -> "Ayer"
+        days < 7 -> "Hace $days días"
+        days < 30 -> "Hace ${days / 7} semanas"
+        days < 365 -> "Hace ${days / 30} meses"
+        else -> "Hace ${days / 365} años"
+    }
+}
 
 fun cerrarSesion(context: Context,navController: NavController){
     Toast.makeText(context, "Cerrando Sesion", Toast.LENGTH_SHORT).show()

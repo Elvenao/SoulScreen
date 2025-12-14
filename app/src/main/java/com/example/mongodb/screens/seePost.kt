@@ -1,5 +1,6 @@
 package com.example.mongodb.screens
 
+import android.text.format.DateUtils.formatDateTime
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.Colors
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
@@ -132,12 +136,12 @@ fun seePost(id:String, navController: NavController){
                     TopAppBar(
                         title = {
                             Text(
-                                "Crear nuevo post",
+                                "Detalles del post",
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                         },
                         backgroundColor = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.height(80.dp)
+                        modifier = Modifier.height(60.dp)
                     )
                 },
                 backgroundColor = MaterialTheme.colorScheme.background,
@@ -151,109 +155,141 @@ fun seePost(id:String, navController: NavController){
                 ) {
                     item {
                         post.value?.let { post ->
-                            Box(
+                            Column(
                                 modifier = Modifier
-                                    .padding(8.dp)
                                     .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.tertiary)
-                                    .padding(16.dp)
+                                    .padding(vertical = 4.dp, horizontal = 8.dp)
                             ) {
-                                Column {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier
-                                            .clickable {
-                                                if(post.post.userId== currentUserData.id){
+                                // Cabecera
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 12.dp), // Padding para darle altura y aire
+                                    verticalAlignment = Alignment.Top, // Alinear al tope para que el título no "empuje" al avatar hacia abajo
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    //Avatar y titulo
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.clickable {
+                                                if (post.post.userId == currentUserData.id) {
                                                     navController.navigate("ProfileScreen")
-                                                }else{
+                                                } else {
                                                     navController.navigate("seeprofileuser/${post.post.userId}")
                                                 }
                                             }
-                                    ) {
-                                        AsyncImage(
-                                            model = "http://" + currentUserData.ip + post.userAvatar,
-                                            contentDescription = "Imagen de usuario",
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(64.dp)
-                                                .clip(CircleShape)
-                                                .padding(8.dp)
-                                        )
+                                        ) {
+                                            AsyncImage(
+                                                model = currentUserData.ip + post.userAvatar,
+                                                contentDescription = "Avatar de usuario",
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .size(50.dp)
+                                                    .clip(CircleShape)
+                                            )
+
+                                            Spacer(modifier = Modifier.width(12.dp))
+
+                                            // Nombre y fecha
+                                            Column {
+                                                Text(
+                                                    text = post.post.user,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 18.sp,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                )
+                                                Text(
+                                                    text = timeAgo(LocalDateTime.parse(post.post.date)),
+                                                    fontSize = 14.sp,
+                                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                                )
+                                            }
+                                        }
+
+                                        // titulo
+                                        Spacer(modifier = Modifier.height(16.dp)) // Espacio entre info de autor y título
                                         Text(
-                                            text = post.post.user,
+                                            text = post.post.title,
                                             fontSize = 24.sp,
-                                            modifier = Modifier
-                                                .padding(8.dp)
-                                                .weight(2f),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            color = MaterialTheme.colorScheme.onPrimary
-                                        )
-                                        Spacer(modifier = Modifier.weight(1f))
-                                        Text(
-                                            text = post.post.date,
-                                            fontSize = 16.sp,
-                                            color = MaterialTheme.colorScheme.onPrimary
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            // El padding derecho evita que el texto se pegue a la imagen del media
+                                            modifier = Modifier.padding(end = 16.dp)
                                         )
                                     }
 
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "Tipo de post: " + post.post.postType,
-                                        fontSize = 18.sp,
-                                        color = MaterialTheme.colorScheme.onPrimary
+                                    // Imagen
+                                    // Se mantiene a la derecha, alineada con el conjunto
+                                    AsyncImage(
+                                        model = currentUserData.ip + post.post.mediaImg,
+                                        contentDescription = "Imagen del medio",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier
+                                            .size(80.dp)
+                                            .clip(RoundedCornerShape(8.dp))
                                     )
+                                }
+
+                                //Cuerpo del post
+                                Text(
+                                    text = post.post.content,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 4.dp) // Añadido padding
+                                )
+
+                                // acerca de
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 10.dp)
+                                ) {
+                                    Text(
+                                        text = "ACERCA DE",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(56.dp),
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(MaterialTheme.colorScheme.tertiary)
+                                            .padding(horizontal = 12.dp, vertical = 8.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "Acerca de: " + post.post.mediaId,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier
-                                                .weight(1f),
+                                            text = "${post.post.mediaName} • ${post.post.postType}",
+                                            fontSize = 14.sp,
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
-
-                                        AsyncImage(
-                                            model = currentUserData.ip + post.post.mediaImg,
-                                            contentDescription = "Imagen del medio",
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .height(32.dp)
-                                                .width(32.dp)
-                                                .clip(RoundedCornerShape(8.dp))
-                                        )
                                     }
-
-                                    Text(
-                                        text = post.post.title,
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier
-                                            .padding(vertical = 8.dp, horizontal = 2.dp)
-                                            .fillMaxWidth(),
-                                        color = MaterialTheme.colorScheme.onPrimary
-                                    )
-
-                                    Text(
-                                        text = post.post.content,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(8.dp),
-                                        color = MaterialTheme.colorScheme.onPrimary
-                                    )
-
-                                    Text(
-                                        text = post.post.time,
-                                        fontSize = 20.sp,
-                                        color = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-
                                 }
                             }
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp), // Padding horizontal para que no toque los bordes
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start // Centra el contenido horizontalmente
+                            ) {
+                                Text(
+                                    text = "Comentarios",
+                                    fontSize = 22.sp, // Un tamaño un poco más sutil
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -262,8 +298,8 @@ fun seePost(id:String, navController: NavController){
                                     .clip(RoundedCornerShape(8.dp))
                             ) {
                                 Text(
-                                    text = "Comentarios",
-                                    fontSize = 24.sp,
+                                    text = "Crear comentario",
+                                    fontSize = 18.sp,
                                     modifier = Modifier
                                         .padding(8.dp)
                                         .fillMaxWidth(),
@@ -281,55 +317,78 @@ fun seePost(id:String, navController: NavController){
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(8.dp)
-                                        .height(120.dp), // Altura fija
+                                        .height(80.dp), // Altura fija
                                     textStyle = TextStyle(
                                         color = MaterialTheme.colorScheme.onPrimary,
-                                        fontSize = 16.sp
+                                        fontSize = 12.sp
                                     ),
-                                    maxLines = 4
+                                    maxLines = 5
                                 )
-                                Text(
-                                    text = "${comments.value.length}/200",
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    modifier = Modifier.align(Alignment.End).padding(end = 16.dp)
-                                )
-                                // Dentro de tu Composable, después del TextField:
-                                Button(
-                                    onClick = {
-                                        if (comments.value.isNotBlank()) {
-                                            CoroutineScope(Dispatchers.IO).launch {
-                                                try {
-                                                    val request = NuevoComentarioRequest(
-                                                        userId = currentUserData.id,
-                                                        userName = currentUserData.userName,
-                                                        comentario = comments.value
-                                                    )
-                                                    val response = RetrofitClient.getInstance(context)
-                                                        .commentPost(id, request)
-                                                    withContext(Dispatchers.Main) {
-                                                        if (response.isSuccessful) {
-                                                            comments.value = ""
-                                                            cargarPosts()
-                                                        } else {
-                                                            val errorBody = response.errorBody()?.string()
-                                                            errorMessage.value = "Error al comentar: ${response.code()} - $errorBody"
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp, end = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Text(
+                                        text = "${comments.value.length}/200",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                    )
+
+                                    Button(
+                                        onClick = {
+                                            if (comments.value.isNotBlank()) {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    try {
+                                                        val request = NuevoComentarioRequest(
+                                                            userId = currentUserData.id,
+                                                            userName = currentUserData.userName,
+                                                            userMedia = currentUserData.avatar,
+                                                            comentario = comments.value,
+                                                        )
+                                                        val response = RetrofitClient.getInstance(context)
+                                                            .commentPost(id, request)
+                                                        withContext(Dispatchers.Main) {
+                                                            if (response.isSuccessful) {
+                                                                comments.value = ""
+                                                                cargarPosts()
+                                                            } else {
+                                                                val errorBody = response.errorBody()?.string()
+                                                                errorMessage.value = "Error al comentar: ${response.code()} - $errorBody"
+                                                            }
                                                         }
-                                                    }
-                                                } catch (e: Exception) {
-                                                    withContext(Dispatchers.Main) {
-                                                        errorMessage.value = "Fallo: ${e.message}"
+                                                    } catch (e: Exception) {
+                                                        withContext(Dispatchers.Main) {
+                                                            errorMessage.value = "Fallo: ${e.message}"
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .align(Alignment.End)
-                                        .padding(end = 16.dp, top = 8.dp)
-                                ) {
-                                    Text("Enviar")
+                                        },
+                                        shape = RoundedCornerShape(50),
+                                        enabled = comments.value.isNotBlank(),
+
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.secondary,
+                                            disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
+                                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                                            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f)
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "Enviar",
+                                            fontSize = 14.sp
+                                        )
+                                    }
                                 }
+
+
                             }
+
+
 
                         }
                     }
@@ -340,28 +399,60 @@ fun seePost(id:String, navController: NavController){
                                     comentarios.forEach { comentario ->
                                         Card(
                                             modifier = Modifier
-                                                .fillMaxWidth(),
-                                            shape = RoundedCornerShape(8.dp),
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp), // Espacio entre cada comentario
+                                            shape = RoundedCornerShape(16.dp),
                                             colors = CardDefaults.cardColors(
-                                                containerColor = MaterialTheme.colorScheme.primary
+                                                containerColor = MaterialTheme.colorScheme.tertiary // Color de fondo sutil
                                             )
                                         ) {
-                                            Column(modifier = Modifier.padding(8.dp)) {
-                                                Text(
-                                                    text = comentario.userName,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = MaterialTheme.colorScheme.onPrimary
+                                            // Usamos un Row para alinear la imagen y el texto
+                                            Row(
+                                                modifier = Modifier.padding(12.dp),
+                                                verticalAlignment = Alignment.Top // Alinea los elementos en la parte superior
+                                            ) {
+                                                // FOTO DE PERFIL DEL USUARIO QUE COMENTÓ
+                                                AsyncImage(
+                                                    model = comentario.userMedia,
+                                                    contentDescription = "Avatar de ${comentario.userName}",
+                                                    contentScale = ContentScale.Crop,
+                                                    modifier = Modifier
+                                                        .size(40.dp)
+                                                        .clip(CircleShape) // Avatar circular
                                                 )
-                                                Text(
-                                                    text = formatearFecha(comentario.fecha),
-                                                    fontSize = 12.sp,
-                                                    color = MaterialTheme.colorScheme.onPrimary
-                                                )
-                                                Text(
-                                                    text = comentario.comentario,
-                                                    color = MaterialTheme.colorScheme.onPrimary,
-                                                    modifier = Modifier.padding(top = 4.dp)
-                                                )
+
+                                                // Espacio entre la foto y el texto
+                                                Spacer(modifier = Modifier.width(12.dp))
+
+                                                // COLUMNA PARA EL NOMBRE, FECHA Y TEXTO DEL COMENTARIO
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    // Fila para el nombre y la fecha
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Text(
+                                                            text = comentario.userName,
+                                                            fontWeight = FontWeight.Bold,
+                                                            color = MaterialTheme.colorScheme.onPrimary,
+                                                            fontSize = 16.sp
+                                                        )
+                                                        Text(
+                                                            text = timeAgo(LocalDateTime.parse(comentario.fecha)), // Usando timeAgo
+                                                            fontSize = 12.sp,
+                                                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                                        )
+                                                    }
+
+                                                    // El texto del comentario
+                                                    Text(
+                                                        text = comentario.comentario,
+                                                        color = MaterialTheme.colorScheme.onPrimary,
+                                                        modifier = Modifier.padding(top = 4.dp),
+                                                        fontSize = 15.sp
+                                                    )
+                                                }
                                             }
                                         }
                                     }

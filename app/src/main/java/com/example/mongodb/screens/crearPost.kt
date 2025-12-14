@@ -198,7 +198,7 @@ fun crearPost(navController: NavController) {
                             userId =currentUserData?.id ?: "",
                             title =title,
                             content =content,
-                            date = fecha,
+                            date = fechaHoraActual.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                             time = time,
                             mediaName = mediaName.value ,
                             mediaId = idMedia.value,

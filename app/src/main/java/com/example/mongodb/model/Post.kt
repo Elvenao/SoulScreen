@@ -7,7 +7,7 @@ data class Post(
 
     val title: String,
     val content: String,
-    val date: String,
+    val date: String?,
     val time: String,
     val mediaName: String,
     val mediaId: String,
