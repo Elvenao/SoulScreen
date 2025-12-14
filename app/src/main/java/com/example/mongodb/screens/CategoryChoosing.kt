@@ -2,17 +2,14 @@ package com.example.mongodb.screens
 
 import android.content.Context
 import android.widget.Toast
-import androidx.collection.MutableScatterSet
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,22 +25,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
@@ -51,9 +44,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.mongodb.SecurePrefs
 import com.example.mongodb.model.Category
-import com.example.mongodb.model.CurrentUserData
 import com.example.mongodb.model.UpdateCategoriesRequest
-import com.example.mongodb.model.UpdateProfileRequest
 import com.example.mongodb.network.RetrofitClient
 import com.example.mongodb.ui.theme.DarkCyan
 import com.google.accompanist.flowlayout.FlowRow
@@ -64,50 +55,40 @@ import kotlinx.coroutines.withContext
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
-fun EditProfile(navController: NavController){
+fun CategoryChoosing(navController: NavController){
     //var categories by remember { mutableStateOf(emptyList()) }
     val categories = remember { mutableStateOf<List<Category>>(emptyList())}
-    val categoriesString = remember { mutableStateOf<List<String>>(emptyList())}
-
-    val EncryptedSharedPreferences = SecurePrefs(LocalContext.current)
-    val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
     val errorMessage = remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
-    val genres = currentUserData.genres ?: emptyList()
-    val categoriesSelected = remember { mutableStateOf(genres) }
+    val categoriesSelected = remember { mutableStateOf<List<String>>(emptyList()) }
     val selectedStates = remember { mutableStateListOf<Boolean>()  }
-    var biography by remember { mutableStateOf("") }
+
 
     LaunchedEffect(Unit) {
-        biography = currentUserData.biography ?: ""
-        loadInformation(categories, errorMessage, context,categoriesString)
+        cargarCategories(categories, errorMessage, context)
     }
-    
+
     LaunchedEffect(categories.value) {
         selectedStates.clear()
-        categoriesString.value.forEach { category ->
-            selectedStates.add(
-                categoriesSelected.value.contains(category)
-            )
-        }
+        selectedStates.addAll(List(categories.value.size) { false })
     }
-    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)){
+    Box(Modifier.fillMaxSize().background(Color.Black)){
 
         Scaffold(
                 topBar = {
-                    MyTopBarProfile(
-                        onBackClick = { navController.navigate("profileScreen"){
-                            popUpTo(0){inclusive = true}
-                        }},
+                    MyTopBar(
+                        onBackClick = { /* Acción para volver */ },
                         onSkipClick = {
-
+                            navController.navigate("Posts"){
+                                popUpTo(0){inclusive = true}
+                            }
                         } ,
                         true,
                         true,
                         true,
-                        "Editar Perfil",
-                        "     ",
-                        true
+                        "¿Qué te gusta?",
+                        "Omitir",
+                        false
                     )
                 }
         ) { innerPadding ->
@@ -115,42 +96,11 @@ fun EditProfile(navController: NavController){
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize() // Ocupa toda la pantalla
-                    .background(MaterialTheme.colorScheme.background)
             ) {
                 Column(modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Biografía",
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(8.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-
-                        TextField(
-                            value = biography,
-                            onValueChange = { biography = it },
-                            label = {
-                                Text(
-                                    "Añadir Biografía",
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                                .height(200.dp),
-                            textStyle = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontSize = 12.sp
-                            ),
-                            maxLines = 5
-                        )
-                    }
                     FlowRow(
                         //modifier = Modifier
                         //    .fillMaxWidth()
@@ -177,10 +127,10 @@ fun EditProfile(navController: NavController){
                                 },
                                 shape = RoundedCornerShape(20.dp), // Define la forma aquí
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isSelected) MaterialTheme.colorScheme.inverseSurface else Color.Transparent,
+                                    containerColor = if (isSelected) Color.Black else Color.Transparent,
                                     contentColor = Color.Black
                                 ),
-                                border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.secondary), // Si quieres borde
+                                border = BorderStroke(1.dp, Color.Black), // Si quieres borde
                                 modifier = Modifier
                                     .defaultMinSize(
                                         minHeight = 0.dp,
@@ -190,7 +140,7 @@ fun EditProfile(navController: NavController){
                                 category.category?.let {
                                     Text(
                                         it,
-                                        color = if (isSelected) MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onPrimary,
+                                        color = if (isSelected) Color.White else Color.Black,
                                     )
                                 }
                             }
@@ -204,7 +154,7 @@ fun EditProfile(navController: NavController){
                     ) {
                         Button(
                             onClick = {
-                                saveInformation(categoriesSelected.value,context,navController, biography)
+                                saveCategories(categoriesSelected.value,context,navController)
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Cyan,
@@ -222,10 +172,10 @@ fun EditProfile(navController: NavController){
 }
 
 @androidx.annotation.OptIn(UnstableApi::class)
-fun saveInformation(categories: List<String>, context: Context, navController: NavController, biography: String,currentUserData: CurrentUserData){
+fun saveCategories(categories: List<String>, context: Context, navController: NavController){
     val securePrefs = SecurePrefs(context)
     val id = securePrefs.getCurrentUserData()
-    val information = UpdateProfileRequest(currentUserData.userName,currentUserData.name,biography,categories,currentUserData.birthDate)
+    val categorias = UpdateCategoriesRequest(categories)
     Log.d("ERRORSOTE", "SIII")
     CoroutineScope(Dispatchers.IO).launch {
         try {
@@ -237,10 +187,9 @@ fun saveInformation(categories: List<String>, context: Context, navController: N
                     if (body != null) {
                         Toast.makeText(context, body.message, Toast.LENGTH_SHORT).show()
                     }
-                    navController.navigate("profileScreen?refresh=${System.currentTimeMillis()}") {
-                        popUpTo("profileScreen") { inclusive = true }
+                    navController.navigate("Posts"){
+                        popUpTo(0){inclusive = true }
                     }
-                    
                 } else {
                     response.body()?.let { Log.d("ERRORSOTE", it.message) }
                 }
@@ -254,7 +203,7 @@ fun saveInformation(categories: List<String>, context: Context, navController: N
 }
 
 @androidx.annotation.OptIn(UnstableApi::class)
-fun loadInformation(categories: MutableState<List<Category>>, errorMessage: MutableState<String?>,context: Context, categoriesString: MutableState<List<String>>) {
+fun cargarCategories(categories: MutableState<List<Category>>, errorMessage: MutableState<String?>,context: Context) {
 
     CoroutineScope(Dispatchers.IO).launch {
         try {
@@ -262,10 +211,6 @@ fun loadInformation(categories: MutableState<List<Category>>, errorMessage: Muta
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     categories.value = response.body() ?: emptyList()
-                    categoriesString.value =
-                        categories.value.map { category ->
-                            category.category as String
-                        }
                     Log.d("ADEROR", "Nose que pasa")
                     errorMessage.value = null
                 } else {
@@ -287,7 +232,7 @@ fun loadInformation(categories: MutableState<List<Category>>, errorMessage: Muta
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopBarProfile(
+fun MyTopBar(
     onBackClick: () -> Unit,
     onSkipClick: () -> Unit,
     backActivated: Boolean,
@@ -331,8 +276,8 @@ fun MyTopBarProfile(
                 var color: Color
                 var otherColor: Color
                 if (centrar) {
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.primary
-                    otherColor =  androidx.compose.material3.MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary
+                    otherColor =  MaterialTheme.colorScheme.primary
                 }
                 else{
                     color = Color.White

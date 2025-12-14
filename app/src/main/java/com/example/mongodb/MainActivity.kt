@@ -122,6 +122,7 @@ import com.example.mongodb.ui.theme.SansSerifFont
 import com.example.mongodb.ui.theme.SerifFont
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
+import com.example.mongodb.screens.CategoryChoosing
 import com.example.mongodb.screens.changeE
 import com.example.mongodb.screens.changePass
 import com.example.mongodb.screens.changeUser
@@ -269,6 +270,10 @@ fun NavigationHost(onFontSelected: (FontFamily) -> Unit, onFontScaleSelected: (F
 
         composable("editProfile"){
             EditProfile(navController)
+        }
+
+        composable("categoryChoosing"){
+            CategoryChoosing(navController)
         }
 
         composable("openCamera/{destination}") {  backStackEntry ->

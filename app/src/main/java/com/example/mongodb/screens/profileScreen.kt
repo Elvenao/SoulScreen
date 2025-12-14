@@ -71,15 +71,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ModeEditOutline
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun profileScreen(
     navController: NavController
 ) {
+
     val context = LocalContext.current
     val EncryptedSharedPreferences = SecurePrefs(LocalContext.current)
-    val refreshToken = EncryptedSharedPreferences.getRefreshToken()
+    var refreshToken = EncryptedSharedPreferences.getRefreshToken()
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
     val isRefreshing = remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -99,6 +101,7 @@ fun profileScreen(
             Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_LONG).show()
         }
     }
+
     BackHandler {
         navController.navigate("UIPrincipal") {
             popUpTo("UIPrincipal") { inclusive = true }
@@ -179,8 +182,9 @@ fun profileScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Editar Perfil"
+                            imageVector = Icons.Default.ModeEditOutline,
+                            contentDescription = "Editar Perfil",
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Text(
