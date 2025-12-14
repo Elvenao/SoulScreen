@@ -93,20 +93,24 @@ interface ApiService {
     @GET("users/buscar")
     suspend fun getUsuariosBusqueda(@Query("q") texto : String):Response<List<Usuario>>
 
+    // EN ApiService.kt
     @GET("users/{id}")
-    fun getUserProfile(@Path("id") id: String): Call<UserData>
+    suspend fun getUserProfile(@Path("id") id: String): UserData?
+
+    @GET("users/username/{id}")
+    suspend fun getUserIdImgById(@Path("id") id: String): UserIdImg?
+
 
     @POST("users/follow/toggle")
     fun toggleFollow(                          
         @Query("target") target: String,
         @Query("follower") follower: String
-    ):Call<Void>
+    ):Response<Void>
 
-    @GET("users/username/{id}")
-    fun getUserIdImgById(@Path("id") id: String): Call<UserIdImg>
 
     @GET("multimedia/idimg")
-    fun getNameAndImgById(@Query("id") id: String): Call<MultimediaIdImg>
+    suspend fun getNameAndImgById(@Query("id") id: String): MultimediaIdImg? // <-- ¡ASÍ DEBE SER!
+
 
     @GET("multimedia/{id}")
     fun getMultimediaDetails(@Path("id") id: String): Call<List<Multimedia>>

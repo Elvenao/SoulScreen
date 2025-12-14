@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,59 +64,57 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
     val isFollowing = remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Peliculas", "Series", "Videojuegos", "Música", "Libros")
+    val scope = rememberCoroutineScope()
+    var error by remember { mutableStateOf<String?>(null) }
 
-    fun cargarPerfil() {
+    suspend fun fetchUserProfile() {
         isRefreshing.value = true
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = RetrofitClient.getInstance(context).getUserProfile(idTarget).execute()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            userData.value = it
-                            isFollowing.value = it.followers?.contains(currentUser.id) == true
-                        }
-                    }
-                    isRefreshing.value = false
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-                    isRefreshing.value = false
-                }
+        error = null
+        try {
+            val user = RetrofitClient.getInstance(context).getUserProfile(idTarget)
+            if (user != null) {
+                userData.value = user
+                isFollowing.value = user.followers?.contains(currentUser.id) == true
+            } else {
+                error = "No se pudo encontrar el perfil del usuario."
             }
+        } catch (e: retrofit2.HttpException) {
+            error = "Error al cargar el perfil: Código ${e.code()}"
+        } catch (e: Exception) {
+            error = "Error de red: Revisa tu conexión."
+            e.printStackTrace()
+        } finally {
+            isRefreshing.value = false
         }
     }
 
-    fun toggleFollow() {
-        CoroutineScope(Dispatchers.IO).launch {
+    // 2. FUNCIÓN PARA SEGUIR/DEJAR DE SEGUIR
+    fun handleToggleFollow() {
+        scope.launch {
             try {
-                val response = RetrofitClient.getInstance(context)
-                    .toggleFollow(idTarget, currentUser.id)
-                    .execute()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        isFollowing.value = !isFollowing.value
-                        cargarPerfil() // refresca datos de seguidores
-                    } else {
-                        Toast.makeText(context, "Error: ${response.code()} - ${response.errorBody()?.string()}", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                // Asumimos que toggleFollow también es 'suspend fun'. ¡HAY QUE REVISAR ApiService!
+                RetrofitClient.getInstance(context).toggleFollow(idTarget, currentUser.id)
+                // Actualizamos el estado localmente para una respuesta instantánea
+                isFollowing.value = !isFollowing.value
+                // Refrescamos los datos del perfil en segundo plano para actualizar el contador
+                fetchUserProfile()
             } catch (e: Exception) {
-                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                error = "No se pudo realizar la acción. Inténtalo de nuevo."
+                e.printStackTrace()
             }
         }
     }
-
-    LaunchedEffect(Unit) {
-        cargarPerfil()
-    }
-
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing.value,
-        onRefresh = { cargarPerfil() }
+        onRefresh = {
+            scope.launch {
+                fetchUserProfile() // Llama a la lógica centralizada al refrescar
+            }
+        }
     )
-
+    LaunchedEffect(key1 = idTarget) {
+        fetchUserProfile()
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -146,7 +145,7 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(8.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "@${user.userName}",
@@ -221,7 +220,7 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Button(
-                            onClick = { toggleFollow() },
+                            onClick = { handleToggleFollow()},
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (isFollowing.value) Color.Gray else MaterialTheme.colorScheme.primary
                             ),

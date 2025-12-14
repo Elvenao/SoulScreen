@@ -58,7 +58,6 @@ fun seguidoresUser(userId: String, navController: NavController) {
 
     val EncryptedSharedPreferences = SecurePrefs(context)
     val currentUserData = EncryptedSharedPreferences.getCurrentUserData()
-    var isLoading by remember { mutableStateOf(true) }
     var isRefreshing by remember { mutableStateOf(false) }
     val isPreview = LocalInspectionMode.current
     val encryptedSharedPreferences = remember {
@@ -66,188 +65,165 @@ fun seguidoresUser(userId: String, navController: NavController) {
     }
     val refreshToken = encryptedSharedPreferences?.getRefreshToken()
 
-    fun cargarSeguidores() {
-        isRefreshing = true
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = RetrofitClient.getInstance(context).getUserProfile(userId).execute()
+    var error by remember { mutableStateOf<String?>(null) } // Para mostrar mensajes de error
 
+    // 1. LA NUEVA FUNCIÓN CENTRALIZADA PARA CARGAR DATOS
+    suspend fun fetchFollowData() {
+        error = null // Limpia errores previos al recargar
+        try {
+            // Obtener el perfil del usuario directamente (gracias al 'suspend' del Paso 1)
+            val user = RetrofitClient.getInstance(context).getUserProfile(userId)
 
-
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val user = response.body()
-                        val seguidoresList = user?.followers?.mapNotNull { id ->
-                            val res = RetrofitClient.getInstance(context).getUserIdImgById(id).execute()
-                            if (res.isSuccessful) res.body() else null
-                        } ?: emptyList()
-                        // Cargar info de seguidos
-                        val seguidosList = user?.following?.map { id ->
-                            async{
-                                val res = RetrofitClient.getInstance(context).getUserIdImgById(id).execute()
-                                if (res.isSuccessful) res.body() else null
-                            }
-                        }?.awaitAll()?.filterNotNull() ?: emptyList()
-                        withContext(Dispatchers.Main) {
-                            seguidores = seguidoresList
-                            seguidos = seguidosList
-                            isLoading = false
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            isLoading = false
-                        }
+            if (user != null) {
+                // Lanzar las llamadas para obtener detalles EN PARALELO para más eficiencia
+                val seguidoresDeferred = user.followers?.map { followerId ->
+                    scope.async(Dispatchers.IO) { // Ejecuta cada llamada en un hilo de fondo
+                        RetrofitClient.getInstance(context).getUserIdImgById(followerId)
                     }
-                    isRefreshing = false
                 }
-            } catch (e: Exception) {
 
-                isRefreshing = false
+                val seguidosDeferred = user.following?.map { followingId ->
+                    scope.async(Dispatchers.IO) {
+                        RetrofitClient.getInstance(context).getUserIdImgById(followingId)
+                    }
+                }
+
+                // Esperar a que todas las llamadas terminen y filtrar los nulos
+                seguidores = seguidoresDeferred?.awaitAll()?.filterNotNull() ?: emptyList()
+                seguidos = seguidosDeferred?.awaitAll()?.filterNotNull() ?: emptyList()
+
+            } else {
+                error = "No se encontró el perfil del usuario."
             }
-
-
-
+        } catch (e: retrofit2.HttpException) { // Error de servidor (ej: 404, 500)
+            error = "Error al cargar el perfil: Código ${e.code()}"
+        } catch (e: Exception) { // Otros errores (ej: sin conexión a internet)
+            error = "Error de red: Revisa tu conexión."
+            e.printStackTrace() // Imprime el error en la consola para depuración
+        } finally {
+            // Asegurarse de que los indicadores de carga se desactiven siempre
+            isRefreshing = false
         }
     }
+
+// 2. EL NUEVO LaunchedEffect PARA LA CARGA INICIAL
+    LaunchedEffect(key1 = userId) {
+        isRefreshing = true // <-- USA isRefreshing en lugar de isLoading
+        fetchFollowData()
+    }
+
+// 3. EL NUEVO pullRefreshState QUE USA LA FUNCIÓN CENTRALIZADA
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
-        onRefresh = { cargarSeguidores() }
+        onRefresh = {
+            scope.launch {
+                isRefreshing = true
+                fetchFollowData() // Llama a la lógica centralizada al refrescar
+            }
+        }
     )
-    LaunchedEffect(userId) {
-        isLoading = true
-        withContext(Dispatchers.IO) {
-            val response = RetrofitClient.getInstance(context).getUserProfile(userId).execute()
-            if (response.isSuccessful) {
-                val user = response.body()
-                // Cargar info de seguidores
-                val seguidoresList = user?.followers?.mapNotNull { id ->
-                    val res = RetrofitClient.getInstance(context).getUserIdImgById(id).execute()
-                    if (res.isSuccessful) res.body() else null
-                } ?: emptyList()
-                // Cargar info de seguidos
-                val seguidosList = user?.following?.map { id ->
-                    async{
-                        val res = RetrofitClient.getInstance(context).getUserIdImgById(id).execute()
-                        if (res.isSuccessful) res.body() else null
-                    }
-                }?.awaitAll()?.filterNotNull() ?: emptyList()
-                withContext(Dispatchers.Main) {
-                    seguidores = seguidoresList
-                    seguidos = seguidosList
-                    isLoading = false
-                }
-            }else{
-                withContext(Dispatchers.Main) {
-                    isLoading = false
-                }
-            }
-        }
-    }
 
-    if (isLoading) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .pullRefresh(pullRefreshState))
+    {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+
         ) {
-            Text("CARGANDO")
-        }
-    } else {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState))
-        {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(16.dp)
-
+            // Columna de Seguidores
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                // Columna de Seguidores
-                Column(
-                    modifier = Modifier.weight(1f)
+                Row(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primary)
+                        .fillMaxWidth()
+                        .padding(8.dp),
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.primary)
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                    ) {
-                        Text("Seguidores", color = MaterialTheme.colorScheme.onPrimary)
-                    }
-                    LazyColumn(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                        items(seguidores) { user ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        if (user.id == currentUserData.id) {
-                                            navController.navigate("ProfileScreen")
-                                        } else {
-                                            navController.navigate("seeProfileUser/${user.id}")
-                                        }
+                    Text("Seguidores", color = MaterialTheme.colorScheme.onPrimary)
+                }
+                LazyColumn(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                    items(seguidores) { user ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (user.id == currentUserData.id) {
+                                        navController.navigate("ProfileScreen")
+                                    } else {
+                                        navController.navigate("seeProfileUser/${user.id}")
                                     }
-                                    .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                            ) {
-                                AsyncImage(
-                                    model = currentUserData.ip + user.img,
-                                    contentDescription = "Avatar",
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(CircleShape)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(user.username, color = MaterialTheme.colorScheme.onPrimary)
-                            }
+                                }
+                                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                        ) {
+                            AsyncImage(
+                                model = currentUserData.ip + user.img,
+                                contentDescription = "Avatar",
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(user.username, color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 }
-                Spacer(modifier = Modifier.width(16.dp))
-                // Columna de Seguidos
-                Column(
-                    modifier = Modifier.weight(1f)
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            // Columna de Seguidos
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primary)
+                        .fillMaxWidth()
+                        .padding(8.dp),
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.primary)
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                    ) {
-                        Text("Seguidos", color = MaterialTheme.colorScheme.onPrimary)
-                    }
-                    LazyColumn(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                        items(seguidos) { user ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        if (user.id == currentUserData.id) {
-                                            navController.navigate("ProfileScreen")
-                                        } else {
-                                            navController.navigate("seeProfileUser/${user.id}")
-                                        }
+                    Text("Seguidos", color = MaterialTheme.colorScheme.onPrimary)
+                }
+                LazyColumn(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                    items(seguidos) { user ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (user.id == currentUserData.id) {
+                                        navController.navigate("ProfileScreen")
+                                    } else {
+                                        navController.navigate("seeProfileUser/${user.id}")
                                     }
-                                    .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                            ) {
-                                AsyncImage(
-                                    model = currentUserData.ip + user.img,
-                                    contentDescription = "Avatar",
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(CircleShape)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(user.username, color = MaterialTheme.colorScheme.onPrimary)
-                            }
+                                }
+                                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                        ) {
+                            AsyncImage(
+                                model = currentUserData.ip + user.img,
+                                contentDescription = "Avatar",
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(user.username, color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 }
             }
         }
+        androidx.compose.material.pullrefresh.PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+            )
     }
+
+
 
 }
 
