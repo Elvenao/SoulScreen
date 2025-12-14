@@ -19,6 +19,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.Colors
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
@@ -314,57 +317,75 @@ fun seePost(id:String, navController: NavController){
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(8.dp)
-                                        .height(120.dp), // Altura fija
+                                        .height(80.dp), // Altura fija
                                     textStyle = TextStyle(
                                         color = MaterialTheme.colorScheme.onPrimary,
-                                        fontSize = 16.sp
+                                        fontSize = 12.sp
                                     ),
-                                    maxLines = 4
+                                    maxLines = 5
                                 )
-                                Text(
-                                    text = "${comments.value.length}/200",
-                                    color = MaterialTheme.colorScheme.onPrimary,
+
+                                Row(
                                     modifier = Modifier
-                                        .align(Alignment.End)
-                                        .padding(end = 16.dp)
-                                )
-                                // Dentro de tu Composable, después del TextField:
-                                Button(
-                                    onClick = {
-                                        if (comments.value.isNotBlank()) {
-                                            CoroutineScope(Dispatchers.IO).launch {
-                                                try {
-                                                    val request = NuevoComentarioRequest(
-                                                        userId = currentUserData.id,
-                                                        userName = currentUserData.userName,
-                                                        userMedia = currentUserData.avatar,
-                                                        comentario = comments.value,
-                                                    )
-                                                    val response = RetrofitClient.getInstance(context)
-                                                        .commentPost(id, request)
-                                                    withContext(Dispatchers.Main) {
-                                                        if (response.isSuccessful) {
-                                                            comments.value = ""
-                                                            cargarPosts()
-                                                        } else {
-                                                            val errorBody = response.errorBody()?.string()
-                                                            errorMessage.value = "Error al comentar: ${response.code()} - $errorBody"
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp, end = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Text(
+                                        text = "${comments.value.length}/200",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                    )
+
+                                    Button(
+                                        onClick = {
+                                            if (comments.value.isNotBlank()) {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    try {
+                                                        val request = NuevoComentarioRequest(
+                                                            userId = currentUserData.id,
+                                                            userName = currentUserData.userName,
+                                                            userMedia = currentUserData.avatar,
+                                                            comentario = comments.value,
+                                                        )
+                                                        val response = RetrofitClient.getInstance(context)
+                                                            .commentPost(id, request)
+                                                        withContext(Dispatchers.Main) {
+                                                            if (response.isSuccessful) {
+                                                                comments.value = ""
+                                                                cargarPosts()
+                                                            } else {
+                                                                val errorBody = response.errorBody()?.string()
+                                                                errorMessage.value = "Error al comentar: ${response.code()} - $errorBody"
+                                                            }
                                                         }
-                                                    }
-                                                } catch (e: Exception) {
-                                                    withContext(Dispatchers.Main) {
-                                                        errorMessage.value = "Fallo: ${e.message}"
+                                                    } catch (e: Exception) {
+                                                        withContext(Dispatchers.Main) {
+                                                            errorMessage.value = "Fallo: ${e.message}"
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .align(Alignment.End)
-                                        .padding(end = 16.dp, top = 8.dp)
-                                ) {
-                                    Text("Enviar")
+                                        },
+                                        shape = RoundedCornerShape(50),
+                                        enabled = comments.value.isNotBlank(),
+
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.secondary,
+                                            disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
+                                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                                            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f)
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "Enviar",
+                                            fontSize = 14.sp
+                                        )
+                                    }
                                 }
+
+
                             }
 
 
