@@ -204,7 +204,7 @@ fun EditProfile(navController: NavController){
                     ) {
                         Button(
                             onClick = {
-                                saveInformation(categoriesSelected.value,context,navController, biography)
+                                saveInformation(categoriesSelected.value,context,navController, biography,currentUserData)
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Cyan,
@@ -229,7 +229,7 @@ fun saveInformation(categories: List<String>, context: Context, navController: N
     Log.d("ERRORSOTE", "SIII")
     CoroutineScope(Dispatchers.IO).launch {
         try {
-            val response = RetrofitClient.getInstance(context).updateCategories(id.id,categorias)
+            val response = RetrofitClient.getInstance(context).updateProfile(id.id,information)
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     val body = response.body()

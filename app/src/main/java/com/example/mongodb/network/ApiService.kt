@@ -13,6 +13,7 @@ import com.example.mongodb.model.PostWithAvatar
 import com.example.mongodb.model.RefreshTokenRequest
 import com.example.mongodb.model.TokenResponse
 import com.example.mongodb.model.UpdateCategoriesRequest
+import com.example.mongodb.model.UpdateProfileRequest
 import com.example.mongodb.model.UserData
 import com.example.mongodb.model.UserIdImg
 import com.example.mongodb.model.UserNameRequest
@@ -72,6 +73,12 @@ interface ApiService {
     suspend fun updateCategories(
         @Path("id") id: String,
         @Body body: UpdateCategoriesRequest
+    ): Response<LoginResponse>
+
+    @PATCH("users/updateProfile/{id}")
+    suspend fun updateProfile(
+        @Path("id") id: String,
+        @Body body: UpdateProfileRequest
     ): Response<LoginResponse>
 
     @Multipart
