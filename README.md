@@ -1,4 +1,4 @@
-# Documentación Técnica de la App SoulScreen (Branch: withToken)
+# Documentación Técnica de la App SoulScreen (Branch: main)
 
 -----
 
