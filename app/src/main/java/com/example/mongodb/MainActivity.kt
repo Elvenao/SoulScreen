@@ -95,7 +95,7 @@ import com.example.mongodb.screens.CameraUI
 import com.example.mongodb.screens.Confirmacion
 import com.example.mongodb.screens.Home
 import com.example.mongodb.screens.SharedViewModel
-import com.example.mongodb.screens.categoryChoosing
+import com.example.mongodb.screens.EditProfile
 import com.example.mongodb.screens.config
 import com.example.mongodb.screens.crearPost
 import com.example.mongodb.screens.detalleMedia
@@ -267,8 +267,8 @@ fun NavigationHost(onFontSelected: (FontFamily) -> Unit, onFontScaleSelected: (F
             crearPost(navController)
         }
 
-        composable("categoryChoosing"){
-            categoryChoosing(navController)
+        composable("editProfile"){
+            EditProfile(navController)
         }
 
         composable("openCamera/{destination}") {  backStackEntry ->

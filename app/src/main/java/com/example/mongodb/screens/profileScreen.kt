@@ -29,6 +29,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
@@ -67,6 +69,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -169,6 +173,16 @@ fun profileScreen(
                                 }
                             }
                     )
+                    IconButton(
+                        onClick = {
+                            navController.navigate("editProfile")
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar Perfil"
+                        )
+                    }
                     Text(
                         text = currentUserData.name,
                         fontSize = 24.sp,

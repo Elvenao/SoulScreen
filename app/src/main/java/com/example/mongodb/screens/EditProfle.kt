@@ -55,7 +55,7 @@ import kotlinx.coroutines.withContext
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
-fun categoryChoosing(navController: NavController){
+fun EditProfile(navController: NavController){
     //var categories by remember { mutableStateOf(emptyList()) }
     val categories = remember { mutableStateOf<List<Category>>(emptyList())}
     val errorMessage = remember { mutableStateOf<String?>(null) }
