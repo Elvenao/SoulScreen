@@ -82,11 +82,12 @@ fun EditProfile(navController: NavController){
     var biography by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
-    val birthDateSend by remember { mutableStateOf("") }
+
 
     LaunchedEffect(Unit) {
         userName = currentUserData.userName
         biography = currentUserData.biography ?: ""
+        birthDate = currentUserData.birthDate
         loadInformation(categories, errorMessage, context,categoriesString)
     }
     
@@ -160,11 +161,13 @@ fun EditProfile(navController: NavController){
                     }
                     Column {
                         DatePickerField(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.height(65
+                                .dp)
+                                .fillMaxWidth(),
                             label = "Fecha de Nacimiento",
                             value = birthDate,
-                            onDateSelected = {
-                                saveBirthDate(birthDate,birthDateSend)
+                            onDateSelected = { selectedDate ->
+                                birthDate = selectedDate
                             }
                         )
                     }
@@ -248,7 +251,7 @@ fun EditProfile(navController: NavController){
                     ) {
                         Button(
                             onClick = {
-                                saveInformation(categoriesSelected.value,context,navController, biography,currentUserData)
+                                saveInformation(categoriesSelected.value,context,navController, biography,birthDate,userName,currentUserData)
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Cyan,
@@ -265,14 +268,11 @@ fun EditProfile(navController: NavController){
     }
 }
 
-fun saveBirthDate(birthDateVar:String, birthDate: MutableState<String>){
-    birthDate.value = birthDateVar
-}
 @androidx.annotation.OptIn(UnstableApi::class)
-fun saveInformation(categories: List<String>, context: Context, navController: NavController, biography: String,currentUserData: CurrentUserData){
+fun saveInformation(categories: List<String>, context: Context, navController: NavController, biography: String,birthDate: String,userName:String, currentUserData: CurrentUserData){
     val securePrefs = SecurePrefs(context)
     val id = securePrefs.getCurrentUserData()
-    val information = UpdateProfileRequest(currentUserData.userName,currentUserData.name,biography,categories,currentUserData.birthDate)
+    val information = UpdateProfileRequest(userName,currentUserData.name,biography,categories,birthDate)
     Log.d("ERRORSOTE", "SIII")
     CoroutineScope(Dispatchers.IO).launch {
         try {
