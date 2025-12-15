@@ -1,6 +1,7 @@
 package com.example.mongodb.screens
 
 import android.content.Context
+import android.net.Uri
 import android.widget.Toast
 import androidx.collection.MutableScatterSet
 import androidx.compose.foundation.BorderStroke
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +52,7 @@ import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.mongodb.SecurePrefs
+import com.example.mongodb.core.DatePickerField
 import com.example.mongodb.model.Category
 import com.example.mongodb.model.CurrentUserData
 import com.example.mongodb.model.UpdateCategoriesRequest
@@ -77,8 +80,12 @@ fun EditProfile(navController: NavController){
     val categoriesSelected = remember { mutableStateOf(genres) }
     val selectedStates = remember { mutableStateListOf<Boolean>()  }
     var biography by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf("") }
+    var birthDate by remember { mutableStateOf("") }
+    val birthDateSend by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
+        userName = currentUserData.userName
         biography = currentUserData.biography ?: ""
         loadInformation(categories, errorMessage, context,categoriesString)
     }
@@ -144,6 +151,43 @@ fun EditProfile(navController: NavController){
                                 .fillMaxWidth()
                                 .padding(8.dp)
                                 .height(150.dp),
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 12.sp
+                            ),
+                            maxLines = 5
+                        )
+                    }
+                    Column {
+                        DatePickerField(
+                            modifier = Modifier.weight(1f),
+                            label = "Fecha de Nacimiento",
+                            value = birthDate,
+                            onDateSelected = {
+                                saveBirthDate(birthDate,birthDateSend)
+                            }
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Nombre de Usuario",
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(8.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        TextField(
+                            value = userName,
+                            onValueChange = { userName = it },
+                            label = {
+                                Text(
+                                    "Cambiar username",
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .height(60.dp),
                             textStyle = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontSize = 12.sp
@@ -221,6 +265,9 @@ fun EditProfile(navController: NavController){
     }
 }
 
+fun saveBirthDate(birthDateVar:String, birthDate: MutableState<String>){
+    birthDate.value = birthDateVar
+}
 @androidx.annotation.OptIn(UnstableApi::class)
 fun saveInformation(categories: List<String>, context: Context, navController: NavController, biography: String,currentUserData: CurrentUserData){
     val securePrefs = SecurePrefs(context)
