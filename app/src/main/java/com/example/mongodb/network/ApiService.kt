@@ -122,7 +122,7 @@ interface ApiService {
     @GET("multimedia/{id}")
     fun getMultimediaDetails(@Path("id") id: String): Call<List<Multimedia>>
 
-    @GET("users/{idUser}/posts")
+    @GET("posts/{idUser}/posts")
     fun getUserPosts(@Path("idUser")id:String):Call<List<Post>>
 
     @PATCH("users/like/{id}")
