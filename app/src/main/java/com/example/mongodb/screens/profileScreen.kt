@@ -328,7 +328,7 @@ fun profileScreen(
                     )
 
                     Text(
-                        text = "Se unió en: ${currentUserData.birthDate}",
+                        text = "Se unió en: ${currentUserData.joiningDate}",
                         fontSize = 16.sp,
                         modifier = Modifier.padding(start = 8.dp, bottom = 18.dp),
                         color = MaterialTheme.colorScheme.onPrimary

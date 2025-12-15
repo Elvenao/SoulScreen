@@ -1,6 +1,7 @@
 package com.example.mongodb.screens
 
 import android.content.Context
+import android.net.Uri
 import android.widget.Toast
 import androidx.collection.MutableScatterSet
 import androidx.compose.foundation.BorderStroke
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +52,7 @@ import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.mongodb.SecurePrefs
+import com.example.mongodb.core.DatePickerField
 import com.example.mongodb.model.Category
 import com.example.mongodb.model.CurrentUserData
 import com.example.mongodb.model.UpdateCategoriesRequest
@@ -77,9 +80,14 @@ fun EditProfile(navController: NavController){
     val categoriesSelected = remember { mutableStateOf(genres) }
     val selectedStates = remember { mutableStateListOf<Boolean>()  }
     var biography by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf("") }
+    var birthDate by remember { mutableStateOf("") }
+
 
     LaunchedEffect(Unit) {
+        userName = currentUserData.userName
         biography = currentUserData.biography ?: ""
+        birthDate = currentUserData.birthDate
         loadInformation(categories, errorMessage, context,categoriesString)
     }
     
@@ -151,6 +159,45 @@ fun EditProfile(navController: NavController){
                             maxLines = 5
                         )
                     }
+                    Column {
+                        DatePickerField(
+                            modifier = Modifier.height(65
+                                .dp)
+                                .fillMaxWidth(),
+                            label = "Fecha de Nacimiento",
+                            value = birthDate,
+                            onDateSelected = { selectedDate ->
+                                birthDate = selectedDate
+                            }
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Nombre de Usuario",
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(8.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        TextField(
+                            value = userName,
+                            onValueChange = { userName = it },
+                            label = {
+                                Text(
+                                    "Cambiar username",
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .height(60.dp),
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 12.sp
+                            ),
+                            maxLines = 5
+                        )
+                    }
                     FlowRow(
                         //modifier = Modifier
                         //    .fillMaxWidth()
@@ -204,7 +251,7 @@ fun EditProfile(navController: NavController){
                     ) {
                         Button(
                             onClick = {
-                                saveInformation(categoriesSelected.value,context,navController, biography,currentUserData)
+                                saveInformation(categoriesSelected.value,context,navController, biography,birthDate,userName,currentUserData)
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Cyan,
@@ -222,10 +269,10 @@ fun EditProfile(navController: NavController){
 }
 
 @androidx.annotation.OptIn(UnstableApi::class)
-fun saveInformation(categories: List<String>, context: Context, navController: NavController, biography: String,currentUserData: CurrentUserData){
+fun saveInformation(categories: List<String>, context: Context, navController: NavController, biography: String,birthDate: String,userName:String, currentUserData: CurrentUserData){
     val securePrefs = SecurePrefs(context)
     val id = securePrefs.getCurrentUserData()
-    val information = UpdateProfileRequest(currentUserData.userName,currentUserData.name,biography,categories,currentUserData.birthDate)
+    val information = UpdateProfileRequest(userName,currentUserData.name,biography,categories,birthDate)
     Log.d("ERRORSOTE", "SIII")
     CoroutineScope(Dispatchers.IO).launch {
         try {

@@ -297,14 +297,7 @@ fun seePost(id:String, navController: NavController){
                                     .background(MaterialTheme.colorScheme.primary)
                                     .clip(RoundedCornerShape(8.dp))
                             ) {
-                                Text(
-                                    text = "Crear comentario",
-                                    fontSize = 18.sp,
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .fillMaxWidth(),
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
+                                
                                 TextField(
                                     value = comments.value,
                                     onValueChange = { if (it.length <= 200) comments.value = it },
