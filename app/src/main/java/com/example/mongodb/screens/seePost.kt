@@ -343,10 +343,13 @@ fun seePost(id:String, navController: NavController){
                                             if (comments.value.isNotBlank()) {
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     try {
+                                                        val imagenURL = currentUserData.avatar.substringAfter("/Images/")
+                                                        val userMediaURL = "/Images/$imagenURL"
+
                                                         val request = NuevoComentarioRequest(
                                                             userId = currentUserData.id,
                                                             userName = currentUserData.userName,
-                                                            userMedia = currentUserData.avatar,
+                                                            userMedia = userMediaURL,
                                                             comentario = comments.value,
                                                         )
                                                         val response = RetrofitClient.getInstance(context)
@@ -413,7 +416,7 @@ fun seePost(id:String, navController: NavController){
                                             ) {
                                                 // FOTO DE PERFIL DEL USUARIO QUE COMENTÓ
                                                 AsyncImage(
-                                                    model = comentario.userMedia,
+                                                    model = currentUserData.ip + comentario.userMedia,
                                                     contentDescription = "Avatar de ${comentario.userName}",
                                                     contentScale = ContentScale.Crop,
                                                     modifier = Modifier
