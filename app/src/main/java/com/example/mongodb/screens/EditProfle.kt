@@ -143,7 +143,7 @@ fun EditProfile(navController: NavController){
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp)
-                                .height(200.dp),
+                                .height(150.dp),
                             textStyle = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontSize = 12.sp
@@ -237,8 +237,8 @@ fun saveInformation(categories: List<String>, context: Context, navController: N
                     if (body != null) {
                         Toast.makeText(context, body.message, Toast.LENGTH_SHORT).show()
                     }
-                    navController.navigate("profileScreen?refresh=${System.currentTimeMillis()}") {
-                        popUpTo("profileScreen") { inclusive = true }
+                    navController.navigate("posts") {
+                        popUpTo("posts") { inclusive = true }
                     }
                     
                 } else {
