@@ -4,20 +4,27 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -28,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,11 +47,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mongodb.SecurePrefs
+import com.example.mongodb.model.LikeInformation
+import com.example.mongodb.model.PostWithAvatar
 import com.example.mongodb.model.UserData
 import com.example.mongodb.network.RetrofitClient
 import com.google.accompanist.flowlayout.FlowRow
@@ -51,6 +62,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
 import androidx.compose.material.Text as MaterialText
 
 
@@ -66,6 +78,7 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
     val tabs = listOf("Peliculas", "Series", "Videojuegos", "Música", "Libros")
     val scope = rememberCoroutineScope()
     var error by remember { mutableStateOf<String?>(null) }
+    var userPosts by remember { mutableStateOf<List<PostWithAvatar>>(emptyList()) }
 
     suspend fun fetchUserProfile() {
         isRefreshing.value = true
@@ -104,16 +117,64 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
             }
         }
     }
+
+    fun cargarUserPosts() {
+        // Seguridad: no hacer nada si aún no tenemos los datos del usuario
+        if (currentUser == null) {
+            isRefreshing.value = false // Si se estaba refrescando, lo detenemos
+            return
+        }
+
+        // 1. Llamamos al endpoint correcto, pasándole el ID del usuario actual
+        val call = RetrofitClient.getInstance(context).getUserPosts(idTarget)
+
+        // 2. Usamos enqueue para la llamada asíncrona (no bloquea la UI)
+        call.enqueue(object : retrofit2.Callback<List<com.example.mongodb.model.Post>> {
+            override fun onResponse(
+                call: retrofit2.Call<List<com.example.mongodb.model.Post>>,
+                response: retrofit2.Response<List<com.example.mongodb.model.Post>>
+            ) {
+                if (response.isSuccessful) {
+                    val postsDelUsuario = response.body()
+                    if (postsDelUsuario != null) {
+                        // 3. Adaptamos los datos para que coincidan con lo que la UI espera
+                        // La UI espera PostWithAvatar, pero recibimos Post. Los "mapeamos".
+                        userPosts = postsDelUsuario.map { post ->
+                            PostWithAvatar(
+                                post = post, // La información del post que acabamos de recibir
+                                userAvatar = currentUser.avatar, // El avatar del usuario actual que ya tenemos
+                            )
+                        }
+                    }
+                } else {
+                    // Manejo del error de la respuesta
+                    Toast.makeText(context, "Error al cargar posts: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+                // Importante: Indicar que el refresco ha terminado, tanto si tuvo éxito como si no
+                isRefreshing.value = false
+            }
+
+            override fun onFailure(call: retrofit2.Call<List<com.example.mongodb.model.Post>>, t: Throwable) {
+                // Manejo del fallo de red
+                Toast.makeText(context, "Fallo de red al cargar posts: ${t.message}", Toast.LENGTH_SHORT).show()
+                // Importante: Indicar que el refresco ha terminado
+                isRefreshing.value = false
+            }
+        })
+    }
+
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing.value,
         onRefresh = {
             scope.launch {
                 fetchUserProfile() // Llama a la lógica centralizada al refrescar
+                cargarUserPosts()
             }
         }
     )
     LaunchedEffect(key1 = idTarget) {
         fetchUserProfile()
+        cargarUserPosts()
     }
     Box(
         modifier = Modifier
@@ -233,7 +294,9 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                         }
                     }
                 }
-                item {
+
+
+                /*item {
                     ScrollableTabRow(
                         selectedTabIndex = selectedTabIndex,
                         backgroundColor = MaterialTheme.colorScheme.background,
@@ -267,7 +330,217 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                         4 -> Text("Contenido de Libros", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onPrimary)
                         else -> Text("Contenido no disponible", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onPrimary)
                     }
+                }*/
+
+                items(userPosts.sortedByDescending { it.post.date }) { post ->
+                    Box(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                            .height(400.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.tertiary)
+                            .clickable {
+                                navController.navigate("VerPostScreen/${post.post.id}")
+                            }
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                        ){
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(2f)
+                                    .padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(7.5f)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+
+                                        ) {
+                                        AsyncImage(
+                                            model = "${currentUser.ip}${user.avatar}" ,
+                                            contentDescription = "Imagen de usuario",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .padding(top = 8.dp)
+                                                .size(52.dp)
+                                                .clip(CircleShape)
+                                        )
+                                        androidx.compose.material3.Text(
+                                            text = "@" + post.post.user,
+                                            fontSize = 18.sp,
+                                            modifier = Modifier
+                                                .padding(top = 10.dp, start = 8.dp)
+                                                .weight(2f), // Da más espacio al usuario, pero deja sitio para la fecha
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    }
+                                    Row(
+
+                                    ) {
+                                        androidx.compose.material3.Text(
+                                            text = post.post.mediaName,
+                                            fontSize = 22.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier
+                                                .weight(2f)
+                                                .padding(top = 8.dp, bottom = 0.dp),
+
+                                            overflow = TextOverflow.Ellipsis,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    }
+                                    Row(){
+                                        if(post.post.postType=="SPOILER"){
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxHeight()
+                                            ){
+                                                Row(){
+                                                    androidx.compose.material3.Text(
+                                                        text = "SPOILER ALERT",
+                                                        fontSize = 24.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = Color.Red,
+                                                        modifier = Modifier.padding(top = 8.dp)
+                                                    )
+                                                }
+                                                Row(){
+                                                    androidx.compose.material3.Text(
+                                                        text = "Presiona para ver detalles (Bajo tu propio riesgo)",
+                                                        fontSize = 16.sp,
+                                                        color = Color.Red,
+                                                        modifier = Modifier
+                                                    )
+                                                }
+                                            }
+                                        }else{
+                                            androidx.compose.material3.Text(
+                                                text = getText(post.post.content),
+
+                                                color = MaterialTheme.colorScheme.onPrimary,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ){
+                                    var likeNumber by remember { mutableIntStateOf(post.post.likes.toInt()) }
+
+                                    Row(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(30.dp),
+                                        horizontalArrangement = Arrangement.Start
+                                    ){
+                                        IconButton(
+                                            onClick = {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    try {
+                                                        val likeInformation = LikeInformation(
+                                                            currentUser.id,
+                                                            currentUser.userName,
+                                                            currentUser.avatar
+                                                        )
+                                                        val response = RetrofitClient.getInstance(context).likePost(post.post.id, likeInformation)
+                                                        withContext(Dispatchers.Main) {
+                                                            if (response.isSuccessful) {
+                                                                Toast.makeText(context, response.body()?.message, Toast.LENGTH_SHORT).show()
+                                                                likeNumber = response.body()?.likes?.toInt() ?: likeNumber
+                                                            } else {
+                                                                Toast.makeText(context, "It was not possible to like", Toast.LENGTH_SHORT).show()
+                                                                likeNumber = response.body()?.likes?.toInt() ?: likeNumber
+                                                            }
+                                                        }
+                                                    } catch (e: Exception){
+                                                        withContext(Dispatchers.Main){
+                                                            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                                        }
+                                                    }
+                                                }
+                                            },
+
+                                            ) {
+                                            androidx.compose.material3.Icon(
+                                                Icons.Default.ArrowCircleUp,
+                                                contentDescription = "Abrir menú",
+                                                tint = MaterialTheme.colorScheme.onPrimary
+                                            )
+                                        }
+                                        androidx.compose.material3.Text(
+                                            text = likeNumber.toString(),
+                                            fontSize = 20.sp,
+                                            modifier = Modifier
+                                                .clickable {
+
+                                                }
+                                                .padding(top = 2.dp),
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    }
+                                }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(1.2f)
+                                    .padding(8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.weight(0.2f)
+                                ){
+
+                                }
+
+                                Row(
+                                    modifier = Modifier.weight(0.5f)
+                                ){
+                                    androidx.compose.material3.Text(
+                                        text = post.post.postType,
+                                        fontSize = 20.sp,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.weight(3f)
+                                ){
+                                    AsyncImage(
+                                        model = currentUser.ip + post.post.mediaImg,
+                                        contentDescription = "Imagen del medio",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .clip(RoundedCornerShape(8.dp))
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.weight(0.2f)
+                                ){
+
+                                }
+
+                                Row(
+                                    modifier = Modifier.weight(0.5f)
+                                ){
+                                    androidx.compose.material3.Text(
+                                        text = timeAgo(LocalDateTime.parse(post.post.date)),
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+
+                            }
+                        }
+                    }
                 }
+
             }
         }
         PullRefreshIndicator(
