@@ -16,6 +16,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayDisabled
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -201,8 +203,8 @@ fun detalleMedia(idMedia: String, navController: NavController) {
                         )
                     ) {
                         Icon(
-                            imageVector = Icons.Default.PlayArrow, // o el ícono que tú quieras
-                            contentDescription = "Me gusto",
+                            imageVector = Icons.Default.ThumbUp, // <-- ¡ICONO CORRECTO!
+                            contentDescription = "Me gusta",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
@@ -234,8 +236,8 @@ fun detalleMedia(idMedia: String, navController: NavController) {
                         )
                     ) {
                         Icon(
-                            imageVector = Icons.Default.PlayDisabled, // o el ícono que tú quieras
-                            contentDescription = "No me gusto",
+                            imageVector = Icons.Default.ThumbDown, // <-- ¡ICONO CORRECTO!
+                            contentDescription = "No me gusta",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }

@@ -162,6 +162,12 @@ fun explorar(navController: NavController){
 
                                 }
                             },
+                            placeholder = {
+                                Text(
+                                    text = "Escribe para buscar multimedia!",
+                                    color = Color.Gray
+                                )
+                            },
                             singleLine = true,
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.background,
