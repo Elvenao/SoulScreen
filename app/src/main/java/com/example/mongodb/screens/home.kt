@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.AssignmentTurnedIn
+import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -621,7 +622,8 @@ fun Home(navController:NavController) {
                                             modifier = Modifier.weight(1f)
                                         ){
                                             var likeNumber by remember { mutableIntStateOf(post.post.likes.toInt()) }
-
+                                            var commentsNumber by remember { mutableIntStateOf(post.post.comments?.size
+                                                ?: 0)}
                                             Row(modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(30.dp),
@@ -665,6 +667,29 @@ fun Home(navController:NavController) {
 
                                                         }
                                                         .padding(top = 2.dp)
+                                                )
+                                                androidx.compose.material.Icon(
+                                                    imageVector = Icons.Default.Comment,
+                                                    contentDescription = "Comentarios",
+                                                    modifier = Modifier.padding(
+                                                        start = 16.dp,
+                                                        top = 4.dp
+                                                    )
+                                                        .clickable{
+                                                            navController.navigate("VerPostScreen/${post.post.id}")
+                                                        },
+                                                    tint = MaterialTheme.colorScheme.onPrimary
+                                                )
+                                                androidx.compose.material3.Text(
+                                                    text = commentsNumber.toString(),
+                                                    fontSize = 20.sp,
+                                                    modifier = Modifier
+                                                        .clickable {
+                                                            navController.navigate("VerPostScreen/${post.post.id}")
+                                                        }
+                                                        .padding(top = 2.dp, start = 12.dp),
+
+                                                    color = MaterialTheme.colorScheme.onPrimary
                                                 )
                                             }
                                         }

@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
+import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ModeEditOutline
 import androidx.compose.runtime.getValue
@@ -216,10 +217,11 @@ fun profileScreen(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp)
+                
         ) {
             item {
                 Column(
+                    modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     AsyncImage(
@@ -303,14 +305,14 @@ fun profileScreen(
 
                     Row(
                         modifier = Modifier
-                            .padding(start = 8.dp, bottom = 15.dp)
+                            .padding(start = 8.dp, bottom = 15.dp, top = 14.dp)
                             .clickable {
                                 navController.navigate("SeguidoresUser/${currentUserData.id}")
                             },
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = currentUserData.followers?.size.toString() + " Seguidores |",
+                            text = currentUserData.followers?.size.toString() + " Seguidores | ",
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
@@ -338,6 +340,7 @@ fun profileScreen(
 
             item {
                 HorizontalDivider(
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     color = MaterialTheme.colorScheme.secondary,
                     thickness = 2.dp,
                 )
@@ -353,6 +356,7 @@ fun profileScreen(
             }
             item {
                 HorizontalDivider(
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     color = MaterialTheme.colorScheme.secondary,
                     thickness = 2.dp,
                 )
@@ -419,7 +423,7 @@ fun profileScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .height(400.dp)
+                        .height(300.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(MaterialTheme.colorScheme.tertiary)
                         .clickable {
@@ -433,7 +437,7 @@ fun profileScreen(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .weight(2f)
-                                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+                                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
 
                         ) {
                             Column(
@@ -515,7 +519,9 @@ fun profileScreen(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ){
-                                var likeNumber by remember { mutableIntStateOf(post.post.likes.toInt()) }
+                                var likeNumber by remember { mutableIntStateOf(post.post.likes.toInt())}
+                                var commentsNumber by remember { mutableIntStateOf(post.post.comments?.size
+                                    ?: 0)}
 
                                 Row(modifier = Modifier
                                     .fillMaxWidth()
@@ -566,6 +572,21 @@ fun profileScreen(
                                             .padding(top = 2.dp),
                                         color = MaterialTheme.colorScheme.onPrimary
                                     )
+                                    Icon(imageVector = Icons.Default.Comment, contentDescription = "Comentarios",modifier= Modifier.padding(start = 16.dp,top = 4.dp).clickable{
+                                        navController.navigate("VerPostScreen/${post.post.id}")
+                                    }, tint = MaterialTheme.colorScheme.onPrimary)
+                                    androidx.compose.material3.Text(
+                                        text = commentsNumber.toString(),
+                                        fontSize = 20.sp,
+                                        modifier = Modifier
+                                            .clickable {
+                                                navController.navigate("VerPostScreen/${post.post.id}")
+                                            }
+                                            .padding(top = 2.dp, start = 12.dp),
+
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+
                                 }
                             }
                         }

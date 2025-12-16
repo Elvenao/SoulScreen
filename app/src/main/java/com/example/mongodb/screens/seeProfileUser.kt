@@ -1,5 +1,6 @@
 package com.example.mongodb.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,11 +21,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
+import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -103,10 +106,13 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
 
     // 2. FUNCIÓN PARA SEGUIR/DEJAR DE SEGUIR
     fun handleToggleFollow() {
+
         scope.launch {
             try {
                 // Asumimos que toggleFollow también es 'suspend fun'. ¡HAY QUE REVISAR ApiService!
-                RetrofitClient.getInstance(context).toggleFollow(idTarget, currentUser.id)
+                RetrofitClient.getInstance(context).toggleFollow(target = idTarget, follower = currentUser.id)
+                Log.d("Target", idTarget)
+                Log.d("Follower", currentUser.id)
                 // Actualizamos el estado localmente para una respuesta instantánea
                 isFollowing.value = !isFollowing.value
                 // Refrescamos los datos del perfil en segundo plano para actualizar el contador
@@ -188,10 +194,10 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(16.dp)
+                    
             ) {
                 item {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.padding(16.dp)) {
                         AsyncImage(
                             model = "${currentUser.ip}${user.avatar}",
                             contentDescription = "Avatar",
@@ -249,7 +255,7 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                         }
                         Row(
                             modifier = Modifier
-                                .padding(start = 8.dp, bottom = 15.dp)
+                                .padding(start = 8.dp, bottom = 15.dp,  top=14.dp)
                                 .clickable(
                                     onClick = {
                                         navController.navigate("seguidoresUser/${user.id}")
@@ -275,7 +281,7 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Text(
-                            text = "Se unió en: ${user.birthDate}",
+                            text = "Se unió en: ${user.joiningDate}",
                             fontSize = 16.sp,
                             modifier = Modifier.padding(start = 8.dp, bottom = 18.dp),
                             color = MaterialTheme.colorScheme.onPrimary
@@ -337,7 +343,7 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxWidth()
-                            .height(400.dp)
+                            .height(300.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(MaterialTheme.colorScheme.tertiary)
                             .clickable {
@@ -434,7 +440,8 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
                                     modifier = Modifier.weight(1f)
                                 ){
                                     var likeNumber by remember { mutableIntStateOf(post.post.likes.toInt()) }
-
+                                    var commentsNumber by remember { mutableIntStateOf(post.post.comments?.size
+                                        ?: 0)}
                                     Row(modifier = Modifier
                                         .fillMaxWidth()
                                         .height(30.dp),
@@ -482,6 +489,20 @@ fun seeProfileUser(idTarget: String, navController: NavController) {
 
                                                 }
                                                 .padding(top = 2.dp),
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                        Icon(imageVector = Icons.Default.Comment, contentDescription = "Comentarios",modifier= Modifier.padding(start = 16.dp,top = 4.dp).clickable{
+                                            navController.navigate("VerPostScreen/${post.post.id}")
+                                        }, tint = MaterialTheme.colorScheme.onPrimary)
+                                        androidx.compose.material3.Text(
+                                            text = commentsNumber.toString(),
+                                            fontSize = 20.sp,
+                                            modifier = Modifier
+                                                .clickable {
+                                                    navController.navigate("VerPostScreen/${post.post.id}")
+                                                }
+                                                .padding(top = 2.dp, start = 12.dp),
+
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }

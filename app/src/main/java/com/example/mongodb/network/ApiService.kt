@@ -108,11 +108,11 @@ interface ApiService {
     suspend fun getUserIdImgById(@Path("id") id: String): UserIdImg?
 
 
-    @POST("users/follow/toggle")
-    fun toggleFollow(                          
-        @Query("target") target: String,
-        @Query("follower") follower: String
-    ):Response<Void>
+    @GET("users/follow/toggle/{target}/{follower}")
+    suspend fun toggleFollow(
+        @Path("target") target: String,
+        @Path("follower") follower: String
+    ):Response<LoginResponse>
 
 
     @GET("multimedia/idimg")
